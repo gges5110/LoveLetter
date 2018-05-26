@@ -1,0 +1,11 @@
+.discard {
+  color: blue;
+}
+
+.playerDead {
+  color: red
+}
+
+.playerWin {
+  color: greenyellow
+}
