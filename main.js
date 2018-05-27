@@ -73,8 +73,11 @@ function startGame() {
   turn(currentPlayer);
 }
 
-$("#playButton1").click(function() {
-  playedCard = players[0].humanPLay(0, 2);
+let cardToPlay;
+
+$("#playAgainstButton1").click(function() {
+  disablePlayAgainstButton();
+  playedCard = players[0].humanPLay(cardToPlay, 1);
 
   // Resolve card action.
   resolve(players[0], playedCard);
@@ -91,8 +94,9 @@ $("#playButton1").click(function() {
   }, 1000);
 });
 
-$("#playButton2").click(function() {
-  playedCard = players[0].humanPLay(1, 2);
+$("#playAgainstButton2").click(function() {
+  disablePlayAgainstButton();
+  playedCard = players[0].humanPLay(cardToPlay, 2);
 
   // Resolve card action.
   resolve(players[0], playedCard);
@@ -107,6 +111,61 @@ $("#playButton2").click(function() {
       return;
     }
   }, 1000);
+});
+
+$("#playAgainstButton3").click(function() {
+  disablePlayAgainstButton();
+  playedCard = players[0].humanPLay(cardToPlay, 3);
+
+  // Resolve card action.
+  resolve(players[0], playedCard);
+
+  setTimeout(() => {
+    gameEnd = checkGameEnd();
+    if (gameEnd.gameEnd === false) {
+      currentPlayer = nextPlayer();
+      turn(currentPlayer);
+    } else {
+      endGame();
+      return;
+    }
+  }, 1000);
+});
+
+$("#playAgainstButton4").click(function() {
+  disablePlayAgainstButton();
+  playedCard = players[0].humanPLay(cardToPlay, 4);
+
+  // Resolve card action.
+  resolve(players[0], playedCard);
+
+  setTimeout(() => {
+    gameEnd = checkGameEnd();
+    if (gameEnd.gameEnd === false) {
+      currentPlayer = nextPlayer();
+      turn(currentPlayer);
+    } else {
+      endGame();
+      return;
+    }
+  }, 1000);
+});
+
+function disablePlayButton() {
+  $("#playButton1").prop('disabled', true);
+  $("#playButton2").prop('disabled', true);
+}
+
+$("#playButton1").click(function() {
+  disablePlayButton();
+  enablePlayAgainstButton();
+  cardToPlay = 0;
+});
+
+$("#playButton2").click(function() {
+  disablePlayButton();
+  enablePlayAgainstButton();
+  cardToPlay = 1;
 });
 
 function endGame() {
@@ -122,14 +181,34 @@ function endGame() {
   });
 }
 
+function enablePlayAgainstButton() {
+  $("#playAgainstButton1").prop('disabled', false);
+  $("#playAgainstButton2").prop('disabled', false);
+  $("#playAgainstButton3").prop('disabled', false);
+  $("#playAgainstButton4").prop('disabled', false);
+}
+
+function disablePlayAgainstButton() {
+  $("#playAgainstButton1").prop('disabled', true);
+  $("#playAgainstButton2").prop('disabled', true);
+  $("#playAgainstButton3").prop('disabled', true);
+  $("#playAgainstButton4").prop('disabled', true);
+}
+
+function enablePlayButton() {
+  $("#playButton1").prop('disabled', false);
+  $("#playButton2").prop('disabled', false);
+}
+
 function turn(player) {
-  $("#status").text(`Player ${player.number}'s turn`);
+  $("#status").text(`Player ${player.number}'s turn, ${getSize()} cards left.`);
   player.protected = false;
   player.draw();
 
   // Let the user pick one to play.
   if (player.number === 1) {
     // Player 1 is defualt to human player.
+    enablePlayButton();
     $("#playButton1").text(`${player.cards[0]}`);
     $("#playButton2").text(`${player.cards[1]}`);
   } else {
@@ -211,8 +290,18 @@ function compareCards(card1, card2) {
   return cardRank[card2] - cardRank[card1];
 }
 
+function getLivingPlayerSize() {
+  let result = 0;
+  players.forEach(player => {
+    if (!player.dead) {
+      result++;
+    }
+  });
+  return result;
+}
+
 function checkGameEnd() {
-  if (getSize() <= 0) {
+  if (getSize() <= 0 || getLivingPlayerSize() <= 1) {
     let winner = calculateWinner();
     return {'gameEnd': true, 'winner': winner};
   } else {
@@ -282,6 +371,8 @@ function initailizeGame() {
   };
   players = [new player(1), new player(2), new player(3), new player(4)];
   getRandomCard(); // Remove a card from the top of the deck.
+  disablePlayAgainstButton();
+
   players.forEach(element => {
     element.draw();
   });
