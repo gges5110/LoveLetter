@@ -3,79 +3,89 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Lover's Letter</title>
+    <title>Love Letter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
     <script
       src="https://code.jquery.com/jquery-3.3.1.min.js"
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
+    <script src="semantic/semantic.min.js"></script>
   </head>
 
   <body onload="initailizeGame()">
-    <button id="restart">Restart</button>
-    <div>
-      Choose a card
-      <button id="playButton1">A</button>
-      <button id="playButton2">B</button>
+    <div class="ui main raised text container segment" id="container">
+      <!-- <div class="ui segment"> -->
+        <h2 class="ui header">Love Letter</h2>
+        <button class="ui button primary" id="restart">Restart</button>
+        <div class="ui divider"></div>
+        <div class="ui segments">
+          <div class="ui segment">
+            Choose a card
+            <button class="ui button" id="playButton1">A</button>
+            <button class="ui button" id="playButton2">B</button>
+          </div>
+          <div class="ui segment">
+            Play Against
+            <button class="ui button" id="playAgainstButton1">1</button>
+            <button class="ui button" id="playAgainstButton2">2</button>
+            <button class="ui button" id="playAgainstButton3">3</button>
+            <button class="ui button" id="playAgainstButton4">4</button>
+          </div>
+          <div class="ui segment">
+            Guard
+            <button class="ui button" id="guardGuessButton2">Priest</button>
+            <button class="ui button" id="guardGuessButton3">Baron</button>
+            <button class="ui button" id="guardGuessButton4">Handmaid</button>
+            <button class="ui button" id="guardGuessButton5">Prince</button>
+            <button class="ui button" id="guardGuessButton6">King</button>
+            <button class="ui button" id="guardGuessButton7">Countess</button>
+            <button class="ui button" id="guardGuessButton8">Princess</button>
+          </div>
+        </div>
+
+        <p id="status"></p>
+        <br>
+
+        <div class="ui segment text">
+          <p id="playerTitle1">Player 1</p>
+          <ul class="ui list" id="playerPlayedList1">
+          </ul>
+
+          <br>
+          <p id="playerTitle2">Player 2</p>
+          <ul class="ui list" id="playerPlayedList2">
+          </ul>
+
+          <br>
+          <p id="playerTitle3">Player 3</p>
+          <ul class="ui list" id="playerPlayedList3">
+          </ul>
+
+          <br>
+          <p id="playerTitle4">Player 4</p>
+          <ul class="ui list" id="playerPlayedList4">
+          </ul>
+        </div>
+
+        <p id="rules">
+          8-Princess (1): Lose if discarded <br>
+          7-Countess (1): Discard if caught with King or Prince <br>
+          6-King (1): Trade hands <br>
+          5-Prince (2): One player discards his or her hand <br>
+          4-Handmaid (2): Protection until your next turn <br>
+          3-Baron (2): Compare hands; lower hand is out <br>
+          2-Priest (2): Look at a hand <br>
+          1-Guard (5): Guess a player's hand <br>
+        </p>
+      <!-- </div> -->
     </div>
-
-    <div>
-      Play Against
-      <button id="playAgainstButton1">1</button>
-      <button id="playAgainstButton2">2</button>
-      <button id="playAgainstButton3">3</button>
-      <button id="playAgainstButton4">4</button>
-    </div>
-
-    <div>
-      Guard
-      <button id="guardGuessButton2">Priest</button>
-      <button id="guardGuessButton3">Baron</button>
-      <button id="guardGuessButton4">Handmaid</button>
-      <button id="guardGuessButton5">Prince</button>
-      <button id="guardGuessButton6">King</button>
-      <button id="guardGuessButton7">Countess</button>
-      <button id="guardGuessButton8">Princess</button>
-    </div>
-
-    <p id="status"></p>
-    <br>
-
-    <br>
-    <p id="playerTitle1">Player 1</p>
-    <ul id="playerPlayedList1">
-    </ul>
-
-    <br>
-    <p id="playerTitle2">Player 2</p>
-    <ul id="playerPlayedList2">
-    </ul>
-
-    <br>
-    <p id="playerTitle3">Player 3</p>
-    <ul id="playerPlayedList3">
-    </ul>
-
-    <br>
-    <p id="playerTitle4">Player 4</p>
-    <ul id="playerPlayedList4">
-    </ul>
-
-    <p id="rules">
-      8-Princess (1): Lose if discarded <br>
-      7-Countess (1): Discard if caught with King or Prince <br>
-      6-King (1): Trade hands <br>
-      5-Prince (2): One player discards his or her hand <br>
-      4-Handmaid (2): Protection until your next turn <br>
-      3-Baron (2): Compare hands; lower hand is out <br>
-      2-Priest (2): Look at a hand <br>
-      1-Guard (5): Guess a player's hand <br>
-    </p>
 
     <script src="main.js"></script>
     <script src="setButtonState.js"></script>
     <script src="util.js"></script>
     <script src="player.js"></script>
+    <script src="const.js"></script>
   </body>
 </html>

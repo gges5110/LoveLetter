@@ -9,3 +9,7 @@
 .playerWin {
   color: greenyellow
 }
+
+#container {
+  margin-top: 2em;
+}
