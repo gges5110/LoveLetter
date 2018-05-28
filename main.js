@@ -1,62 +1,5 @@
-// Game loop
-function player(number) {
-  this.number = number;
-  this.dead = false;
-  this.protected = false;
-  this.cards = [];
-  this.draw = function() {
-    console.log(`Draw a card for player ${this.number}`);
-    this.cards.push(getRandomCard());
-  }
-
-  this.showHand = function() {
-    $(`#playerTitle${this.number}`).append(` - ${this.cards[0]}`);
-  }
-
-  this.setPlayerDead = function() {
-    this.dead = true;
-    $(`#playerTitle${this.number}`).attr("class","playerDead");
-    $(`#playerTitle${this.number}`).append(` - ${this.cards[0]}`);
-  }
-
-  this.play = function() {
-    let cardIndex = Math.floor(Math.random() * 2);
-    let card = this.cards[cardIndex];
-    // TODO: Play against random non dead/non protected person.
-    let against = this.number % 4 + 1;
-    let getNonDeadNonProtectedPlayerList = getNonDeadNonProtectedPlayers(this);
-    if (getNonDeadNonProtectedPlayerList.length == 0) {
-      // The player is the winner.
-    } else {
-      // Randomly select one player to play the card against.
-      let randomPlayerIndex = Math.floor(Math.random() * getNonDeadNonProtectedPlayerList.length);
-      against = getNonDeadNonProtectedPlayerList[randomPlayerIndex];
-    }
-    $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}</li>`);
-    this.cards.splice(cardIndex, 1);
-    return {'card': card, 'against': against};
-  }
-
-  this.humanPLay = function(cardIndex, against) {
-    let card = this.cards[cardIndex];
-    $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}</li>`);
-    this.cards.splice(cardIndex, 1);
-    return {'card': card, 'against': against};
-  }
-
-  this.discard = function() {
-    console.log(`Player ${this.number} discarded a card.`);
-    if (this.cards[0] === 'Princess') {
-      this.setPlayerDead();
-    }
-    // TODO: if played against itself, need to discard the right one.
-    $(`#playerPlayedList${this.number}`).append(`<li class="discard">${this.cards[0]}</li>`);
-    this.cards = [];
-  }
-}
-
-var players, availableCards;
-var currentPlayer, gameEnd;
+var players, availableCards, currentPlayer, gameEnd;
+let cardToPlay;
 
 function getNonDeadNonProtectedPlayers(caller) {
   let nonDeadNonProtectedPlayerList = [];
@@ -73,8 +16,6 @@ function startGame() {
   turn(currentPlayer);
 }
 
-let cardToPlay;
-
 $("#playAgainstButton1").click(function() {
   disablePlayAgainstButton();
   playedCard = players[0].humanPLay(cardToPlay, 1);
@@ -82,16 +23,7 @@ $("#playAgainstButton1").click(function() {
   // Resolve card action.
   resolve(players[0], playedCard);
 
-  setTimeout(() => {
-    gameEnd = checkGameEnd();
-    if (gameEnd.gameEnd === false) {
-      currentPlayer = nextPlayer();
-      turn(currentPlayer);
-    } else {
-      endGame();
-      return;
-    }
-  }, 1000);
+  setNextTurn();
 });
 
 $("#playAgainstButton2").click(function() {
@@ -101,16 +33,7 @@ $("#playAgainstButton2").click(function() {
   // Resolve card action.
   resolve(players[0], playedCard);
 
-  setTimeout(() => {
-    gameEnd = checkGameEnd();
-    if (gameEnd.gameEnd === false) {
-      currentPlayer = nextPlayer();
-      turn(currentPlayer);
-    } else {
-      endGame();
-      return;
-    }
-  }, 1000);
+  setNextTurn();
 });
 
 $("#playAgainstButton3").click(function() {
@@ -120,16 +43,7 @@ $("#playAgainstButton3").click(function() {
   // Resolve card action.
   resolve(players[0], playedCard);
 
-  setTimeout(() => {
-    gameEnd = checkGameEnd();
-    if (gameEnd.gameEnd === false) {
-      currentPlayer = nextPlayer();
-      turn(currentPlayer);
-    } else {
-      endGame();
-      return;
-    }
-  }, 1000);
+  setNextTurn();
 });
 
 $("#playAgainstButton4").click(function() {
@@ -139,6 +53,10 @@ $("#playAgainstButton4").click(function() {
   // Resolve card action.
   resolve(players[0], playedCard);
 
+  setNextTurn();
+});
+
+function setNextTurn() {
   setTimeout(() => {
     gameEnd = checkGameEnd();
     if (gameEnd.gameEnd === false) {
@@ -149,23 +67,36 @@ $("#playAgainstButton4").click(function() {
       return;
     }
   }, 1000);
-});
-
-function disablePlayButton() {
-  $("#playButton1").prop('disabled', true);
-  $("#playButton2").prop('disabled', true);
 }
 
 $("#playButton1").click(function() {
   disablePlayButton();
-  enablePlayAgainstButton();
   cardToPlay = 0;
+  if (players[0].cards[cardToPlay] === 'Handmaid') {
+    playedCard = players[0].humanPLay(cardToPlay, 1);
+
+    // Resolve card action.
+    resolve(players[0], playedCard);
+
+    setNextTurn();
+  } else {
+    enablePlayAgainstButton();
+  }
 });
 
 $("#playButton2").click(function() {
   disablePlayButton();
-  enablePlayAgainstButton();
   cardToPlay = 1;
+  if (players[0].cards[cardToPlay] === 'Handmaid') {
+    playedCard = players[0].humanPLay(cardToPlay, 1);
+
+    // Resolve card action.
+    resolve(players[0], playedCard);
+
+    setNextTurn();
+  } else {
+    enablePlayAgainstButton();
+  }
 });
 
 function endGame() {
@@ -179,25 +110,6 @@ function endGame() {
       $(`#playerTitle${player.number}`).attr("class","playerWin");
     }
   });
-}
-
-function enablePlayAgainstButton() {
-  $("#playAgainstButton1").prop('disabled', false);
-  $("#playAgainstButton2").prop('disabled', false);
-  $("#playAgainstButton3").prop('disabled', false);
-  $("#playAgainstButton4").prop('disabled', false);
-}
-
-function disablePlayAgainstButton() {
-  $("#playAgainstButton1").prop('disabled', true);
-  $("#playAgainstButton2").prop('disabled', true);
-  $("#playAgainstButton3").prop('disabled', true);
-  $("#playAgainstButton4").prop('disabled', true);
-}
-
-function enablePlayButton() {
-  $("#playButton1").prop('disabled', false);
-  $("#playButton2").prop('disabled', false);
 }
 
 function turn(player) {
@@ -218,35 +130,19 @@ function turn(player) {
     // Resolve card action.
     resolve(player, playedCard);
 
-    setTimeout(() => {
-      gameEnd = checkGameEnd();
-      if (gameEnd.gameEnd === false) {
-        currentPlayer = nextPlayer();
-        turn(currentPlayer);
-      } else {
-        endGame();
-        return;
-      }
-    }, 1000);
+    setNextTurn();
   }
 }
 
 function resolve(player, playedCard) {
-  if (playedCard.card === 'Princess') {
-    player.setPlayerDead();
-  } else if (playedCard.card === 'Prince') {
+  if (playedCard.card === 'Guard') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
-      players[playedCard.against - 1].discard();
-      players[playedCard.against - 1].draw();
+      if (players[playedCard.against - 1].cards[0] === playedCard.guess) {
+        player.setPlayerDead();
+      }
     }
-  } else if (playedCard.card === 'Handmaid') {
-    player.protected = true;
-  } else if (playedCard.card === 'King') {
-    if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
-      let temp = player.cards[0];
-      player.cards[0] = players[playedCard.against - 1].cards[0];
-      players[playedCard.against - 1].cards[0] = temp;
-    }
+  } else if (playedCard.card === 'Priest') {
+    // TODO: create new player field to deal with card info for other players.
   } else if (playedCard.card === 'Baron') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
       if (compareCards(player.cards[0], players[playedCard.against - 1].cards[0]) > 0) {
@@ -255,24 +151,24 @@ function resolve(player, playedCard) {
         players[playedCard.against - 1].setPlayerDead();
       }
     }
-  }
-}
-
-function calculateWinner() {
-  let winner = new player(-1);
-  players.forEach(player => {
-    if (!player.dead) {
-      if (winner.number == -1) {
-        winner = player;
-      } else {
-        if (compareCards(winner.cards[0], player.cards[0]) > 0) {
-          winner = player;
-        }
-      }
+  } else if (playedCard.card === 'Handmaid') {
+    player.protected = true;
+  } else if (playedCard.card === 'Princess') {
+    player.setPlayerDead();
+  } else if (playedCard.card === 'King') {
+    if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
+      let temp = player.cards[0];
+      player.cards[0] = players[playedCard.against - 1].cards[0];
+      players[playedCard.against - 1].cards[0] = temp;
     }
-  });
-
-  return winner;
+  } else if (playedCard.card === 'Countess') {
+    // TODO: enforce the rule for playing countess?
+  } else if (playedCard.card === 'Prince') {
+    if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
+      players[playedCard.against - 1].discard();
+      players[playedCard.against - 1].draw();
+    }
+  }
 }
 
 const cardRank = {
@@ -284,20 +180,6 @@ const cardRank = {
   'King': 6,
   'Countess': 7,
   'Princess': 8,
-}
-
-function compareCards(card1, card2) {
-  return cardRank[card2] - cardRank[card1];
-}
-
-function getLivingPlayerSize() {
-  let result = 0;
-  players.forEach(player => {
-    if (!player.dead) {
-      result++;
-    }
-  });
-  return result;
 }
 
 function checkGameEnd() {
@@ -318,18 +200,6 @@ function nextPlayer() {
   }
   return players[nextPlayerIndex];
 }
-
-function getSize() {
-  let totalCards = 0;
-  for (var key in availableCards) {
-    if (availableCards.hasOwnProperty(key)) {
-      totalCards += availableCards[key];
-    }
-  }
-  return totalCards;
-}
-
-
 
 function getRandomCard() {
   // Get the number of total cards
@@ -372,6 +242,7 @@ function initailizeGame() {
   players = [new player(1), new player(2), new player(3), new player(4)];
   getRandomCard(); // Remove a card from the top of the deck.
   disablePlayAgainstButton();
+  disableGuardGuessButton();
 
   players.forEach(element => {
     element.draw();

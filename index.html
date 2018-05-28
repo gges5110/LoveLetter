@@ -13,13 +13,31 @@
   </head>
 
   <body onload="initailizeGame()">
-    <button id="playButton1">A</button>
-    <button id="playButton2">B</button>
+    <div>
+      Choose a card
+      <button id="playButton1">A</button>
+      <button id="playButton2">B</button>
+    </div>
 
-    <button id="playAgainstButton1">1</button>
-    <button id="playAgainstButton2">2</button>
-    <button id="playAgainstButton3">3</button>
-    <button id="playAgainstButton4">4</button>
+    <div>
+      Play Against
+      <button id="playAgainstButton1">1</button>
+      <button id="playAgainstButton2">2</button>
+      <button id="playAgainstButton3">3</button>
+      <button id="playAgainstButton4">4</button>
+    </div>
+
+    <div>
+      Guard
+      <button id="guardGuessButton2">Priest</button>
+      <button id="guardGuessButton3">Baron</button>
+      <button id="guardGuessButton4">Handmaid</button>
+      <button id="guardGuessButton5">Prince</button>
+      <button id="guardGuessButton6">King</button>
+      <button id="guardGuessButton7">Countess</button>
+      <button id="guardGuessButton8">Princess</button>
+    </div>
+
     <p id="status"></p>
     <br>
 
@@ -42,6 +60,21 @@
     <p id="playerTitle4">Player 4</p>
     <ul id="playerPlayedList4">
     </ul>
+
+    <p id="rules">
+      8-Princess (1): Lose if discarded <br>
+      7-Countess (1): Discard if caught with King or Prince <br>
+      6-King (1): Trade hands <br>
+      5-Prince (2): One player discards his or her hand <br>
+      4-Handmaid (2): Protection until your next turn <br>
+      3-Baron (2): Compare hands; lower hand is out <br>
+      2-Priest (2): Look at a hand <br>
+      1-Guard (5): Guess a player's hand <br>
+    </p>
+
     <script src="main.js"></script>
+    <script src="setButtonState.js"></script>
+    <script src="util.js"></script>
+    <script src="player.js"></script>
   </body>
 </html>
