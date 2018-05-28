@@ -23,9 +23,10 @@ function player(number) {
     this.dead = true;
     $(`#playerTitle${this.number}`).attr("class","playerDead");
     $(`#playerTitle${this.number}`).append(` - ${this.cards[0]}`);
+    cardsNotPlayedYet[this.cards[0]]--;
   }
 
-  this.play = function() {
+  this.randomAI = function() {
     let cardIndex;
     if (compareCards(this.cards[0], this.cards[1]) > 0) {
       cardIndex = 0;
@@ -36,7 +37,8 @@ function player(number) {
     let card = this.cards[cardIndex];
     let cardToGuess;
     if (card === 'Guard') {
-      cardToGuess = 'Priest';
+      // Randomly choose from the highest not yet appeared card.
+      cardToGuess = getHighestNotYetAppearedCard(this.cards);
     }
     // TODO: Play against random non dead/non protected person.
     let against = this.number % 4 + 1;
@@ -48,38 +50,24 @@ function player(number) {
       let randomPlayerIndex = Math.floor(Math.random() * getNonDeadNonProtectedPlayerList.length);
       against = getNonDeadNonProtectedPlayerList[randomPlayerIndex];
     }
-    if (card === 'Handmaid') {
-      $(`#playerPlayedList${this.number}`).append(`<li>${card}</li>`);
-    } else if (card === 'Guard') {
-      $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}, guessing ${cardToGuess}</li>`);
-    } else {
-      $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}</li>`);
-    }
-    this.cards.splice(cardIndex, 1);
-    return {'card': card, 'against': against, 'guess': cardToGuess};
+    let playedCard = this.play(cardIndex, against, cardToGuess);
+    return playedCard;
   }
 
-  this.humanPLay = function(cardIndex, against, cardToGuess) {
+  this.play = function(cardIndex, against, cardToGuess) {
     let card = this.cards[cardIndex];
-    if (card === 'Handmaid') {
-      $(`#playerPlayedList${this.number}`).append(`<li>${card}</li>`);
-    } else if (card === 'Guard') {
-      $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}, guessing ${cardToGuess}</li>`);
-    } else {
-      $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}</li>`);
-    }
-
+    cardsNotPlayedYet[card]--;
     this.cards.splice(cardIndex, 1);
     return {'card': card, 'against': against, 'guess': cardToGuess};
   }
 
   this.discard = function() {
     console.log(`Player ${this.number} discarded a card.`);
-    if (this.cards[0] === 'Princess') {
-      this.setPlayerDead();
-    }
+    let discardedCard = this.cards[0];
+    cardsNotPlayedYet[discardedCard]--;
     // TODO: if played against itself, need to discard the right one.
-    $(`#playerPlayedList${this.number}`).append(`<li class="discard">${this.cards[0]}</li>`);
+    $(`#playerPlayedList${this.number}`).append(`<li class="discard">${discardedCard}</li>`);
     this.cards = [];
+    return discardedCard;
   }
 }

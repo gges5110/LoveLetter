@@ -68,6 +68,18 @@ function nextPlayer() {
   return players[nextPlayerIndex];
 }
 
+function getHighestNotYetAppearedCard(holdingCards) {
+  // hodingCards[0, 1]
+  for (let index = 7; index > 0; index--) {
+    const cardName = cardNames[index];
+    if (cardsNotPlayedYet[cardName] !== 0 && holdingCards.indexOf(cardName) === -1) {
+      return cardName;
+    }
+  }
+
+  return 'Priest';
+}
+
 function getRandomCard() {
   // Get the number of total cards
   let totalCards = getSize();

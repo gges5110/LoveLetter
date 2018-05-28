@@ -1,5 +1,5 @@
 var players, availableCards, currentPlayer, gameEnd;
-let cardToPlay, playAgainst;
+let cardToPlay, playAgainst, cardsNotPlayedYet;
 
 function startGame() {
   console.log('Start Game.');
@@ -44,17 +44,27 @@ function turn(player) {
     $("#playButton1").text(`${player.cards[0]}`);
     $("#playButton2").text(`${player.cards[1]}`);
   } else {
-    let playedCard = player.play();
+    let playedCard = player.randomAI();
     console.log(`Player ${player.number} played ${playedCard.card} against ${playedCard.against}`);
 
     // Resolve card action.
     resolve(player, playedCard);
+  }
+}
 
-    setNextTurn();
+function updatePlayedCard(player, playedCard) {
+  if (playedCard.card === 'Handmaid' || playedCard.card === 'Countess') {
+    $(`#playerPlayedList${player.number}`).append(`<li>${playedCard.card}</li>`);
+  } else if (playedCard.card === 'Guard') {
+    $(`#playerPlayedList${player.number}`).append(`<li>${playedCard.card} against ${playedCard.against}, guessing ${playedCard.guess}</li>`);
+  } else {
+    $(`#playerPlayedList${player.number}`).append(`<li>${playedCard.card} against ${playedCard.against}</li>`);
   }
 }
 
 function resolve(player, playedCard) {
+  updatePlayedCard(player, playedCard);
+
   if (playedCard.card === 'Guard') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
       if (players[playedCard.against - 1].cards[0] === playedCard.guess) {
@@ -85,33 +95,16 @@ function resolve(player, playedCard) {
     // TODO: enforce the rule for playing countess?
   } else if (playedCard.card === 'Prince') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
-      players[playedCard.against - 1].discard();
+      let discardedCard = players[playedCard.against - 1].discard();
       players[playedCard.against - 1].draw();
+      if (discardedCard === 'Princess') {
+        players[playedCard.against - 1].setPlayerDead();
+      }
     }
   }
-}
 
-const cardRank = {
-  'Guard': 1,
-  'Priest': 2,
-  'Baron': 3,
-  'Handmaid': 4,
-  'Prince': 5,
-  'King': 6,
-  'Countess': 7,
-  'Princess': 8,
+  setNextTurn();
 }
-
-const cardNames = [
-  'Guard',
-  'Priest',
-  'Baron',
-  'Handmaid',
-  'Prince',
-  'King',
-  'Countess',
-  'Princess',
-];
 
 function initailizeCards() {
   availableCards = {
@@ -124,6 +117,16 @@ function initailizeCards() {
     'Countess': 1,
     'Princess': 1,
   };
+  cardsNotPlayedYet = {
+    'Guard': 5,
+    'Priest': 2,
+    'Baron': 2,
+    'Handmaid': 2,
+    'Prince': 2,
+    'King': 1,
+    'Countess': 1,
+    'Princess': 1,
+  }
 }
 
 /*
@@ -133,13 +136,11 @@ function setPlayCardOnClick(index) {
   $(`#playButton${index}`).click(function() {
     disablePlayButton();
     cardToPlay = index - 1;
-    if (players[0].cards[cardToPlay] === 'Handmaid') {
-      playedCard = players[0].humanPLay(cardToPlay, index, -1);
+    if (players[0].cards[cardToPlay] === 'Handmaid' || players[0].cards[cardToPlay] === 'Countess') {
+      playedCard = players[0].play(cardToPlay, index, -1);
 
       // Resolve card action.
       resolve(players[0], playedCard);
-
-      setNextTurn();
     } else {
       enablePlayAgainstButton();
     }
@@ -154,12 +155,10 @@ function setPlayAgainstOnClick(index) {
     disablePlayAgainstButton();
     playAgainst = index;
     if (players[0].cards[cardToPlay] !== 'Guard') {
-      playedCard = players[0].humanPLay(cardToPlay, playAgainst, -1);
+      playedCard = players[0].play(cardToPlay, playAgainst, -1);
 
       // Resolve card action.
       resolve(players[0], playedCard);
-
-      setNextTurn();
     } else {
       enableGuardGuessButton();
     }
@@ -172,12 +171,10 @@ function setPlayAgainstOnClick(index) {
 function setGuardGuessOnClick(index) {
   $(`#guardGuessButton${index}`).click(function() {
     disableGuardGuessButton();
-    playedCard = players[0].humanPLay(cardToPlay, playAgainst, cardNames[index - 1]);
+    playedCard = players[0].play(cardToPlay, playAgainst, cardNames[index - 1]);
 
     // Resolve card action.
     resolve(players[0], playedCard);
-
-    setNextTurn();
   });
 }
 

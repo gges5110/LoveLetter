@@ -19,10 +19,11 @@ function disableGuardGuessButton() {
 }
 
 function enablePlayAgainstButton() {
-  $("#playAgainstButton1").prop('disabled', false);
-  $("#playAgainstButton2").prop('disabled', false);
-  $("#playAgainstButton3").prop('disabled', false);
-  $("#playAgainstButton4").prop('disabled', false);
+  for (let index = 1; index < 5; index++) {
+    if (!players[index - 1].dead) {
+      $(`#playAgainstButton${index}`).prop('disabled', false);
+    }
+  }
 }
 
 function disablePlayAgainstButton() {
