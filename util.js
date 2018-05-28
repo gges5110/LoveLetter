@@ -38,3 +38,59 @@ function calculateWinner() {
 
   return winner;
 }
+
+function getNonDeadNonProtectedPlayers(caller) {
+  let nonDeadNonProtectedPlayerList = [];
+  players.forEach(player => {
+    if (player.number != caller.number && !player.protected && !player.dead) {
+      nonDeadNonProtectedPlayerList.push(player.number);
+    }
+  });
+  return nonDeadNonProtectedPlayerList;
+}
+
+function checkGameEnd() {
+  if (getSize() <= 0 || getLivingPlayerSize() <= 1) {
+    let winner = calculateWinner();
+    return {'gameEnd': true, 'winner': winner};
+  } else {
+    return {'gameEnd': false, 'winner': -1};
+  }
+}
+
+function nextPlayer() {
+  // Next non dead player
+  let totalPlayers = players.length;
+  let nextPlayerIndex = currentPlayer.number % totalPlayers;
+  while (players[nextPlayerIndex].dead == true) {
+    nextPlayerIndex = (nextPlayerIndex + 1) % totalPlayers;
+  }
+  return players[nextPlayerIndex];
+}
+
+function getRandomCard() {
+  // Get the number of total cards
+  let totalCards = getSize();
+
+  console.log(`Total Cards: ${totalCards}`);
+  if (totalCards == 0) {
+    return;
+  }
+
+  let randomCardNumber = Math.floor(Math.random() * totalCards);
+
+  let temp = 0, drawedCard;
+  for (var key in availableCards) {
+    if (availableCards.hasOwnProperty(key)) {
+      temp += availableCards[key];
+      if (temp > randomCardNumber) {
+        drawedCard = key;
+        break;
+      }
+    }
+  }
+
+  console.log(`Card drawed: ${drawedCard}`);
+  availableCards[drawedCard]--;
+  return drawedCard;
+}

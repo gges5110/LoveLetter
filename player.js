@@ -9,6 +9,12 @@ function player(number) {
     this.cards.push(getRandomCard());
   }
 
+  this.reset = function() {
+    this.dead = false;
+    this.protected = false;
+    this.cards = [];
+  }
+
   this.showHand = function() {
     $(`#playerTitle${this.number}`).append(` - ${this.cards[0]}`);
   }
@@ -42,16 +48,29 @@ function player(number) {
       let randomPlayerIndex = Math.floor(Math.random() * getNonDeadNonProtectedPlayerList.length);
       against = getNonDeadNonProtectedPlayerList[randomPlayerIndex];
     }
-    $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}</li>`);
+    if (card === 'Handmaid') {
+      $(`#playerPlayedList${this.number}`).append(`<li>${card}</li>`);
+    } else if (card === 'Guard') {
+      $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}, guessing ${cardToGuess}</li>`);
+    } else {
+      $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}</li>`);
+    }
     this.cards.splice(cardIndex, 1);
     return {'card': card, 'against': against, 'guess': cardToGuess};
   }
 
-  this.humanPLay = function(cardIndex, against) {
+  this.humanPLay = function(cardIndex, against, cardToGuess) {
     let card = this.cards[cardIndex];
-    $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}</li>`);
+    if (card === 'Handmaid') {
+      $(`#playerPlayedList${this.number}`).append(`<li>${card}</li>`);
+    } else if (card === 'Guard') {
+      $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}, guessing ${cardToGuess}</li>`);
+    } else {
+      $(`#playerPlayedList${this.number}`).append(`<li>${card} against ${against}</li>`);
+    }
+
     this.cards.splice(cardIndex, 1);
-    return {'card': card, 'against': against};
+    return {'card': card, 'against': against, 'guess': cardToGuess};
   }
 
   this.discard = function() {

@@ -1,103 +1,10 @@
 var players, availableCards, currentPlayer, gameEnd;
-let cardToPlay;
-
-function getNonDeadNonProtectedPlayers(caller) {
-  let nonDeadNonProtectedPlayerList = [];
-  players.forEach(player => {
-    if (player.number != caller.number && !player.protected && !player.dead) {
-      nonDeadNonProtectedPlayerList.push(player.number);
-    }
-  });
-  return nonDeadNonProtectedPlayerList;
-}
+let cardToPlay, playAgainst;
 
 function startGame() {
   console.log('Start Game.');
   turn(currentPlayer);
 }
-
-$("#playAgainstButton1").click(function() {
-  disablePlayAgainstButton();
-  playedCard = players[0].humanPLay(cardToPlay, 1);
-
-  // Resolve card action.
-  resolve(players[0], playedCard);
-
-  setNextTurn();
-});
-
-$("#playAgainstButton2").click(function() {
-  disablePlayAgainstButton();
-  playedCard = players[0].humanPLay(cardToPlay, 2);
-
-  // Resolve card action.
-  resolve(players[0], playedCard);
-
-  setNextTurn();
-});
-
-$("#playAgainstButton3").click(function() {
-  disablePlayAgainstButton();
-  playedCard = players[0].humanPLay(cardToPlay, 3);
-
-  // Resolve card action.
-  resolve(players[0], playedCard);
-
-  setNextTurn();
-});
-
-$("#playAgainstButton4").click(function() {
-  disablePlayAgainstButton();
-  playedCard = players[0].humanPLay(cardToPlay, 4);
-
-  // Resolve card action.
-  resolve(players[0], playedCard);
-
-  setNextTurn();
-});
-
-function setNextTurn() {
-  setTimeout(() => {
-    gameEnd = checkGameEnd();
-    if (gameEnd.gameEnd === false) {
-      currentPlayer = nextPlayer();
-      turn(currentPlayer);
-    } else {
-      endGame();
-      return;
-    }
-  }, 1000);
-}
-
-$("#playButton1").click(function() {
-  disablePlayButton();
-  cardToPlay = 0;
-  if (players[0].cards[cardToPlay] === 'Handmaid') {
-    playedCard = players[0].humanPLay(cardToPlay, 1);
-
-    // Resolve card action.
-    resolve(players[0], playedCard);
-
-    setNextTurn();
-  } else {
-    enablePlayAgainstButton();
-  }
-});
-
-$("#playButton2").click(function() {
-  disablePlayButton();
-  cardToPlay = 1;
-  if (players[0].cards[cardToPlay] === 'Handmaid') {
-    playedCard = players[0].humanPLay(cardToPlay, 1);
-
-    // Resolve card action.
-    resolve(players[0], playedCard);
-
-    setNextTurn();
-  } else {
-    enablePlayAgainstButton();
-  }
-});
 
 function endGame() {
   $("#status").text(`Game ended, winner is ${gameEnd.winner.number}`);
@@ -110,6 +17,19 @@ function endGame() {
       $(`#playerTitle${player.number}`).attr("class","playerWin");
     }
   });
+}
+
+function setNextTurn() {
+  setTimeout(() => {
+    gameEnd = checkGameEnd();
+    if (gameEnd.gameEnd === false) {
+      currentPlayer = nextPlayer();
+      turn(currentPlayer);
+    } else {
+      endGame();
+      return;
+    }
+  }, 1000);
 }
 
 function turn(player) {
@@ -138,7 +58,7 @@ function resolve(player, playedCard) {
   if (playedCard.card === 'Guard') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
       if (players[playedCard.against - 1].cards[0] === playedCard.guess) {
-        player.setPlayerDead();
+        players[playedCard.against - 1].setPlayerDead();
       }
     }
   } else if (playedCard.card === 'Priest') {
@@ -182,53 +102,18 @@ const cardRank = {
   'Princess': 8,
 }
 
-function checkGameEnd() {
-  if (getSize() <= 0 || getLivingPlayerSize() <= 1) {
-    let winner = calculateWinner();
-    return {'gameEnd': true, 'winner': winner};
-  } else {
-    return {'gameEnd': false, 'winner': -1};
-  }
-}
+const cardNames = [
+  'Guard',
+  'Priest',
+  'Baron',
+  'Handmaid',
+  'Prince',
+  'King',
+  'Countess',
+  'Princess',
+];
 
-function nextPlayer() {
-  // Next non dead player
-  let totalPlayers = players.length;
-  let nextPlayerIndex = currentPlayer.number % totalPlayers;
-  while (players[nextPlayerIndex].dead == true) {
-    nextPlayerIndex = (nextPlayerIndex + 1) % totalPlayers;
-  }
-  return players[nextPlayerIndex];
-}
-
-function getRandomCard() {
-  // Get the number of total cards
-  let totalCards = getSize();
-
-  console.log(`Total Cards: ${totalCards}`);
-  if (totalCards == 0) {
-    return;
-  }
-
-  let randomCardNumber = Math.floor(Math.random() * totalCards);
-
-  let temp = 0, drawedCard;
-  for (var key in availableCards) {
-    if (availableCards.hasOwnProperty(key)) {
-      temp += availableCards[key];
-      if (temp > randomCardNumber) {
-        drawedCard = key;
-        break;
-      }
-    }
-  }
-
-  console.log(`Card drawed: ${drawedCard}`);
-  availableCards[drawedCard]--;
-  return drawedCard;
-}
-
-function initailizeGame() {
+function initailizeCards() {
   availableCards = {
     'Guard': 5,
     'Priest': 2,
@@ -239,15 +124,102 @@ function initailizeGame() {
     'Countess': 1,
     'Princess': 1,
   };
-  players = [new player(1), new player(2), new player(3), new player(4)];
+}
+
+/*
+* playButton
+*/
+function setPlayCardOnClick(index) {
+  $(`#playButton${index}`).click(function() {
+    disablePlayButton();
+    cardToPlay = index - 1;
+    if (players[0].cards[cardToPlay] === 'Handmaid') {
+      playedCard = players[0].humanPLay(cardToPlay, index, -1);
+
+      // Resolve card action.
+      resolve(players[0], playedCard);
+
+      setNextTurn();
+    } else {
+      enablePlayAgainstButton();
+    }
+  });
+}
+
+/*
+* playAgainstButton
+*/
+function setPlayAgainstOnClick(index) {
+  $(`#playAgainstButton${index}`).click(function() {
+    disablePlayAgainstButton();
+    playAgainst = index;
+    if (players[0].cards[cardToPlay] !== 'Guard') {
+      playedCard = players[0].humanPLay(cardToPlay, playAgainst, -1);
+
+      // Resolve card action.
+      resolve(players[0], playedCard);
+
+      setNextTurn();
+    } else {
+      enableGuardGuessButton();
+    }
+  });
+}
+
+/*
+* guardGuessButton
+*/
+function setGuardGuessOnClick(index) {
+  $(`#guardGuessButton${index}`).click(function() {
+    disableGuardGuessButton();
+    playedCard = players[0].humanPLay(cardToPlay, playAgainst, cardNames[index - 1]);
+
+    // Resolve card action.
+    resolve(players[0], playedCard);
+
+    setNextTurn();
+  });
+}
+
+$('#restart').click(function() {
+  restart();
+})
+
+function restart() {
+  initailizeCards();
   getRandomCard(); // Remove a card from the top of the deck.
   disablePlayAgainstButton();
   disableGuardGuessButton();
 
-  players.forEach(element => {
-    element.draw();
+  for (let index = 0; index < players.length; index++) {
+    $(`#playerPlayedList${index + 1}`).empty();
+    $(`#playerTitle${index + 1}`).removeClass();
+    $(`#playerTitle${index + 1}`).text(`Player ${index + 1}`);
+  }
+
+  players.forEach(player => {
+    player.reset();
+    player.draw();
   });
   currentPlayer = players[0];
   gameEnd = false;
   startGame();
+}
+
+function initailizeGame() {
+  players = [new player(1), new player(2), new player(3), new player(4)];
+
+  for (let index = 0; index < players.length; index++) {
+    setPlayAgainstOnClick(index + 1);
+  }
+
+  for (let index = 0; index < 2; index++) {
+    setPlayCardOnClick(index + 1);
+  }
+
+  for (let index = 1; index < 8; index++) {
+    setGuardGuessOnClick(index + 1);
+  }
+
+  restart();
 }
