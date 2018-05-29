@@ -66,7 +66,7 @@ function player(number) {
     let discardedCard = this.cards[0];
     cardsNotPlayedYet[discardedCard]--;
     // TODO: if played against itself, need to discard the right one.
-    $(`#playerPlayedList${this.number}`).append(`<li class="discard">${discardedCard}</li>`);
+    $(`#playerPlayedList${this.number}`).append(`<li class="discard item">${discardedCard}</li>`);
     this.cards = [];
     return discardedCard;
   }

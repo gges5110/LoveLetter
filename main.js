@@ -54,11 +54,11 @@ function turn(player) {
 
 function updatePlayedCard(player, playedCard) {
   if (playedCard.card === 'Handmaid' || playedCard.card === 'Countess') {
-    $(`#playerPlayedList${player.number}`).append(`<li>${playedCard.card}</li>`);
+    $(`#playerPlayedList${player.number}`).append(`<li class="item">${playedCard.card}</li>`);
   } else if (playedCard.card === 'Guard') {
-    $(`#playerPlayedList${player.number}`).append(`<li>${playedCard.card} against ${playedCard.against}, guessing ${playedCard.guess}</li>`);
+    $(`#playerPlayedList${player.number}`).append(`<li class="item">${playedCard.card} against ${playedCard.against}, guessing ${playedCard.guess}</li>`);
   } else {
-    $(`#playerPlayedList${player.number}`).append(`<li>${playedCard.card} against ${playedCard.against}</li>`);
+    $(`#playerPlayedList${player.number}`).append(`<li class="item">${playedCard.card} against ${playedCard.against}</li>`);
   }
 }
 
@@ -73,6 +73,9 @@ function resolve(player, playedCard) {
     }
   } else if (playedCard.card === 'Priest') {
     // TODO: create new player field to deal with card info for other players.
+    if (player.number === 1) {
+      $("#priestList").append(`<li class="item">Player ${players[playedCard.against - 1].number} has ${players[playedCard.against - 1].cards[0]}</li>`);;
+    }
   } else if (playedCard.card === 'Baron') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
       if (compareCards(player.cards[0], players[playedCard.against - 1].cards[0]) > 0) {
@@ -188,6 +191,7 @@ function restart() {
   disablePlayAgainstButton();
   disableGuardGuessButton();
 
+  $("#priestList").empty();
   for (let index = 0; index < players.length; index++) {
     $(`#playerPlayedList${index + 1}`).empty();
     $(`#playerTitle${index + 1}`).removeClass();
