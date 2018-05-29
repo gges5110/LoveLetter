@@ -28,11 +28,17 @@ function player(number) {
 
   this.randomAI = function() {
     let cardIndex;
-    if (compareCards(this.cards[0], this.cards[1]) > 0) {
-      cardIndex = 0;
+    if (this.cards.indexOf('Handmaid') !== -1) {
+      // Prioritize on playing handmaid.
+      cardIndex = this.cards.indexOf('Handmaid');
     } else {
-      cardIndex = 1;
+      if (compareCards(this.cards[0], this.cards[1]) > 0) {
+        cardIndex = 0;
+      } else {
+        cardIndex = 1;
+      }
     }
+
     // let cardIndex = Math.floor(Math.random() * 2);
     let card = this.cards[cardIndex];
     let cardToGuess;
