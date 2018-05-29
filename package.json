@@ -1,0 +1,25 @@
+{
+  "name": "love-letter",
+  "version": "1.0.0",
+  "description": "# Rule 8-Princess (1): Lose if discarded",
+  "main": "main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gges5110/LoversLetter.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gges5110/LoversLetter/issues"
+  },
+  "homepage": "https://github.com/gges5110/LoversLetter#readme",
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
