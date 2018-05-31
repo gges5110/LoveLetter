@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Love Letter - Simulator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="src/main.css" />
     <script
       src="https://code.jquery.com/jquery-3.3.1.min.js"
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -14,7 +14,7 @@
     <script src="semantic/semantic.min.js"></script>
   </head>
 
-  <body onload="initailizeGame()">
+  <body>
     <div class="ui main raised container segment" id="container">
       <!-- <div class="ui segment"> -->
         <h2 class="ui header">Love Letter - Simulator</h2>
@@ -119,10 +119,6 @@
         .tab()
       ;
     </script>
-    <script src="main.js"></script>
-    <script src="setButtonState.js"></script>
-    <script src="util.js"></script>
-    <script src="player.js"></script>
-    <script src="const.js"></script>
+    <script src="./build/main.bundle.js"></script>
   </body>
 </html>

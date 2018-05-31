@@ -1,7 +1,16 @@
-import { player } from './player.js';
+import Player from './player';
+import { getRandomCard, getAvailableCardSize, checkGameEnd, nextPlayer, compareCards } from './util';
+import { disablePlayAgainstButton, disableGuardGuessButton, disablePlayButton, enablePlayButton, enableGuardGuessButton, enablePlayAgainstButton } from './setButtonState';
+import { cardNames, cardRank, startingCards } from './const';
+
+// const Player = require('./player.js').default;
 
 var players, availableCards, currentPlayer, gameEnd;
 let cardToPlay, playAgainst, cardsNotPlayedYet;
+
+$( document ).ready(function() {
+  initailizeGame();
+});
 
 function startGame() {
   console.log('Start Game.');
@@ -23,9 +32,9 @@ function endGame() {
 
 function setNextTurn() {
   setTimeout(() => {
-    gameEnd = checkGameEnd();
+    gameEnd = checkGameEnd(players, availableCards);
     if (gameEnd.gameEnd === false) {
-      currentPlayer = nextPlayer();
+      currentPlayer = nextPlayer(players, currentPlayer);
       turn(currentPlayer);
     } else {
       endGame();
@@ -35,9 +44,9 @@ function setNextTurn() {
 }
 
 function turn(player) {
-  $("#status").text(`Player ${player.number}'s turn, ${getAvailableCardSize()} cards left.`);
+  $("#status").text(`Player ${player.number}'s turn, ${getAvailableCardSize(availableCards)} cards left.`);
   player.protected = false;
-  player.draw();
+  player.draw(availableCards);
 
   // Let the user pick one to play.
   if (player.number === 1) {
@@ -46,7 +55,7 @@ function turn(player) {
     $("#playButton1").text(`${player.cards[0]}`);
     $("#playButton2").text(`${player.cards[1]}`);
   } else {
-    let playedCard = player.randomAI();
+    let playedCard = player.randomAI(players, cardsNotPlayedYet);
     console.log(`Player ${player.number} played ${playedCard.card} against ${playedCard.against}`);
 
     // Resolve card action.
@@ -62,6 +71,8 @@ function updatePlayedCard(player, playedCard) {
   } else {
     $(`#playerPlayedList${player.number}`).append(`<li class="item">${playedCard.card} against ${playedCard.against}</li>`);
   }
+
+  cardsNotPlayedYet[playedCard.card]--;
 }
 
 function resolve(player, playedCard) {
@@ -70,7 +81,7 @@ function resolve(player, playedCard) {
   if (playedCard.card === 'Guard') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
       if (players[playedCard.against - 1].cards[0] === playedCard.guess) {
-        players[playedCard.against - 1].setPlayerDead();
+        players[playedCard.against - 1].setPlayerDead(cardsNotPlayedYet);
       }
     }
   } else if (playedCard.card === 'Priest') {
@@ -81,15 +92,15 @@ function resolve(player, playedCard) {
   } else if (playedCard.card === 'Baron') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
       if (compareCards(player.cards[0], players[playedCard.against - 1].cards[0]) > 0) {
-        player.setPlayerDead();
+        player.setPlayerDead(cardsNotPlayedYet);
       } else if (compareCards(player.cards[0], players[playedCard.against - 1].cards[0]) < 0) {
-        players[playedCard.against - 1].setPlayerDead();
+        players[playedCard.against - 1].setPlayerDead(cardsNotPlayedYet);
       }
     }
   } else if (playedCard.card === 'Handmaid') {
     player.protected = true;
   } else if (playedCard.card === 'Princess') {
-    player.setPlayerDead();
+    player.setPlayerDead(cardsNotPlayedYet);
   } else if (playedCard.card === 'King') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
       let temp = player.cards[0];
@@ -101,9 +112,9 @@ function resolve(player, playedCard) {
   } else if (playedCard.card === 'Prince') {
     if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
       let discardedCard = players[playedCard.against - 1].discard();
-      players[playedCard.against - 1].draw();
+      players[playedCard.against - 1].draw(availableCards);
       if (discardedCard === 'Princess') {
-        players[playedCard.against - 1].setPlayerDead();
+        players[playedCard.against - 1].setPlayerDead(cardsNotPlayedYet);
       }
     }
   }
@@ -112,26 +123,8 @@ function resolve(player, playedCard) {
 }
 
 function initailizeCards() {
-  availableCards = {
-    'Guard': 5,
-    'Priest': 2,
-    'Baron': 2,
-    'Handmaid': 2,
-    'Prince': 2,
-    'King': 1,
-    'Countess': 1,
-    'Princess': 1,
-  };
-  cardsNotPlayedYet = {
-    'Guard': 5,
-    'Priest': 2,
-    'Baron': 2,
-    'Handmaid': 2,
-    'Prince': 2,
-    'King': 1,
-    'Countess': 1,
-    'Princess': 1,
-  }
+  availableCards = JSON.parse(JSON.stringify(startingCards));
+  cardsNotPlayedYet = JSON.parse(JSON.stringify(startingCards));
 }
 
 /*
@@ -142,12 +135,12 @@ function setPlayCardOnClick(index) {
     disablePlayButton();
     cardToPlay = index - 1;
     if (players[0].cards[cardToPlay] === 'Handmaid' || players[0].cards[cardToPlay] === 'Countess') {
-      playedCard = players[0].play(cardToPlay, index, -1);
+      let playedCard = players[0].play(cardToPlay, index, -1);
 
       // Resolve card action.
       resolve(players[0], playedCard);
     } else {
-      enablePlayAgainstButton();
+      enablePlayAgainstButton(players);
     }
   });
 }
@@ -160,7 +153,7 @@ function setPlayAgainstOnClick(index) {
     disablePlayAgainstButton();
     playAgainst = index;
     if (players[0].cards[cardToPlay] !== 'Guard') {
-      playedCard = players[0].play(cardToPlay, playAgainst, -1);
+      let playedCard = players[0].play(cardToPlay, playAgainst, -1);
 
       // Resolve card action.
       resolve(players[0], playedCard);
@@ -176,7 +169,7 @@ function setPlayAgainstOnClick(index) {
 function setGuardGuessOnClick(index) {
   $(`#guardGuessButton${index}`).click(function() {
     disableGuardGuessButton();
-    playedCard = players[0].play(cardToPlay, playAgainst, cardNames[index - 1]);
+    let playedCard = players[0].play(cardToPlay, playAgainst, cardNames[index - 1]);
 
     // Resolve card action.
     resolve(players[0], playedCard);
@@ -189,7 +182,7 @@ $('#restart').click(function() {
 
 function restart() {
   initailizeCards();
-  getRandomCard(); // Remove a card from the top of the deck.
+  getRandomCard(availableCards); // Remove a card from the top of the deck.
   disablePlayAgainstButton();
   disableGuardGuessButton();
 
@@ -202,7 +195,7 @@ function restart() {
 
   players.forEach(player => {
     player.reset();
-    player.draw();
+    player.draw(availableCards);
   });
   currentPlayer = players[0];
   gameEnd = false;
@@ -210,7 +203,7 @@ function restart() {
 }
 
 function initailizeGame() {
-  players = [new player(1), new player(2), new player(3), new player(4)];
+  players = [new Player(1), new Player(2), new Player(3), new Player(4)];
 
   for (let index = 0; index < players.length; index++) {
     setPlayAgainstOnClick(index + 1);

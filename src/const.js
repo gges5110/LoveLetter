@@ -19,3 +19,20 @@ const cardNames = [
   'Countess',
   'Princess',
 ];
+
+const startingCards = {
+  'Guard': 5,
+  'Priest': 2,
+  'Baron': 2,
+  'Handmaid': 2,
+  'Prince': 2,
+  'King': 1,
+  'Countess': 1,
+  'Princess': 1,
+};
+
+export {
+  cardRank,
+  cardNames,
+  startingCards,
+}

@@ -8,7 +8,7 @@ function enableGuardGuessButton() {
   $("#guardGuessButton8").prop('disabled', false);
 }
 
-function disableGuardGuessButton() {
+let disableGuardGuessButton = function() {
   $("#guardGuessButton2").prop('disabled', true);
   $("#guardGuessButton3").prop('disabled', true);
   $("#guardGuessButton4").prop('disabled', true);
@@ -18,7 +18,7 @@ function disableGuardGuessButton() {
   $("#guardGuessButton8").prop('disabled', true);
 }
 
-function enablePlayAgainstButton() {
+function enablePlayAgainstButton(players) {
   for (let index = 1; index < 5; index++) {
     if (!players[index - 1].dead) {
       $(`#playAgainstButton${index}`).prop('disabled', false);
@@ -26,7 +26,7 @@ function enablePlayAgainstButton() {
   }
 }
 
-function disablePlayAgainstButton() {
+var disablePlayAgainstButton = function() {
   $("#playAgainstButton1").prop('disabled', true);
   $("#playAgainstButton2").prop('disabled', true);
   $("#playAgainstButton3").prop('disabled', true);
@@ -42,3 +42,12 @@ function disablePlayButton() {
   $("#playButton1").prop('disabled', true);
   $("#playButton2").prop('disabled', true);
 }
+
+export {
+  disablePlayAgainstButton,
+  disableGuardGuessButton,
+  disablePlayButton,
+  enablePlayButton,
+  enablePlayAgainstButton,
+  enableGuardGuessButton,
+};

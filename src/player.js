@@ -1,32 +1,37 @@
-// Player definition
-function player(number) {
-  this.number = number;
-  this.dead = false;
-  this.protected = false;
-  this.cards = [];
-  this.draw = function() {
-    console.log(`Draw a card for player ${this.number}`);
-    this.cards.push(getRandomCard());
-  }
+import { getRandomCard, compareCards, getHighestNotYetAppearedCard, getNonDeadNonProtectedPlayers } from './util';
 
-  this.reset = function() {
+// Player definition
+export default class Player {
+  constructor(number) {
+    this.number = number;
     this.dead = false;
     this.protected = false;
     this.cards = [];
   }
 
-  this.showHand = function() {
+  draw(availableCards) {
+    console.log(`Draw a card for player ${this.number}`);
+    this.cards.push(getRandomCard(availableCards));
+  }
+
+  reset() {
+    this.dead = false;
+    this.protected = false;
+    this.cards = [];
+  }
+
+  showHand() {
     $(`#playerTitle${this.number}`).append(` - ${this.cards[0]}`);
   }
 
-  this.setPlayerDead = function() {
+  setPlayerDead(cardsNotPlayedYet) {
     this.dead = true;
     $(`#playerTitle${this.number}`).attr("class","playerDead");
     $(`#playerTitle${this.number}`).append(` - ${this.cards[0]}`);
     cardsNotPlayedYet[this.cards[0]]--;
   }
 
-  this.randomAI = function() {
+  randomAI(players, cardsNotPlayedYet) {
     let cardIndex;
     if (this.cards.indexOf('Handmaid') !== -1) {
       // Prioritize on playing handmaid.
@@ -41,14 +46,15 @@ function player(number) {
 
     // let cardIndex = Math.floor(Math.random() * 2);
     let card = this.cards[cardIndex];
+    console.log(card);
     let cardToGuess;
     if (card === 'Guard') {
       // Randomly choose from the highest not yet appeared card.
-      cardToGuess = getHighestNotYetAppearedCard(this.cards);
+      cardToGuess = getHighestNotYetAppearedCard(this.cards, cardsNotPlayedYet);
     }
     // TODO: Play against random non dead/non protected person.
     let against = this.number % 4 + 1;
-    let getNonDeadNonProtectedPlayerList = getNonDeadNonProtectedPlayers(this);
+    let getNonDeadNonProtectedPlayerList = getNonDeadNonProtectedPlayers(this, players);
     if (getNonDeadNonProtectedPlayerList.length == 0) {
       // The player is the winner.
     } else {
@@ -60,24 +66,18 @@ function player(number) {
     return playedCard;
   }
 
-  this.play = function(cardIndex, against, cardToGuess) {
+  play(cardIndex, against, cardToGuess) {
     let card = this.cards[cardIndex];
-    cardsNotPlayedYet[card]--;
     this.cards.splice(cardIndex, 1);
     return {'card': card, 'against': against, 'guess': cardToGuess};
   }
 
-  this.discard = function() {
+  discard() {
     console.log(`Player ${this.number} discarded a card.`);
     let discardedCard = this.cards[0];
-    cardsNotPlayedYet[discardedCard]--;
     // TODO: if played against itself, need to discard the right one.
     $(`#playerPlayedList${this.number}`).append(`<li class="discard item">${discardedCard}</li>`);
     this.cards = [];
     return discardedCard;
   }
 }
-
-export default {
-  player
-};
