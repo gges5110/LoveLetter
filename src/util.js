@@ -1,4 +1,4 @@
-function getSize() {
+function getAvailableCardSize() {
   let totalCards = 0;
   for (var key in availableCards) {
     if (availableCards.hasOwnProperty(key)) {
@@ -8,9 +8,13 @@ function getSize() {
   return totalCards;
 }
 
-function compareCards(card1, card2) {
+var compareCards = function(card1, card2) {
   return cardRank[card2] - cardRank[card1];
 }
+
+export {
+  compareCards
+};
 
 function getLivingPlayerSize() {
   let result = 0;
@@ -50,7 +54,7 @@ function getNonDeadNonProtectedPlayers(caller) {
 }
 
 function checkGameEnd() {
-  if (getSize() <= 0 || getLivingPlayerSize() <= 1) {
+  if (getAvailableCardSize() <= 0 || getLivingPlayerSize() <= 1) {
     let winner = calculateWinner();
     return {'gameEnd': true, 'winner': winner};
   } else {
@@ -82,7 +86,7 @@ function getHighestNotYetAppearedCard(holdingCards) {
 
 function getRandomCard() {
   // Get the number of total cards
-  let totalCards = getSize();
+  let totalCards = getAvailableCardSize();
 
   console.log(`Total Cards: ${totalCards}`);
   if (totalCards == 0) {

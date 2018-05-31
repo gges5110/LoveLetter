@@ -1,3 +1,5 @@
+import { player } from './player.js';
+
 var players, availableCards, currentPlayer, gameEnd;
 let cardToPlay, playAgainst, cardsNotPlayedYet;
 
@@ -33,7 +35,7 @@ function setNextTurn() {
 }
 
 function turn(player) {
-  $("#status").text(`Player ${player.number}'s turn, ${getSize()} cards left.`);
+  $("#status").text(`Player ${player.number}'s turn, ${getAvailableCardSize()} cards left.`);
   player.protected = false;
   player.draw();
 

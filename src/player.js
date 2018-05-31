@@ -77,3 +77,7 @@ function player(number) {
     return discardedCard;
   }
 }
+
+export default {
+  player
+};
