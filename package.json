@@ -9,7 +9,7 @@
   "scripts": {
     "babel": "babel --presets es2015 src/main.js -o build/main.bundle.js",
     "test": "mocha",
-    "server": "http-server . -c-1",
+    "test-server": "http-server ./test -c-1",
     "webpack": "webpack --watch"
   },
   "repository": {

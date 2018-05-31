@@ -13,11 +13,11 @@ describe('Array', function() {
     });
 
     it('every player should have a card after game start', function() {
-      // initailizeGame();
-      // assert.equal(players[0].cards.length, 2);
-      // assert.equal(players[1].cards.length, 1);
-      // assert.equal(players[2].cards.length, 1);
-      // assert.equal(players[3].cards.length, 1);
+      initailizeGame();
+      assert.equal(players[0].cards.length, 2);
+      assert.equal(players[1].cards.length, 1);
+      assert.equal(players[2].cards.length, 1);
+      assert.equal(players[3].cards.length, 1);
     });
 
     it('check available card size', function() {
