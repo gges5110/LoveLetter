@@ -9,39 +9,18 @@ export default class Game {
     this.cardToPlay = -1;
     var availableCards, currentPlayer, gameEnd;
     var playAgainst, cardsNotPlayedYet;
-  }
-
-  /*
-  * playButton
-  */
-  setPlayCardOnClick(index) {
-    $(`#playButton${index}`).click(function() {
-      disablePlayButton();
-      console.log(this.players);
-
-      this.cardToPlay = index - 1;
-      if (this.players[0].cards[this.cardToPlay] === 'Handmaid' || this.players[0].cards[this.cardToPlay] === 'Countess') {
-        let playedCard = this.players[0].play(this.cardToPlay, index, -1);
-
-        // Resolve card action.
-        this.resolve(this.players[0], playedCard);
-      } else {
-        enablePlayAgainstButton(this.players);
-      }
-    });
+    this.resolve = this.resolve.bind(this);
+    this.setNextTurn = this.setNextTurn.bind(this);
   }
 
   startGame() {
     console.log('Start Game.');
-    console.log(this.players);
-    console.log('aaa');
-
     this.turn(this.currentPlayer);
   }
 
-  endGame() {
+  endGame(gameEnd) {
     $("#status").text(`Game ended, winner is ${gameEnd.winner.number}`);
-    players.forEach(player => {
+    this.players.forEach(player => {
       if (!player.dead) {
         player.showHand();
       }
@@ -54,12 +33,12 @@ export default class Game {
 
   setNextTurn() {
     setTimeout(() => {
-      gameEnd = checkGameEnd(players, availableCards);
-      if (gameEnd.gameEnd === false) {
-        currentPlayer = nextPlayer(players, currentPlayer);
-        turn(currentPlayer);
+      this.gameEnd = checkGameEnd(this.players, this.availableCards);
+      if (this.gameEnd.gameEnd === false) {
+        this.currentPlayer = nextPlayer(this.players, this.currentPlayer);
+        this.turn(this.currentPlayer);
       } else {
-        endGame();
+        this.endGame(this.gameEnd);
         return;
       }
     }, 1000);
@@ -77,7 +56,7 @@ export default class Game {
       $("#playButton1").text(`${player.cards[0]}`);
       $("#playButton2").text(`${player.cards[1]}`);
     } else {
-      let playedCard = player.randomAI(players, cardsNotPlayedYet);
+      let playedCard = player.randomAI(this.players, this.cardsNotPlayedYet);
       console.log(`Player ${player.number} played ${playedCard.card} against ${playedCard.against}`);
 
       // Resolve card action.
@@ -94,54 +73,54 @@ export default class Game {
       $(`#playerPlayedList${player.number}`).append(`<li class="item">${playedCard.card} against ${playedCard.against}</li>`);
     }
 
-    cardsNotPlayedYet[playedCard.card]--;
+    this.cardsNotPlayedYet[playedCard.card]--;
   }
 
   resolve(player, playedCard) {
-    updatePlayedCard(player, playedCard);
+    this.updatePlayedCard(player, playedCard);
 
     if (playedCard.card === 'Guard') {
-      if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
-        if (players[playedCard.against - 1].cards[0] === playedCard.guess) {
-          players[playedCard.against - 1].setPlayerDead(cardsNotPlayedYet);
+      if (!this.players[playedCard.against - 1].protected &&  !this.players[playedCard.against - 1].dead) {
+        if (this.players[playedCard.against - 1].cards[0] === playedCard.guess) {
+          this.players[playedCard.against - 1].setPlayerDead(this.cardsNotPlayedYet);
         }
       }
     } else if (playedCard.card === 'Priest') {
       // TODO: create new player field to deal with card info for other players.
       if (player.number === 1) {
-        $("#priestList").append(`<li class="item">Player ${players[playedCard.against - 1].number} has ${players[playedCard.against - 1].cards[0]}</li>`);;
+        $("#priestList").append(`<li class="item">Player ${this.players[playedCard.against - 1].number} has ${this.players[playedCard.against - 1].cards[0]}</li>`);;
       }
     } else if (playedCard.card === 'Baron') {
-      if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
-        if (compareCards(player.cards[0], players[playedCard.against - 1].cards[0]) > 0) {
-          player.setPlayerDead(cardsNotPlayedYet);
-        } else if (compareCards(player.cards[0], players[playedCard.against - 1].cards[0]) < 0) {
-          players[playedCard.against - 1].setPlayerDead(cardsNotPlayedYet);
+      if (!this.players[playedCard.against - 1].protected &&  !this.players[playedCard.against - 1].dead) {
+        if (compareCards(player.cards[0], this.players[playedCard.against - 1].cards[0]) > 0) {
+          player.setPlayerDead(this.cardsNotPlayedYet);
+        } else if (compareCards(player.cards[0], this.players[playedCard.against - 1].cards[0]) < 0) {
+          this.players[playedCard.against - 1].setPlayerDead(this.cardsNotPlayedYet);
         }
       }
     } else if (playedCard.card === 'Handmaid') {
       player.protected = true;
     } else if (playedCard.card === 'Princess') {
-      player.setPlayerDead(cardsNotPlayedYet);
+      player.setPlayerDead(this.cardsNotPlayedYet);
     } else if (playedCard.card === 'King') {
-      if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
+      if (!this.players[playedCard.against - 1].protected &&  !this.players[playedCard.against - 1].dead) {
         let temp = player.cards[0];
-        player.cards[0] = players[playedCard.against - 1].cards[0];
-        players[playedCard.against - 1].cards[0] = temp;
+        player.cards[0] = this.players[playedCard.against - 1].cards[0];
+        this.players[playedCard.against - 1].cards[0] = temp;
       }
     } else if (playedCard.card === 'Countess') {
       // TODO: enforce the rule for playing countess?
     } else if (playedCard.card === 'Prince') {
-      if (!players[playedCard.against - 1].protected &&  !players[playedCard.against - 1].dead) {
-        let discardedCard = players[playedCard.against - 1].discard();
-        players[playedCard.against - 1].draw(availableCards);
+      if (!this.players[playedCard.against - 1].protected &&  !this.players[playedCard.against - 1].dead) {
+        let discardedCard = this.players[playedCard.against - 1].discard();
+        this.players[playedCard.against - 1].draw(this.availableCards);
         if (discardedCard === 'Princess') {
-          players[playedCard.against - 1].setPlayerDead(cardsNotPlayedYet);
+          this.players[playedCard.against - 1].setPlayerDead(this.cardsNotPlayedYet);
         }
       }
     }
 
-    setNextTurn();
+    this.setNextTurn();
   }
 
   initailizeCards() {
@@ -150,49 +129,51 @@ export default class Game {
   }
 
   /*
+  * playButton
+  */
+  playCardOnClick(index) {
+    disablePlayButton();
+    console.log(this.players);
+
+    this.cardToPlay = index - 1;
+    if (this.players[0].cards[this.cardToPlay] === 'Handmaid' || this.players[0].cards[this.cardToPlay] === 'Countess') {
+      let playedCard = this.players[0].play(this.cardToPlay, index, -1);
+
+      // Resolve card action.
+      this.resolve(this.players[0], playedCard);
+    } else {
+      enablePlayAgainstButton(this.players);
+    }
+  }
+
+  /*
   * playAgainstButton
   */
-  setPlayAgainstOnClick(index) {
-    $(`#playAgainstButton${index}`).click(function() {
-      disablePlayAgainstButton();
-      playAgainst = index;
-      if (players[0].cards[cardToPlay] !== 'Guard') {
-        let playedCard = players[0].play(cardToPlay, playAgainst, -1);
+  playAgainstOnClick(index) {
+    disablePlayAgainstButton();
+    this.playAgainst = index;
+    if (this.players[0].cards[this.cardToPlay] !== 'Guard') {
+      let playedCard = this.players[0].play(this.cardToPlay, this.playAgainst, -1);
 
-        // Resolve card action.
-        resolve(players[0], playedCard);
-      } else {
-        enableGuardGuessButton();
-      }
-    });
+      // Resolve card action.
+      this.resolve(this.players[0], playedCard);
+    } else {
+      enableGuardGuessButton();
+    }
   }
 
   /*
   * guardGuessButton
   */
-  setGuardGuessOnClick(index) {
-    $(`#guardGuessButton${index}`).click(function() {
-      disableGuardGuessButton();
-      let playedCard = players[0].play(cardToPlay, playAgainst, cardNames[index - 1]);
+  guardGuessOnClick(index) {
+    disableGuardGuessButton();
+    let playedCard = this.players[0].play(this.cardToPlay, this.playAgainst, cardNames[index - 1]);
 
-      // Resolve card action.
-      resolve(players[0], playedCard);
-    });
+    // Resolve card action.
+    this.resolve(this.players[0], playedCard);
   }
 
   initailizeGame() {
-    for (let index = 0; index < this.players.length; index++) {
-      this.setPlayAgainstOnClick(index + 1);
-    }
-
-    for (let index = 0; index < 2; index++) {
-      this.setPlayCardOnClick(index + 1);
-    }
-
-    for (let index = 1; index < 8; index++) {
-      this.setGuardGuessOnClick(index + 1);
-    }
-
     this.restart();
   }
 
