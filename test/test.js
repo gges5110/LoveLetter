@@ -1,4 +1,5 @@
-import { compareCards } from '../util.js';
+// import { compareCards } from '../util.js';
+let compareCards = require('../util.js');
 
 var assert = chai.assert;
 

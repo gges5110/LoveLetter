@@ -1,7 +1,7 @@
 import Player from './player';
 import { getRandomCard, getAvailableCardSize, checkGameEnd, nextPlayer, compareCards } from './util';
 import { disablePlayAgainstButton, disableGuardGuessButton, disablePlayButton, enablePlayButton, enableGuardGuessButton, enablePlayAgainstButton } from './setButtonState';
-import { cardNames, cardRank, startingCards } from './const';
+import { cardNames, cardRank, nonAttackingCards, startingCards } from './const';
 
 export default class Game {
   constructor() {
@@ -9,8 +9,6 @@ export default class Game {
     this.cardToPlay = -1;
     var availableCards, currentPlayer, gameEnd;
     var playAgainst, cardsNotPlayedYet;
-    this.resolve = this.resolve.bind(this);
-    this.setNextTurn = this.setNextTurn.bind(this);
   }
 
   startGame() {
@@ -133,10 +131,9 @@ export default class Game {
   */
   playCardOnClick(index) {
     disablePlayButton();
-    console.log(this.players);
 
     this.cardToPlay = index - 1;
-    if (this.players[0].cards[this.cardToPlay] === 'Handmaid' || this.players[0].cards[this.cardToPlay] === 'Countess') {
+    if (nonAttackingCards.indexOf(this.players[0].cards[this.cardToPlay]) !== -1) {
       let playedCard = this.players[0].play(this.cardToPlay, index, -1);
 
       // Resolve card action.
@@ -171,10 +168,6 @@ export default class Game {
 
     // Resolve card action.
     this.resolve(this.players[0], playedCard);
-  }
-
-  initailizeGame() {
-    this.restart();
   }
 
   restart() {

@@ -31,8 +31,15 @@ const startingCards = {
   'Princess': 1,
 };
 
+const nonAttackingCards = [
+  'Handmaid',
+  'Countess',
+  'King',
+];
+
 export {
   cardRank,
   cardNames,
+  nonAttackingCards,
   startingCards,
 }
