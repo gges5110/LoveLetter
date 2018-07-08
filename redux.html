@@ -3,6 +3,10 @@
   <head>
     <title>Redux basic example</title>
     <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
   </head>
   <body>
     <div>
@@ -257,7 +261,6 @@
       var valueE2 = document.getElementById('currentPlayerId')
       var valueE3 = document.getElementById('playButton1')
       var valueE4 = document.getElementById('playButton2')
-      var arrayE1 = document.getElementById('playerPlayedList1');
       function render() {
         valueEl.innerHTML = store.getState().counter.counter.toString()
         valueE2.innerHTML = store.getState().counter.currentPlayerId.toString()
@@ -265,8 +268,22 @@
         if (store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards.length > 1) {
           valueE4.innerHTML = cardNames[store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1].toString() - 1]
         }
+
+        $(`#playerPlayedList1`).empty();
+        $(`#playerPlayedList2`).empty();
+        $(`#playerPlayedList3`).empty();
+        $(`#playerPlayedList4`).empty();
         for (var i = 0; i < store.getState().counter.players[0].playedCards.length; ++i) {
-          arrayE1.innerHTML.push(store.getState().counter.players[0].playedCards[i]);
+          $(`#playerPlayedList1`).append(`<li class="item">${cardNames[store.getState().counter.players[0].playedCards[i].cardId - 1]}</li>`);
+        }
+        for (var i = 0; i < store.getState().counter.players[1].playedCards.length; ++i) {
+          $(`#playerPlayedList2`).append(`<li class="item">${cardNames[store.getState().counter.players[1].playedCards[i].cardId - 1]}</li>`);
+        }
+        for (var i = 0; i < store.getState().counter.players[2].playedCards.length; ++i) {
+          $(`#playerPlayedList3`).append(`<li class="item">${cardNames[store.getState().counter.players[2].playedCards[i].cardId - 1]}</li>`);
+        }
+        for (var i = 0; i < store.getState().counter.players[3].playedCards.length; ++i) {
+          $(`#playerPlayedList4`).append(`<li class="item">${cardNames[store.getState().counter.players[3].playedCards[i].cardId - 1]}</li>`);
         }
       }
       render()
