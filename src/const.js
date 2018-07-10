@@ -37,9 +37,54 @@ const nonAttackingCards = [
   'King',
 ];
 
+const initialState = {
+  counter: 0,
+  currentPlayerId: 1,
+  players: [
+    {
+      id: 1,
+      dead: false,
+      holdingCards: [],
+      playedCards: []
+    },
+    {
+      id: 2,
+      dead: false,
+      holdingCards: [],
+      playedCards: []
+    },
+    {
+      id: 3,
+      dead: false,
+      holdingCards: [],
+      playedCards: []
+    },
+    {
+      id: 4,
+      dead: false,
+      holdingCards: [],
+      playedCards: []
+    }
+  ],
+  availableCards: {
+    'Guard': 5,
+    'Priest': 2,
+    'Baron': 2,
+    'Handmaid': 2,
+    'Prince': 2,
+    'King': 1,
+    'Countess': 1,
+    'Princess': 1,
+  },
+  gameEnds: {
+    winner: null
+  }
+};
+
 export {
   cardRank,
   cardNames,
+  initialState,
   nonAttackingCards,
   startingCards,
 }

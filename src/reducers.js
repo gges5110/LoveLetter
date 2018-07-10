@@ -1,5 +1,8 @@
 // var availableCards, currentPlayer, gameEnd;
 // var playAgainst, cardsNotPlayedYet;
+import { initialState, cardRank } from './const';
+import { getRandomCard, getLivingPlayerSize, calculateWinner } from './util';
+
 function initGame(state) {
   // Draw cards
   return state;
@@ -51,55 +54,6 @@ function getAvailableCardSize(availableCards) {
   return totalCards;
 }
 
-function getRandomCard(availableCards) {
-  // Get the number of total cards
-  let totalCards = getAvailableCardSize(availableCards);
-
-  console.log(`Total Cards: ${totalCards}`);
-  if (totalCards == 0) {
-    return;
-  }
-
-  let randomCardNumber = Math.floor(Math.random() * totalCards);
-
-  let temp = 0, drawedCard;
-  for (var key in availableCards) {
-    if (availableCards.hasOwnProperty(key)) {
-      temp += availableCards[key];
-      if (temp > randomCardNumber) {
-        drawedCard = key;
-        break;
-      }
-    }
-  }
-
-  console.log(`Card drawed: ${drawedCard}`);
-  availableCards[drawedCard]--;
-  return cardRank[drawedCard];
-}
-
-const cardRank = {
-  'Guard': 1,
-  'Priest': 2,
-  'Baron': 3,
-  'Handmaid': 4,
-  'Prince': 5,
-  'King': 6,
-  'Countess': 7,
-  'Princess': 8,
-}
-
-const cardNames = [
-  'Guard',
-  'Priest',
-  'Baron',
-  'Handmaid',
-  'Prince',
-  'King',
-  'Countess',
-  'Princess',
-];
-
 // discardCard(nextState, currentPlayerId, action.cardToPlay.cardId);
 function discardCard(players, currentPlayerId, discardCard) {
   let player = players[currentPlayerId - 1];
@@ -138,63 +92,10 @@ function addHoldingCards(players, playerId, card) {
 
 function counter(state, action) {
   if (typeof state === 'undefined') {
-    return {
-      counter: 0,
-      currentPlayerId: 1,
-      players: [
-        {
-          id: 1,
-          dead: false,
-          holdingCards: [],
-          playedCards: []
-        },
-        {
-          id: 2,
-          dead: false,
-          holdingCards: [],
-          playedCards: []
-        },
-        {
-          id: 3,
-          dead: false,
-          holdingCards: [],
-          playedCards: []
-        },
-        {
-          id: 4,
-          dead: false,
-          holdingCards: [],
-          playedCards: []
-        }
-      ],
-      availableCards: {
-        'Guard': 5,
-        'Priest': 2,
-        'Baron': 2,
-        'Handmaid': 2,
-        'Prince': 2,
-        'King': 1,
-        'Countess': 1,
-        'Princess': 1,
-      },
-      gameEnds: {
-        winner: null
-      }
-    };
+    return JSON.parse(JSON.stringify(initialState));
   }
 
   switch (action.type) {
-    case 'INCREMENT':
-      if (action.number === undefined) {
-        action.number = 1;
-      }
-      return Object.assign({}, state, {
-        counter: state.counter + action.number
-      });
-    case 'DECREMENT':
-      return Object.assign({}, state, {
-        counter: state.counter - 1
-      });
     case 'PLAY_CARD':
       let nextState = Object.assign({}, state);
       // Remove holding cards
@@ -212,49 +113,7 @@ function counter(state, action) {
       return drawCard(state);
     case 'RESTART':
       // Clean up store state.
-      let newState = {
-        counter: 0,
-        currentPlayerId: 1,
-        players: [
-          {
-            id: 1,
-            dead: false,
-            holdingCards: [],
-            playedCards: []
-          },
-          {
-            id: 2,
-            dead: false,
-            holdingCards: [],
-            playedCards: []
-          },
-          {
-            id: 3,
-            dead: false,
-            holdingCards: [],
-            playedCards: []
-          },
-          {
-            id: 4,
-            dead: false,
-            holdingCards: [],
-            playedCards: []
-          }
-        ],
-        availableCards: {
-          'Guard': 5,
-          'Priest': 2,
-          'Baron': 2,
-          'Handmaid': 2,
-          'Prince': 2,
-          'King': 1,
-          'Countess': 1,
-          'Princess': 1,
-        },
-        gameEnds: {
-          winner: null
-        }
-      };
+      let newState = JSON.parse(JSON.stringify(initialState));
       // Setup and draw cards.
       // Discard a card at the start of the game.
       getRandomCard(newState.availableCards);
@@ -270,47 +129,6 @@ function counter(state, action) {
     default:
       return state
   }
-}
-
-function getAvailableCardSize(availableCards) {
-  let totalCards = 0;
-  for (var key in availableCards) {
-    if (availableCards.hasOwnProperty(key)) {
-      totalCards += availableCards[key];
-    }
-  }
-  return totalCards;
-}
-
-var compareCards = function(card1, card2) {
-  return cardRank[card2] - cardRank[card1];
-}
-
-function getLivingPlayerSize(players) {
-  let result = 0;
-  players.forEach(player => {
-    if (!player.dead) {
-      result++;
-    }
-  });
-  return result;
-}
-
-function calculateWinner(players) {
-  let winnerId = -1;
-  players.forEach(player => {
-    if (!player.dead) {
-      if (winnerId == -1) {
-        winnerId = player.id;
-      } else {
-        if (compareCards(players[winnerId - 1].holdingCards[0], player.holdingCards[0]) > 0) {
-          winnerId = player.id;
-        }
-      }
-    }
-  });
-
-  return winnerId;
 }
 
 function checkGameEnd(players, availableCards) {

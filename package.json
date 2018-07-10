@@ -7,10 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "babel": "babel --presets es2015 src/main.js -o build/main.bundle.js",
     "test": "mocha --require babel-register",
-    "test-server": "http-server ./test -c-1",
-    "webpack": "webpack --watch"
+    "webpack": "webpack",
+    "webpack:watch": "webpack --watch"
   },
   "repository": {
     "type": "git",
@@ -29,7 +28,6 @@
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
-    "http-server": "^0.11.1",
     "mocha": "^5.2.0",
     "webpack": "^4.10.2",
     "webpack-cli": "^2.1.4"

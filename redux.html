@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Redux basic example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.13.0/polyfill.js"></script>
     <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
     <script
     src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -11,12 +12,6 @@
   <body>
     <div>
       <p>
-        Clicked: <span id="value">0</span> times
-        <button id="increment">+</button>
-        <button id="decrement">-</button>
-        <button id="incrementIfOdd">Increment if odd</button>
-        <button id="incrementAsync">Increment async</button>
-        <button id="incrementby2">Increment by 2</button>
         Current Player ID: <span id="currentPlayerId"></span>
 
         <button class="ui button" id="playButton1">A</button>
@@ -43,7 +38,6 @@
         <ul class="ui list" id="playerPlayedList4">
       </p>
     </div>
-    <script src="reducers.js"></script>
-    <script src="index.js"></script>
+    <script src="./build/main.bundle.js"></script>
   </body>
 </html>

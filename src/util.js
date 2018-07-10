@@ -26,20 +26,20 @@ function getLivingPlayerSize(players) {
 }
 
 function calculateWinner(players) {
-  let winner = new Player(-1);
+  let winnerId = -1;
   players.forEach(player => {
     if (!player.dead) {
-      if (winner.number == -1) {
-        winner = player;
+      if (winnerId == -1) {
+        winnerId = player.id;
       } else {
-        if (compareCards(winner.cards[0], player.cards[0]) > 0) {
-          winner = player;
+        if (compareCards(players[winnerId - 1].holdingCards[0], player.holdingCards[0]) > 0) {
+          winnerId = player.id;
         }
       }
     }
   });
 
-  return winner;
+  return winnerId;
 }
 
 function getNonDeadNonProtectedPlayers(caller, players) {
@@ -107,7 +107,7 @@ function getRandomCard(availableCards) {
 
   console.log(`Card drawed: ${drawedCard}`);
   availableCards[drawedCard]--;
-  return drawedCard;
+  return cardRank[drawedCard];
 }
 
 export {
@@ -117,5 +117,7 @@ export {
   getAvailableCardSize,
   getHighestNotYetAppearedCard,
   getNonDeadNonProtectedPlayers,
+  getLivingPlayerSize,
+  calculateWinner,
   nextPlayer,
 };

@@ -1,19 +1,16 @@
+import { counter } from './reducers';
+import { cardNames } from './const';
 
 var store = Redux.createStore(Redux.combineReducers({counter}))
-var valueEl = document.getElementById('value')
-var valueE2 = document.getElementById('currentPlayerId')
-var valueE3 = document.getElementById('playButton1')
-var valueE4 = document.getElementById('playButton2')
-var valueE5 = document.getElementById('status')
+
 function render() {
-  valueEl.innerHTML = store.getState().counter.counter.toString()
-  valueE2.innerHTML = store.getState().counter.currentPlayerId.toString()
+  $('#currentPlayerId').text(store.getState().counter.currentPlayerId.toString());
   if (store.getState().counter.gameEnds.winner === null && store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards.length > 0) {
-    valueE3.innerHTML = cardNames[store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[0].toString() - 1]
+    $('#playButton1').text(cardNames[store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[0].toString() - 1]);
   }
 
   if (store.getState().counter.gameEnds.winner === null && store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards.length > 1) {
-    valueE4.innerHTML = cardNames[store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1].toString() - 1]
+    $('#playButton2').text(cardNames[store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1].toString() - 1]);
   }
 
   if (store.getState().counter.gameEnds.winner === null) {
@@ -43,39 +40,13 @@ function render() {
 }
 render()
 store.subscribe(render)
-document.getElementById('increment')
-  .addEventListener('click', function () {
-    store.dispatch({ type: 'INCREMENT' })
-  })
-document.getElementById('decrement')
-  .addEventListener('click', function () {
-    store.dispatch({ type: 'DECREMENT' })
-  })
-document.getElementById('incrementIfOdd')
-  .addEventListener('click', function () {
-    if (store.getState() % 2 !== 0) {
-      store.dispatch({ type: 'INCREMENT' })
-    }
-  })
-document.getElementById('incrementAsync')
-  .addEventListener('click', function () {
-    setTimeout(function () {
-      store.dispatch({ type: 'INCREMENT' })
-    }, 1000)
-  })
-document.getElementById('incrementby2')
-  .addEventListener('click', function () {
-    store.dispatch({ type: 'INCREMENT', number: 2 });
-    // console.log(store.getState());
-  })
-document.getElementById('playButton1')
-  .addEventListener('click', function () {
+
+$('#playButton1').on('click', function () {
     store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[0], playAgainst: 2, guardGuess: -1} });
     store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
     // console.log(store.getState());
   })
-document.getElementById('playButton2')
-  .addEventListener('click', function () {
+$('#playButton2').on('click', function () {
     store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1], playAgainst: 2, guardGuess: -1} });
     store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
     // console.log(store.getState());
