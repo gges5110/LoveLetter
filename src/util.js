@@ -83,6 +83,7 @@ function getHighestNotYetAppearedCard(holdingCards, cardsNotPlayedYet) {
   return 'Priest';
 }
 
+// This function will return a random card index based on the availableCards passed in.
 function getRandomCard(availableCards) {
   // Get the number of total cards
   let totalCards = getAvailableCardSize(availableCards);
@@ -106,7 +107,6 @@ function getRandomCard(availableCards) {
   }
 
   console.log(`Card drawed: ${drawedCard}`);
-  availableCards[drawedCard]--;
   return cardRank[drawedCard];
 }
 

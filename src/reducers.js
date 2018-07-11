@@ -1,6 +1,6 @@
 // var availableCards, currentPlayer, gameEnd;
 // var playAgainst, cardsNotPlayedYet;
-import { initialState, cardRank } from './const';
+import { initialState, cardRank, cardNames } from './const';
 import { getRandomCard, getLivingPlayerSize, calculateWinner } from './util';
 
 function initGame(state) {
@@ -69,10 +69,14 @@ function drawCard(previousState) {
 }
 
 function drawCardForPlayer(previousState, playerId) {
-  let cardDrew = getRandomCard(previousState.availableCards);
+  let randomCardId = getRandomCard(previousState.availableCards);
+  // Remove the cardDrew from availableCards
+  let arr = Object.assign([], previousState.availableCards);
+  arr[cardNames[randomCardId - 1]]--;
 
   return Object.assign({}, previousState, {
-    players: addHoldingCards(previousState.players, playerId, cardDrew)
+    players: addHoldingCards(previousState.players, playerId, randomCardId),
+    availableCards: arr
   });
 }
 
@@ -81,7 +85,7 @@ function addHoldingCards(players, playerId, card) {
   if (player.id !== playerId) {
       return player;
     } else {
-      let arr = player.holdingCards;
+      let arr = Object.assign([], player.holdingCards);
       arr.push(card);
       return Object.assign({}, player, {
         holdingCards: arr
