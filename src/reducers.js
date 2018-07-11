@@ -95,15 +95,17 @@ function addHoldingCards(players, playerId, card) {
 }
 
 function counter(state, action) {
-  if (typeof state === 'undefined') {
+  if (typeof state === 'undefined' && action.type !== 'RESTART') {
     return JSON.parse(JSON.stringify(initialState));
   }
 
   switch (action.type) {
     case 'PLAY_CARD':
-      let nextState = Object.assign({}, state);
+      // Make a deep copy of the state object
+      let nextState = JSON.parse(JSON.stringify(state));
       // Remove holding cards
       discardCard(nextState.players, nextState.currentPlayerId, action.cardToPlay);
+
       // Resolve
       nextState = resolve(nextState, action);
       // Check if game ends
@@ -120,7 +122,8 @@ function counter(state, action) {
       let newState = JSON.parse(JSON.stringify(initialState));
       // Setup and draw cards.
       // Discard a card at the start of the game.
-      getRandomCard(newState.availableCards);
+      let randomCardId = getRandomCard(newState.availableCards);
+      newState.availableCards[cardNames[randomCardId - 1]]--;
 
       newState = drawCardForPlayer(newState, 1);
       newState = drawCardForPlayer(newState, 2);
