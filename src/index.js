@@ -1,5 +1,6 @@
 import { counter } from './reducers';
 import { cardNames } from './const';
+import { disablePlayButton, disablePlayAgainstButton, disableGuardGuessButton } from './setButtonState';
 
 var store = Redux.createStore(Redux.combineReducers({counter}))
 
@@ -34,6 +35,9 @@ function render() {
 
   if (store.getState().counter.gameEnds.winner !== null) {
     $('#status').text(`Winner is ${store.getState().counter.gameEnds.winner.id}`);
+    disablePlayButton();
+    disablePlayAgainstButton();
+    disableGuardGuessButton();
   } else {
     $('#status').text(`Player ${store.getState().counter.currentPlayerId}'s turn.`);
   }
@@ -42,15 +46,20 @@ render()
 store.subscribe(render)
 
 $('#playButton1').on('click', function () {
-    store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[0], playAgainst: 2, guardGuess: -1} });
-    store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
-    // console.log(store.getState());
-  })
+  store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[0], playAgainst: 2, guardGuess: -1} });
+  store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+  if (store.getState().counter.currentPlayerId !== 1) {
+    setTimeout(function () {
+      store.dispatch({ type: 'AI_MOVE' });
+    }, 1000);
+  }
+});
+
 $('#playButton2').on('click', function () {
-    store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1], playAgainst: 2, guardGuess: -1} });
-    store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
-    // console.log(store.getState());
-  })
+  store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1], playAgainst: 2, guardGuess: -1} });
+  store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+});
+
 $('#restart').click(function() {
   console.log('Restart');
   store.dispatch({ type: 'RESTART'});

@@ -10,6 +10,15 @@ describe('General Reducer', () => {
     expect(counter(undefined, {})).to.deep.equal(initialState);
   });
 
+  it('shouldn\'t mutate the original state', () => {
+    let state = {
+      counter: 0
+    };
+    let nextState = Object.assign({}, state);
+    nextState.counter = 1;
+    expect(state.counter).to.equal(0);
+  })
+
   it('should draw a card from the availableCards and append to the current player\'s holding card', () => {
     let state = JSON.parse(JSON.stringify(initialState));
     let nextState = counter(state, {type: 'DRAW_CARD'});

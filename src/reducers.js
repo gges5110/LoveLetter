@@ -11,7 +11,6 @@ function initGame(state) {
 function resolve(state, action) {
   return Object.assign({}, state, {
       players: playAgainst(state.players, action, state.currentPlayerId),
-      currentPlayerId: nextPlayer(state.players, state.currentPlayerId),
     }
   );
 }
@@ -56,12 +55,19 @@ function getAvailableCardSize(availableCards) {
 
 // discardCard(nextState, currentPlayerId, action.cardToPlay.cardId);
 function discardCard(players, currentPlayerId, discardCard) {
-  let player = players[currentPlayerId - 1];
-  // Remove card.
-  let arr = player.holdingCards;
-  let idx = arr.indexOf(discardCard.cardId);
-  arr.splice(idx, 1);
-  player.playedCards.push(discardCard);
+  return players.map(function CB(player, index) {
+    if (player.id === currentPlayerId) {
+      let arr = Object.assign([], player.holdingCards);
+      // Remove card.
+      arr.splice(arr.indexOf(discardCard.cardId), 1);
+
+      return Object.assign({}, player, {
+        holdingCards: arr
+      });
+    } else {
+      return player;
+    }
+  });
 }
 
 function drawCard(previousState) {
@@ -80,9 +86,23 @@ function drawCardForPlayer(previousState, playerId) {
   });
 }
 
+function addPlayedCard(players, playerId, card) {
+  return players.map(function CB(player, index) {
+    if (player.id !== playerId) {
+      return player;
+    } else {
+      let arr = Object.assign([], player.playedCards);
+      arr.push(card);
+      return Object.assign({}, player, {
+        playedCards: arr
+      })
+    }
+  });
+}
+
 function addHoldingCards(players, playerId, card) {
   return players.map(function CB(player, index) {
-  if (player.id !== playerId) {
+    if (player.id !== playerId) {
       return player;
     } else {
       let arr = Object.assign([], player.holdingCards);
@@ -102,12 +122,16 @@ function counter(state, action) {
   switch (action.type) {
     case 'PLAY_CARD':
       // Make a deep copy of the state object
-      let nextState = JSON.parse(JSON.stringify(state));
+      // let nextState = JSON.parse(JSON.stringify(state));
+      let nextState = Object.assign({}, state);
       // Remove holding cards
-      discardCard(nextState.players, nextState.currentPlayerId, action.cardToPlay);
-
+      nextState.players = discardCard(nextState.players, nextState.currentPlayerId, action.cardToPlay);
+      // Add played Card
+      nextState.players = addPlayedCard(nextState.players, nextState.currentPlayerId, action.cardToPlay);
       // Resolve
       nextState = resolve(nextState, action);
+      // Next Player
+      nextState.currentPlayerId = nextPlayer(nextState.players, nextState.currentPlayerId);
       // Check if game ends
       let gameEnds = checkGameEnd(nextState.players, nextState.availableCards);
       if (gameEnds.gameEnd) {
