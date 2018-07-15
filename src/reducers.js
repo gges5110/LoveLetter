@@ -116,10 +116,54 @@ function addHoldingCards(players, playerId, card) {
 
 function counter(state, action) {
   if (typeof state === 'undefined' && action.type !== 'RESTART') {
-    return JSON.parse(JSON.stringify(initialState));
+    // return JSON.parse(JSON.stringify(initialState));
+    // Clean up store state.
+    let newState = JSON.parse(JSON.stringify(initialState));
+    // Setup and draw cards.
+    // Discard a card at the start of the game.
+    let randomCardId = getRandomCard(newState.availableCards);
+    newState.availableCards[cardNames[randomCardId - 1]]--;
+
+    newState = drawCardForPlayer(newState, 1);
+    newState = drawCardForPlayer(newState, 2);
+    newState = drawCardForPlayer(newState, 3);
+    newState = drawCardForPlayer(newState, 4);
+    // Draw a card for the starting player
+    // newState = drawCard(newState);
+
+    return newState;
   }
 
   switch (action.type) {
+    case 'CHOOSE_CARD':
+      // TODO: based on selected card, decide if play against action is needed
+      // If not then set readyForNextTurn to true
+      return Object.assign({}, state, {
+        buttonStates: Object.assign({}, state.buttonStates, {
+          chooseCard: false,
+          playAgainst: true,
+        }),
+        readyForNextTurn: false,
+      });
+    case 'PLAY_AGAINST':
+      // TODO: based on selected card, decide if guard guess action is needed
+      // If not then set readyForNextTurn to true
+      return Object.assign({}, state, {
+        buttonStates: Object.assign({}, state.buttonStates, {
+          playAgainst: false,
+          guardGuess: true,
+        }),
+        readyForNextTurn: false,
+      });
+    case 'GUARD_GUESS':
+      return Object.assign({}, state, {
+        buttonStates: Object.assign({}, state.buttonStates, {
+          chooseCard: true,
+          guardGuess: false,
+        }),
+        readyForNextTurn: true,
+        currentPlayerId: nextPlayer(state.players, state.currentPlayerId)
+      });
     case 'PLAY_CARD':
       // Make a deep copy of the state object
       // let nextState = JSON.parse(JSON.stringify(state));
@@ -136,6 +180,7 @@ function counter(state, action) {
       let gameEnds = checkGameEnd(nextState.players, nextState.availableCards);
       if (gameEnds.gameEnd) {
         nextState.gameEnds.winner = nextState.players[gameEnds.winnerId - 1];
+        nextState.buttonStates.chooseCard = false;
       }
 
       return nextState;
@@ -154,7 +199,7 @@ function counter(state, action) {
       newState = drawCardForPlayer(newState, 3);
       newState = drawCardForPlayer(newState, 4);
       // Draw a card for the starting player
-      newState = drawCard(newState);
+      // newState = drawCard(newState);
 
       return newState;
     default:

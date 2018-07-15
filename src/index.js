@@ -1,8 +1,8 @@
 import { counter } from './reducers';
 import { cardNames } from './const';
-import { disablePlayButton, disablePlayAgainstButton, disableGuardGuessButton } from './setButtonState';
+import { disablePlayButton, disablePlayAgainstButton, disableGuardGuessButton, enablePlayButton, enablePlayAgainstButton, enableGuardGuessButton } from './setButtonState';
 
-var store = Redux.createStore(Redux.combineReducers({counter}))
+var store = Redux.createStore(Redux.combineReducers({counter}));
 
 function render() {
   $('#currentPlayerId').text(store.getState().counter.currentPlayerId.toString());
@@ -35,30 +35,139 @@ function render() {
 
   if (store.getState().counter.gameEnds.winner !== null) {
     $('#status').text(`Winner is ${store.getState().counter.gameEnds.winner.id}`);
-    disablePlayButton();
-    disablePlayAgainstButton();
-    disableGuardGuessButton();
   } else {
     $('#status').text(`Player ${store.getState().counter.currentPlayerId}'s turn.`);
+  }
+
+  if (store.getState().counter.buttonStates.chooseCard) {
+    enablePlayButton();
+  } else {
+    disablePlayButton();
+  }
+
+  if (store.getState().counter.buttonStates.playAgainst) {
+    enablePlayAgainstButton(store.getState().counter.players);
+  } else {
+    disablePlayAgainstButton();
+  }
+
+  if (store.getState().counter.buttonStates.guardGuess) {
+    enableGuardGuessButton();
+  } else {
+    disableGuardGuessButton();
   }
 }
 render()
 store.subscribe(render)
 
 $('#playButton1').on('click', function () {
-  store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[0], playAgainst: 2, guardGuess: -1} });
-  store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
-  if (store.getState().counter.currentPlayerId !== 1) {
-    setTimeout(function () {
-      store.dispatch({ type: 'AI_MOVE' });
-    }, 1000);
-  }
+  store.dispatch({type: 'CHOOSE_CARD', cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[0]});
+  // store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[0], playAgainst: 2, guardGuess: -1} });
+  // store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+  // nextTurn();
 });
 
 $('#playButton2').on('click', function () {
-  store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1], playAgainst: 2, guardGuess: -1} });
-  store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+  store.dispatch({type: 'CHOOSE_CARD', cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1]});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
 });
+
+$('#playAgainstButton1').on('click', function() {
+  store.dispatch({type: 'PLAY_AGAINST', playAgainst: 1});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#playAgainstButton2').on('click', function() {
+  store.dispatch({type: 'PLAY_AGAINST', playAgainst: 2});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#playAgainstButton3').on('click', function() {
+  store.dispatch({type: 'PLAY_AGAINST', playAgainst: 3});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#playAgainstButton4').on('click', function() {
+  store.dispatch({type: 'PLAY_AGAINST', playAgainst: 4});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#guardGuessButton2').on('click', function() {
+  store.dispatch({type: 'GUARD_GUESS', guardGuess: 2});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#guardGuessButton3').on('click', function() {
+  store.dispatch({type: 'GUARD_GUESS', guardGuess: 3});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#guardGuessButton4').on('click', function() {
+  store.dispatch({type: 'GUARD_GUESS', guardGuess: 4});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#guardGuessButton5').on('click', function() {
+  store.dispatch({type: 'GUARD_GUESS', guardGuess: 5});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#guardGuessButton6').on('click', function() {
+  store.dispatch({type: 'GUARD_GUESS', guardGuess: 6});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#guardGuessButton7').on('click', function() {
+  store.dispatch({type: 'GUARD_GUESS', guardGuess: 7});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+$('#guardGuessButton8').on('click', function() {
+  store.dispatch({type: 'GUARD_GUESS', guardGuess: 8});
+  if (store.getState().counter.readyForNextTurn) {
+    nextTurn();
+  }
+});
+
+function nextTurn() {
+  if (store.getState().counter.currentPlayerId !== 1) {
+    // AI move
+    // Disable buttons
+
+    setTimeout(function() {
+      // store.dispatch({type: 'AI_MOVE'});
+      // TODO: randomly choose a card
+      store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+      store.dispatch({ type: 'PLAY_CARD', cardToPlay: {cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1], playAgainst: 2, guardGuess: -1} });
+      nextTurn();
+    }, 1000);
+  } else {
+    store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+    // Wait for human input
+  }
+}
 
 $('#restart').click(function() {
   console.log('Restart');

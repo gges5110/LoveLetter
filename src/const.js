@@ -78,7 +78,13 @@ const initialState = {
   },
   gameEnds: {
     winner: null
-  }
+  },
+  buttonStates: {
+    chooseCard: true,
+    playAgainst: false,
+    GuardGuess: false,
+  },
+  readyForNextTurn: false,
 };
 
 export {
