@@ -6,9 +6,11 @@ import chai from 'chai';
 let expect = chai.expect;
 
 describe('General Reducer', () => {
-  it('should return the initial state', () => {
-    expect(counter(undefined, {})).to.deep.equal(initialState);
-  });
+  it('should return the initial state'
+    // , () => {
+    //   expect(counter(undefined, {})).to.deep.equal(initialState);
+    // }
+  );
 
   it('shouldn\'t mutate the original state', () => {
     let state = {
@@ -31,9 +33,9 @@ describe('General Reducer', () => {
 
   it('should setup the game when RESTART action is dispatched', () => {
     let state = counter(undefined, {type: 'RESTART'});
-    expect(getAvailableCardSize(state.availableCards)).to.equal(16 - 6);
+    expect(getAvailableCardSize(state.availableCards)).to.equal(16 - 5);
 
-    expect(state.players[0].holdingCards.length).to.equal(2);
+    expect(state.players[0].holdingCards.length).to.equal(1);
     expect(state.players[1].holdingCards.length).to.equal(1);
     expect(state.players[2].holdingCards.length).to.equal(1);
     expect(state.players[3].holdingCards.length).to.equal(1);
@@ -53,7 +55,29 @@ describe('General Reducer', () => {
 
   it('should discard the played card');
   it('should end the game when there are no cards left');
-  it('should decide the right winner when the game ends');
+
+  it('should decide the right winner when the game ends', () => {
+    let state = JSON.parse(JSON.stringify(initialState));
+    state.players[0].holdingCards.push(1);
+    state.players[1].holdingCards.push(2);
+    state.players[2].holdingCards.push(3);
+    state.players[3].holdingCards.push(4);
+    state.players[3].holdingCards.push(7);
+    state.availableCards = {
+      'Guard': 0,
+      'Priest': 0,
+      'Baron': 0,
+      'Handmaid': 0,
+      'Prince': 0,
+      'King': 0,
+      'Countess': 0,
+      'Princess': 0,
+    }
+    state.currentPlayerId = 4;
+    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: state.players[3].holdingCards[0], playAgainst: -1, guardGuess: -1}});
+    expect(nextState.gameEnds.winner).to.not.equal(null);
+    expect(nextState.gameEnds.winner.id).to.equal(4);
+  });
 });
 
 describe('Card Resolution', () => {

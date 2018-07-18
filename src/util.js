@@ -32,7 +32,8 @@ function calculateWinner(players) {
       if (winnerId == -1) {
         winnerId = player.id;
       } else {
-        if (compareCards(players[winnerId - 1].holdingCards[0], player.holdingCards[0]) > 0) {
+        console.log(`Comparing ${players[winnerId - 1].holdingCards[0]} with ${player.holdingCards[0]}`);
+        if (players[winnerId - 1].holdingCards[0] < player.holdingCards[0]) {
           winnerId = player.id;
         }
       }

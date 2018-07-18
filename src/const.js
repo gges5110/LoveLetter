@@ -44,24 +44,28 @@ const initialState = {
     {
       id: 1,
       dead: false,
+      protected: false,
       holdingCards: [],
       playedCards: []
     },
     {
       id: 2,
       dead: false,
+      protected: false,
       holdingCards: [],
       playedCards: []
     },
     {
       id: 3,
       dead: false,
+      protected: false,
       holdingCards: [],
       playedCards: []
     },
     {
       id: 4,
       dead: false,
+      protected: false,
       holdingCards: [],
       playedCards: []
     }
@@ -85,7 +89,14 @@ const initialState = {
     GuardGuess: false,
   },
   readyForNextTurn: false,
+  cardToPlay: {
+    cardId: null,
+    playAgainst: -1,
+    guardGuess: -1
+  }
 };
+
+
 
 export {
   cardRank,

@@ -8,11 +8,36 @@ function initGame(state) {
   return state;
 }
 
-function resolve(state, action) {
-  return Object.assign({}, state, {
-      players: playAgainst(state.players, action, state.currentPlayerId),
-    }
-  );
+function resolve(state, cardToPlay) {
+  if (cardToPlay.cardId === 8) {
+    return Object.assign({}, state, {
+      players: Object.assign([], state.players, { [state.currentPlayerId - 1]: Object.assign({}, state.players[state.currentPlayerId - 1], {
+        dead: true
+      })})
+    });
+  } else if (cardToPlay.cardId === 4) {
+    return Object.assign({}, state, {
+      players: Object.assign([], state.players, { [state.currentPlayerId - 1]: Object.assign({}, state.players[state.currentPlayerId - 1], {
+        protected: true
+      })})
+    });
+  }
+  return Object.assign({}, state, playAgainst(state, cardToPlay, state.currentPlayerId));
+}
+
+function playAgainst(state, cardToPlay, currentPlayerId) {
+  if (cardToPlay.cardId === 5 && !state.players[cardToPlay.playAgainst - 1].dead && !state.players[cardToPlay.playAgainst - 1].protected) {
+    // Discard and draw
+    let nextState = Object.assign({}, state);
+    let cardToDiscard = state.players[cardToPlay.playAgainst - 1].holdingCards[0];
+    nextState.players = discardCard(state.players, cardToPlay.playAgainst, cardToDiscard);
+    nextState.players = addPlayedCard(nextState.players, cardToPlay.playAgainst - 1, {
+      cardId: cardToDiscard
+    });
+    nextState = drawCardForPlayer(nextState, cardToPlay.playAgainst);
+    return nextState;
+  }
+  return state;
 }
 
 function nextPlayer(players, currentPlayerId) {
@@ -28,19 +53,6 @@ function nextPlayer(players, currentPlayerId) {
   console.log(`Next Player ID: ${nextPlayerIndex}`);
 
   return players[nextPlayerIndex].id;
-}
-
-function playAgainst(players, action, currentPlayerId) {
-  return players.map(function CB(player, index) {
-    // if (player.id !== action.cardToPlay.playAgainst && player.id !== currentPlayerId) {
-    //   return player;
-    // } else {
-    //   return Object.assign({}, player, {
-    //     dead: !player.dead
-    //   });
-    // }
-    return player;
-  });
 }
 
 function getAvailableCardSize(availableCards) {
@@ -101,16 +113,12 @@ function addPlayedCard(players, playerId, card) {
 }
 
 function addHoldingCards(players, playerId, card) {
-  return players.map(function CB(player, index) {
-    if (player.id !== playerId) {
-      return player;
-    } else {
-      let arr = Object.assign([], player.holdingCards);
-      arr.push(card);
-      return Object.assign({}, player, {
-        holdingCards: arr
-      })
-    }
+  let arr = Object.assign([], players[playerId - 1].holdingCards);
+  arr.push(card);
+  return Object.assign([], players, {
+    [playerId - 1]: Object.assign({}, players[playerId - 1], {
+      holdingCards: arr
+    })
   });
 }
 
@@ -128,52 +136,78 @@ function counter(state, action) {
     newState = drawCardForPlayer(newState, 2);
     newState = drawCardForPlayer(newState, 3);
     newState = drawCardForPlayer(newState, 4);
-    // Draw a card for the starting player
-    // newState = drawCard(newState);
 
     return newState;
   }
 
   switch (action.type) {
-    case 'CHOOSE_CARD':
+    case 'CHOOSE_CARD': {
       // TODO: based on selected card, decide if play against action is needed
       // If not then set readyForNextTurn to true
+      let readyForNextTurn = false;
+      let chooseCard = false;
+      let guardGuess = true;
+      if (action.cardId === 4 || action.cardId === 8) {
+        readyForNextTurn = true;
+        chooseCard = true;
+        guardGuess = false;
+      }
       return Object.assign({}, state, {
         buttonStates: Object.assign({}, state.buttonStates, {
-          chooseCard: false,
-          playAgainst: true,
+          chooseCard: chooseCard,
+          playAgainst: guardGuess,
         }),
-        readyForNextTurn: false,
+        readyForNextTurn: readyForNextTurn,
+        cardToPlay: Object.assign({}, state.cardToPlay, {
+          cardId: action.cardId,
+        })
       });
-    case 'PLAY_AGAINST':
-      // TODO: based on selected card, decide if guard guess action is needed
-      // If not then set readyForNextTurn to true
+    }
+    case 'PLAY_AGAINST': {
+      let readyForNextTurn = false;
+      let chooseCard = false;
+      let guardGuess = true;
+      if (state.cardToPlay.cardId !== 1) {
+        readyForNextTurn = true;
+        chooseCard = true;
+        guardGuess = false;
+      }
       return Object.assign({}, state, {
         buttonStates: Object.assign({}, state.buttonStates, {
+          chooseCard: chooseCard,
           playAgainst: false,
-          guardGuess: true,
+          guardGuess: guardGuess,
         }),
-        readyForNextTurn: false,
+        readyForNextTurn: readyForNextTurn,
+        cardToPlay: Object.assign({}, state.cardToPlay, {
+          playAgainst: action.playAgainst,
+        })
       });
-    case 'GUARD_GUESS':
+    }
+    case 'GUARD_GUESS': {
       return Object.assign({}, state, {
         buttonStates: Object.assign({}, state.buttonStates, {
           chooseCard: true,
           guardGuess: false,
         }),
         readyForNextTurn: true,
-        currentPlayerId: nextPlayer(state.players, state.currentPlayerId)
+        cardToPlay: Object.assign({}, state.cardToPlay, {
+          guardGuess: action.guardGuess,
+        })
       });
+    }
     case 'PLAY_CARD':
       // Make a deep copy of the state object
       // let nextState = JSON.parse(JSON.stringify(state));
       let nextState = Object.assign({}, state);
+
+      // TODO: Move all these into other reducer functions.
       // Remove holding cards
       nextState.players = discardCard(nextState.players, nextState.currentPlayerId, action.cardToPlay);
       // Add played Card
       nextState.players = addPlayedCard(nextState.players, nextState.currentPlayerId, action.cardToPlay);
       // Resolve
-      nextState = resolve(nextState, action);
+      nextState = resolve(nextState, action.cardToPlay);
       // Next Player
       nextState.currentPlayerId = nextPlayer(nextState.players, nextState.currentPlayerId);
       // Check if game ends
@@ -198,8 +232,6 @@ function counter(state, action) {
       newState = drawCardForPlayer(newState, 2);
       newState = drawCardForPlayer(newState, 3);
       newState = drawCardForPlayer(newState, 4);
-      // Draw a card for the starting player
-      // newState = drawCard(newState);
 
       return newState;
     default:
@@ -209,6 +241,7 @@ function counter(state, action) {
 
 function checkGameEnd(players, availableCards) {
   if (getAvailableCardSize(availableCards) <= 0 || getLivingPlayerSize(players) <= 1) {
+    console.log(players)
     let winnerId = calculateWinner(players);
     return {'gameEnd': true, 'winnerId': winnerId};
   } else {
