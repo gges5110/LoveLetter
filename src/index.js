@@ -2,8 +2,10 @@ import { counter } from './reducers';
 import { cardNames } from './const';
 import actions from './actions';
 import { disablePlayButton, disablePlayAgainstButton, disableGuardGuessButton, enablePlayButton, enablePlayAgainstButton, enableGuardGuessButton } from './setButtonState';
+import { getAvailableCardSize } from './util';
 
-var store = Redux.createStore(Redux.combineReducers({counter}));
+var store = Redux.createStore(Redux.combineReducers({counter}),
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 function render() {
   $('#currentPlayerId').text(store.getState().counter.currentPlayerId.toString());
@@ -37,6 +39,11 @@ function render() {
     }
   }
 
+  $('#priestList').empty();
+  for (let i = 0; i < store.getState().counter.players[0].seenCards.length; ++i) {
+    $('#priestList').append(`<li class="item">Player ${store.getState().counter.players[0].seenCards[i].playerId} has ${cardNames[store.getState().counter.players[0].seenCards[i].cardId - 1]}</li>`);
+  }
+
   for (let i = 0; i < 4; ++i) {
     $(`#playerTitle${i + 1}`).removeClass("playerProtected");
     $(`#playerTitle${i + 1}`).removeClass("playerDead");
@@ -61,8 +68,13 @@ function render() {
   if (store.getState().counter.gameEnds.winner !== null) {
     $('#status').text(`Winner is ${store.getState().counter.gameEnds.winner.id}`);
     $(`#playerTitle${store.getState().counter.gameEnds.winner.id}`).attr("class","playerWin");
+    for (var i = 0; i < 4; ++i) {
+      if (!store.getState().counter.players[i].dead) {
+        $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].holdingCards[0] - 1]}`);
+      }
+    }
   } else {
-    $('#status').text(`Player ${store.getState().counter.currentPlayerId}'s turn.`);
+    $('#status').text(`Player ${store.getState().counter.currentPlayerId}'s turn. ${getAvailableCardSize(store.getState().counter.availableCards)} cards left`);
   }
 
   if (store.getState().counter.buttonStates.chooseCard) {
@@ -207,11 +219,11 @@ $('#guardGuessButton8').on('click', function() {
 
 function nextTurn() {
   if (store.getState().counter.gameEnds.winner !== null) {
+    // Game end
     return;
   } else if (store.getState().counter.currentPlayerId !== 1 || store.getState().counter.players[0].dead) {
     // AI move
     // Disable buttons
-
     setTimeout(function() {
       // store.dispatch({type: 'AI_MOVE'});
       // TODO: randomly choose a card
@@ -222,8 +234,65 @@ function nextTurn() {
     }, 1000);
   } else {
     store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+    // Update Value Table
+    store.dispatch({type: 'UPDATE_VALUE_TALBE', previousState: {playerDead}})
     // Wait for human input
+    let randomAICard = reinforcementAI(store.getState().counter.players, store.getState().counter.currentPlayerId);
+    store.dispatch(actions.playCard(randomAICard));
+    nextTurn();
   }
+}
+
+function value(cardId, playerId, guess) {
+  // look up a table and return the value of action
+  return store.getState().counter.valueTable.cardId[cardId - 1].playAgainst[playerId - 1].guess[guess - 1];
+}
+
+function reinforcementAI(players, playerId) {
+  let card1Id = players[playerId - 1].holdingCards[0];
+  let card2Id = players[playerId - 1].holdingCards[1];
+
+  let card1MaxValue = -1000, card2MaxValue = -1000;
+  let playAgainst1 = -1, playAgainst2 = -1;
+  let guess1 = -1, guess2 = -1;
+
+  for (var playAgainst = 1; playAgainst < 4; ++playAgainst) {
+    if (card1Id === 1) {
+      for (var guess = 2; guess < 9; ++guess) {
+        if (card1MaxValue < value(card1Id, playAgainst, guess)) {
+          card1MaxValue = value(card1Id, playAgainst, guess);
+          playAgainst1 = playAgainst;
+          guess1 = guess;
+        }
+      }
+    } else {
+      if (card1MaxValue < value(card1Id, playAgainst, -1)) {
+        card1MaxValue = value(card1Id, playAgainst, -1);
+        playAgainst1 = playAgainst;
+      }
+    }
+  }
+
+  for (var playAgainst = 1; playAgainst < 4; ++playAgainst) {
+    if (card1Id === 1) {
+      for (var guess = 2; guess < 9; ++guess) {
+        if (card2MaxValue < value(card2Id, playAgainst, guess)) {
+          card2MaxValue = value(card2Id, playAgainst, guess);
+          playAgainst2 = playAgainst;
+          guess2 = guess;
+        }
+      }
+    } else {
+      if (card2MaxValue < value(card2Id, playAgainst, -1)) {
+        card2MaxValue = value(card2Id, playAgainst, -1);
+        playAgainst2 = playAgainst;
+      }
+    }
+  }
+
+  return card1MaxValue > card2MaxValue ?
+    {cardId: card1Id, playAgainst: playAgainst1, guardGuess: guess1} :
+    {cardId: card2Id, playAgainst: playAgainst2, guardGuess: guess2};
 }
 
 function randomAI(players, playerId) {
@@ -269,6 +338,7 @@ function getNonDeadNonProtectedPlayers(playerId, players) {
 }
 
 $(document).ready(function() {
+  store.dispatch({type: 'POPULATE_TABLE'});
   nextTurn();
 })
 

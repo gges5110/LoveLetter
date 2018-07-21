@@ -1,22 +1,21 @@
 // var availableCards, currentPlayer, gameEnd;
 // var playAgainst, cardsNotPlayedYet;
 import { initialState, cardRank, cardNames } from './const';
-import { getRandomCard, getLivingPlayerSize, calculateWinner, compareCards } from './util';
-
-
-function checkNotDeadAndNotProtected(state, playerId) {
-  return !state.players[playerId - 1].dead && !state.players[playerId - 1].protected;
-}
-
-function setPlayerDead(state, playerId) {
-  return Object.assign({}, state, {
-    players: Object.assign([], state.players, {
-      [playerId - 1]: Object.assign({}, state.players[playerId - 1], {
-        dead: true
-      })
-    })
-  })
-}
+import {
+  getRandomCard,
+  getLivingPlayerSize,
+  calculateWinner,
+  nextPlayer,
+  drawCard,
+  resetProtection,
+  discardCard,
+  drawCardForPlayer,
+  addPlayedCard,
+  addSeenCards,
+  getAvailableCardSize,
+  setPlayerDead,
+  checkNotDeadAndNotProtected,
+  populateValueTable, } from './util';
 
 function resolve(state, cardToPlay) {
   if (cardToPlay.cardId === 1 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
@@ -25,6 +24,13 @@ function resolve(state, cardToPlay) {
     } else {
       return state;
     }
+  } else if (cardToPlay.cardId === 2 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
+    let nextState = Object.assign({}, state);
+    nextState.players = addSeenCards(nextState.players, nextState.currentPlayerId, {
+      cardId: nextState.players[cardToPlay.playAgainst - 1].holdingCards[0],
+      playerId: cardToPlay.playAgainst
+    });
+    return nextState;
   } else if (cardToPlay.cardId === 3 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
     let cardValue1 = state.players[state.currentPlayerId - 1].holdingCards[0];
     let cardValue2 = state.players[cardToPlay.playAgainst - 1].holdingCards[0];
@@ -85,107 +91,8 @@ function resolve(state, cardToPlay) {
   }
 }
 
-function nextPlayer(players, currentPlayerId) {
-  // Next non dead player
-  let totalPlayers = players.length;
-  let nextPlayerIndex = currentPlayerId % totalPlayers;
-
-  while (players[nextPlayerIndex].dead === true) {
-    nextPlayerIndex = (nextPlayerIndex + 1) % totalPlayers;
-  }
-  console.log(`Next Player ID: ${nextPlayerIndex}`);
-
-  return players[nextPlayerIndex].id;
-}
-
-function getAvailableCardSize(availableCards) {
-  let totalCards = 0;
-  for (var key in availableCards) {
-    if (availableCards.hasOwnProperty(key)) {
-      totalCards += availableCards[key];
-    }
-  }
-  return totalCards;
-}
-
-function resetProtection(players, currentPlayerId) {
-  return Object.assign([], players, { [currentPlayerId - 1]: Object.assign({}, players[currentPlayerId - 1], {
-    protected: false,
-  })})
-}
-
-// discardCard(nextState, currentPlayerId, action.cardToPlay.cardId);
-function discardCard(players, currentPlayerId, discardCard) {
-  return players.map(function CB(player, index) {
-    if (player.id === currentPlayerId) {
-      let arr = Object.assign([], player.holdingCards);
-      // Remove card.
-      arr.splice(arr.indexOf(discardCard.cardId), 1);
-
-      return Object.assign({}, player, {
-        holdingCards: arr
-      });
-    } else {
-      return player;
-    }
-  });
-}
-
-function drawCard(previousState) {
-  return drawCardForPlayer(previousState, previousState.currentPlayerId);
-}
-
-function drawCardForPlayer(previousState, playerId) {
-  let randomCardId = getRandomCard(previousState.availableCards);
-  // Remove the cardDrew from availableCards
-  let arr = Object.assign([], previousState.availableCards);
-  arr[cardNames[randomCardId - 1]]--;
-
-  return Object.assign({}, previousState, {
-    players: addHoldingCards(previousState.players, playerId, randomCardId),
-    availableCards: arr
-  });
-}
-
-function addPlayedCard(players, playerId, card) {
-  let arr = Object.assign([], players[playerId - 1].playedCards);
-  if (card.cardId === 4 || card.cardId === 8) {
-    arr.push({
-      cardId: card.cardId,
-      playAgainst: -1,
-      guardGuess: -1,
-      discarded: card.discarded,
-    });
-  } else if (card.cardId !== 1) {
-    arr.push({
-      cardId: card.cardId,
-      playAgainst: card.playAgainst,
-      guardGuess: -1,
-      discarded: card.discarded,
-    });
-  } else {
-    arr.push(card);
-  }
-
-  return Object.assign([], players, {
-    [playerId - 1]: Object.assign({}, players[playerId - 1], {
-      playedCards: arr
-    })
-  });
-}
-
-function addHoldingCards(players, playerId, card) {
-  let arr = Object.assign([], players[playerId - 1].holdingCards);
-  arr.push(card);
-  return Object.assign([], players, {
-    [playerId - 1]: Object.assign({}, players[playerId - 1], {
-      holdingCards: arr
-    })
-  });
-}
-
 function counter(state, action) {
-  if (typeof state === 'undefined' && action.type !== 'RESTART') {
+  if (typeof state === 'undefined') {
     // return JSON.parse(JSON.stringify(initialState));
     // Clean up store state.
     let newState = JSON.parse(JSON.stringify(initialState));
@@ -209,7 +116,7 @@ function counter(state, action) {
       let readyForNextTurn = false;
       let chooseCard = false;
       let guardGuess = true;
-      if (action.cardId === 4 || action.cardId === 8) {
+      if (action.cardId === 4 || action.cardId === 7 || action.cardId === 8) {
         readyForNextTurn = true;
         chooseCard = true;
         guardGuess = false;
@@ -289,6 +196,10 @@ function counter(state, action) {
       return nextState;
     case 'DRAW_CARD':
       return drawCard(state);
+    case 'POPULATE_TABLE':
+      return populateValueTable(state);
+    case 'UPDATE_TABLE':
+      return updateValueTable(state, action.previousState)
     case 'RESTART':
       // Clean up store state.
       let newState = JSON.parse(JSON.stringify(initialState));

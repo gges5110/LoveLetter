@@ -46,30 +46,37 @@ const initialState = {
       dead: false,
       protected: false,
       holdingCards: [],
-      playedCards: []
+      playedCards: [],
+      seenCards: [],
     },
     {
       id: 2,
       dead: false,
       protected: false,
       holdingCards: [],
-      playedCards: []
+      playedCards: [],
+      seenCards: [],
     },
     {
       id: 3,
       dead: false,
       protected: false,
       holdingCards: [],
-      playedCards: []
+      playedCards: [],
+      seenCards: [],
     },
     {
       id: 4,
       dead: false,
       protected: false,
       holdingCards: [],
-      playedCards: []
+      playedCards: [],
+      seenCards: [],
     }
   ],
+  firstCard: {
+
+  },
   availableCards: {
     'Guard': 5,
     'Priest': 2,
@@ -93,10 +100,108 @@ const initialState = {
     cardId: null,
     playAgainst: -1,
     guardGuess: -1
+  },
+  valueTable: {
+    cardId: [
+      {
+        playAgainst: [
+          {
+            guess: []
+          },
+          {
+            guess: []
+          },{
+            guess: []
+          }
+        ]
+      },
+      {
+        playAgainst: [
+          {
+            guess: []
+          },
+          {
+            guess: []
+          },{
+            guess: []
+          }
+        ]
+      },
+      {
+        playAgainst: [
+          {
+            guess: []
+          },
+          {
+            guess: []
+          },{
+            guess: []
+          }
+        ]
+      },
+      {
+        playAgainst: [
+          {
+            guess: []
+          },
+          {
+            guess: []
+          },{
+            guess: []
+          }
+        ]
+      },
+      {
+        playAgainst: [
+          {
+            guess: []
+          },
+          {
+            guess: []
+          },{
+            guess: []
+          }
+        ]
+      },
+      {
+        playAgainst: [
+          {
+            guess: []
+          },
+          {
+            guess: []
+          },{
+            guess: []
+          }
+        ]
+      },
+      {
+        playAgainst: [
+          {
+            guess: []
+          },
+          {
+            guess: []
+          },{
+            guess: []
+          }
+        ]
+      },
+      {
+        playAgainst: [
+          {
+            guess: []
+          },
+          {
+            guess: []
+          },{
+            guess: []
+          }
+        ]
+      },
+    ]
   }
 };
-
-
 
 export {
   cardRank,
