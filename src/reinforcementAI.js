@@ -210,14 +210,14 @@ export default class ReinforcementAI {
     ]
     */
 
-    let player0lastCardId = -1;
+    let player0lastCardId = 8;
     if (reduxState.players[0].playedCards.length != 0) {
-      player0lastCardId = reduxState.players[0].playedCards[reduxState.players[0].playedCards.length - 1];
+      player0lastCardId = reduxState.players[0].playedCards[reduxState.players[0].playedCards.length - 1].cardId;
     }
 
     return {
       player0dead: reduxState.players[1].dead,
-      player0lastCardId: reduxState.players[1].playedCards[0].cardId,
+      player0lastCardId: player0lastCardId,
       player0holdingCard0: reduxState.players[1].holdingCards[0],
       player0holdingCard1: reduxState.players[1].holdingCards[1],
     }
