@@ -33,11 +33,11 @@ function calculateWinner(players) {
   return winnerId;
 }
 
-function getNonDeadNonProtectedPlayers(caller, players) {
+function getNonDeadNonProtectedPlayers(playerId, players) {
   let nonDeadNonProtectedPlayerList = [];
   players.forEach(player => {
-    if (player.number != caller.number && !player.protected && !player.dead) {
-      nonDeadNonProtectedPlayerList.push(player.number);
+    if (player.id != playerId && !player.protected && !player.dead) {
+      nonDeadNonProtectedPlayerList.push(player.id);
     }
   });
   return nonDeadNonProtectedPlayerList;

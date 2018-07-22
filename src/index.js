@@ -3,6 +3,8 @@ import { cardNames } from './const';
 import actions from './actions';
 import { disablePlayButton, disablePlayAgainstButton, disableGuardGuessButton, enablePlayButton, enablePlayAgainstButton, enableGuardGuessButton } from './setButtonState';
 import { getAvailableCardSize } from './util';
+import ReinforcementAI from './reinforcementAI';
+import randomAI from './randomAI';
 
 var store = Redux.createStore(Redux.combineReducers({counter}),
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
@@ -221,12 +223,20 @@ function nextTurn() {
   if (store.getState().counter.gameEnds.winner !== null) {
     // Game end
     return;
+  } else if (store.getState().counter.currentPlayerId === 2 && store.getState().counter.players[1].dead === false) {
+    // RL AI move
+    setTimeout(function() {
+      // Update Value Table, if not the first time
+      store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+      reinforcementAI.learn(store.getState().counter);
+      let reinforcementAICard = reinforcementAI.getBestAction(store.getState().counter);
+      store.dispatch(actions.playCard(reinforcementAICard));
+      nextTurn();
+    }, 1000);
   } else if (store.getState().counter.currentPlayerId !== 1 || store.getState().counter.players[0].dead) {
-    // AI move
+    // Random AI move
     // Disable buttons
     setTimeout(function() {
-      // store.dispatch({type: 'AI_MOVE'});
-      // TODO: randomly choose a card
       store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
       let randomAICard = randomAI(store.getState().counter.players, store.getState().counter.currentPlayerId);
       store.dispatch(actions.playCard(randomAICard));
@@ -234,111 +244,19 @@ function nextTurn() {
     }, 1000);
   } else {
     store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
-    // Update Value Table
-    store.dispatch({type: 'UPDATE_VALUE_TALBE', previousState: {playerDead}})
     // Wait for human input
-    let randomAICard = reinforcementAI(store.getState().counter.players, store.getState().counter.currentPlayerId);
-    store.dispatch(actions.playCard(randomAICard));
-    nextTurn();
   }
 }
 
-function value(cardId, playerId, guess) {
-  // look up a table and return the value of action
-  return store.getState().counter.valueTable.cardId[cardId - 1].playAgainst[playerId - 1].guess[guess - 1];
-}
-
-function reinforcementAI(players, playerId) {
-  let card1Id = players[playerId - 1].holdingCards[0];
-  let card2Id = players[playerId - 1].holdingCards[1];
-
-  let card1MaxValue = -1000, card2MaxValue = -1000;
-  let playAgainst1 = -1, playAgainst2 = -1;
-  let guess1 = -1, guess2 = -1;
-
-  for (var playAgainst = 1; playAgainst < 4; ++playAgainst) {
-    if (card1Id === 1) {
-      for (var guess = 2; guess < 9; ++guess) {
-        if (card1MaxValue < value(card1Id, playAgainst, guess)) {
-          card1MaxValue = value(card1Id, playAgainst, guess);
-          playAgainst1 = playAgainst;
-          guess1 = guess;
-        }
-      }
-    } else {
-      if (card1MaxValue < value(card1Id, playAgainst, -1)) {
-        card1MaxValue = value(card1Id, playAgainst, -1);
-        playAgainst1 = playAgainst;
-      }
-    }
-  }
-
-  for (var playAgainst = 1; playAgainst < 4; ++playAgainst) {
-    if (card1Id === 1) {
-      for (var guess = 2; guess < 9; ++guess) {
-        if (card2MaxValue < value(card2Id, playAgainst, guess)) {
-          card2MaxValue = value(card2Id, playAgainst, guess);
-          playAgainst2 = playAgainst;
-          guess2 = guess;
-        }
-      }
-    } else {
-      if (card2MaxValue < value(card2Id, playAgainst, -1)) {
-        card2MaxValue = value(card2Id, playAgainst, -1);
-        playAgainst2 = playAgainst;
-      }
-    }
-  }
-
-  return card1MaxValue > card2MaxValue ?
-    {cardId: card1Id, playAgainst: playAgainst1, guardGuess: guess1} :
-    {cardId: card2Id, playAgainst: playAgainst2, guardGuess: guess2};
-}
-
-function randomAI(players, playerId) {
-  let cardId;
-  if (players[playerId - 1].holdingCards.indexOf(4) !== -1) {
-    // Prioritize on playing handmaid.
-    cardId = 4;
-  } else {
-    if (players[playerId - 1].holdingCards[0] < players[playerId - 1].holdingCards[1]) {
-      cardId = players[playerId - 1].holdingCards[0];
-    } else {
-      cardId = players[playerId - 1].holdingCards[1];
-    }
-  }
-
-  let guardGuess;
-  if (cardId === 1) {
-    // Randomly choose from the highest not yet appeared card.
-    // cardToGuess = getHighestNotYetAppearedCard(this.cards, cardsNotPlayedYet);
-    guardGuess = 8; // Make this smarter.
-  }
-
-  let playAgainst = playerId % 4 + 1;
-  let getNonDeadNonProtectedPlayerList = getNonDeadNonProtectedPlayers(playerId, players);
-  if (getNonDeadNonProtectedPlayerList.length == 0) {
-    // The player is the winner.
-  } else {
-    // Randomly select one player to play the card against.
-    let randomPlayerIndex = Math.floor(Math.random() * getNonDeadNonProtectedPlayerList.length);
-    playAgainst = getNonDeadNonProtectedPlayerList[randomPlayerIndex];
-  }
-  return {cardId, playAgainst, guardGuess};
-}
-
-function getNonDeadNonProtectedPlayers(playerId, players) {
-  let nonDeadNonProtectedPlayerList = [];
-  players.forEach(player => {
-    if (player.id != playerId && !player.protected && !player.dead) {
-      nonDeadNonProtectedPlayerList.push(player.id);
-    }
-  });
-  return nonDeadNonProtectedPlayerList;
-}
-
+/*
+env.getNumStates() returns an integer of total number of states
+env.getMaxNumActions() returns an integer with max number of actions in any state
+env.allowedActions(s) takes an integer s and returns a list of available actions, which should be integers from zero to maxNumActions
+*/
+let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [7, 4, 8]);
 $(document).ready(function() {
-  store.dispatch({type: 'POPULATE_TABLE'});
+  // store.dispatch({type: 'POPULATE_TABLE'});
+  reinforcementAI.initialize();
   nextTurn();
 })
 

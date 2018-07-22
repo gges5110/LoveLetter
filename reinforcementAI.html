@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>REINFORCEjs: Gridworld with Dynamic Programming</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- rljs -->
+  <script type="text/javascript" src="./externalLib/rl.js"></script>
+  <script type="text/javascript" src="./node_modules/ind2sub/ind2sub-browser.js"></script>
+
+  <script type="application/javascript">
+    // Gridworld
+    var Gridworld = function(){
+      this.Rarr = null; // reward array
+      this.T = null; // cell types, 0 = normal, 1 = cliff
+      this.stateVectorMaxValues = [
+        2,9,8,8
+      ]
+      actionVectorMaxValues = [
+        8, 4, 7
+      ]
+      this.reset()
+    }
+    Gridworld.prototype = {
+      reset: function() {
+        var Rarr = R.zeros(this.gs);
+        var T = R.zeros(this.gs);
+
+        this.Rarr = Rarr;
+        this.T = T;
+      },
+      reward: function(s,a,ns) {
+        // reward of being in s, taking action a, and ending up in ns
+        return this.Rarr[s];
+      },
+      allowedActions: function(s) {
+        /*
+        stateVector = [
+          player[0].dead,                         // 2
+          player[0].playedCards[last_idx].cardId, // 9
+          player[0].holdingCards[0],              // 8
+          player[0].holdingCards[1]               // 8
+        ]
+        actionVector = [
+          cardId,       // 8
+          playAgainst,  // 4
+          guardGuess,   // 7 (Can't guess guard)
+        ]
+        */
+        var as = [];
+        var stateOject = this.integerToStateObject(s);
+        if (stateOject.player0dead) {
+          return as;
+        }
+        var playAgainst = [], guess = [];
+        // stateOject.player0card0
+        if (stateOject.player0card0 === 0) {
+          playAgainst = [2, 3, 4];
+          guess = [2, 3, 4, 5, 6, 7, 8];
+        } else if (stateOject.player0card === 8 || stateOject.player0card === 7 || stateOject.player0card === 4) {
+          playAgainst = [1];
+          guess = [2, 3, 4, 5, 6, 7, 8];
+        } else {
+          playAgainst = [2, 3, 4];
+          guess = [2, 3, 4, 5, 6, 7, 8];
+        }
+        as = as.concat(this.product(stateOject.player0card0, playAgainst, guess));
+
+        // stateOject.player0card0
+        if (stateOject.player0card1 === 0) {
+          playAgainst = [2, 3, 4];
+          guess = [2, 3, 4, 5, 6, 7, 8];
+        } else if (stateOject.player0card === 8 || stateOject.player0card === 7 || stateOject.player0card === 4) {
+          playAgainst = [1];
+          guess = [];
+        } else {
+          playAgainst = [2, 3, 4];
+          guess = [];
+        }
+        as = as.concat(this.product(stateOject.player0card1, playAgainst, guess));
+        return as;
+      },
+      product: function(cardIdx, playAgainstArr, guessArr) {
+        let arr = [];
+        for (var pidx = 0; pidx < playAgainstArr.length; ++pidx) {
+          for (var gidx = 0; gidx < guessArr.length; ++gidx) {
+            arr.push(cardIdx * 28 + playAgainstArr[pidx] * 7 + guessArr[gidx]);
+          }
+        }
+        return arr;
+      },
+      randomState: function() { return Math.floor(Math.random()*this.gs); },
+      startState: function() { return 1; },
+      getNumStates: function() { return this.gs; },
+      getMaxNumActions: function() { return 4; },
+      // private functions
+      integerToStateObject: function(s) {
+        /*
+        stateVector = [
+          player[0].dead,                         // 2
+          player[0].playedCards[last_idx].cardId, // 9
+          player[0].holdingCards[0],              // 8
+          player[0].holdingCards[1]               // 8
+        ]
+        */
+        var objIntegerArr = ind2sub.ind2sub([2, 9, 8, 8], s);
+        console.log(objIntegerArr);
+        return {
+          player0dead: objIntegerArr[0],
+          player0lplayedCard: objIntegerArr[1],
+          player0card0: objIntegerArr[2],
+          player0card1: objIntegerArr[3]
+        }
+      },
+      stateObjectToInteger: function(obj) {
+        return -1;
+      },
+      xytos: function(x,y) { return x*this.gh + y; },
+    }
+    // ------
+    // UI
+    // ------
+    // var tdlearn = function() {
+    //   if(sid === -1) {
+    //     sid = setInterval(function(){
+    //       for(var k=0;k<steps_per_tick;k++) {
+    //         var a = agent.act(state); // ask agent for an action
+    //         var obs = env.sampleNextState(state, a); // run it through environment dynamics
+    //         agent.learn(obs.r); // allow opportunity for the agent to learn
+    //         state = obs.ns; // evolve environment to next state
+    //         nsteps_counter += 1;
+    //         if(typeof obs.reset_episode !== 'undefined') {
+    //           agent.resetEpisode();
+    //           // record the reward achieved
+    //           if(nsteps_history.length >= nflot) {
+    //             nsteps_history = nsteps_history.slice(1);
+    //           }
+    //           nsteps_history.push(nsteps_counter);
+    //           nsteps_counter = 0;
+    //         }
+    //       }
+    //       // keep track of reward history
+    //       drawGrid(); // draw
+    //     }, 20);
+    //   } else {
+    //     clearInterval(sid);
+    //     sid = -1;
+    //   }
+    // }
+
+    var state;
+    var agent, env;
+    function start() {
+      env = new Gridworld(); // create environment
+      state = env.startState();
+      var spec = { alpha: 0.01 } // see full options on top of this page
+      agent = new RL.TDAgent(env, spec);
+    }
+  </script>
+
+ </head>
+<body onload="start();">
+ </body>
+</html>
