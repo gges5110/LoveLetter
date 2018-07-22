@@ -20,7 +20,7 @@ let disableGuardGuessButton = function() {
 
 function enablePlayAgainstButton(players) {
   for (let index = 1; index < 5; index++) {
-    if (!players[index - 1].dead) {
+    if (!players[index - 1].dead && !players[index - 1].protected) {
       $(`#playAgainstButton${index}`).prop('disabled', false);
     }
   }

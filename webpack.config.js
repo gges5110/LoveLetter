@@ -2,8 +2,8 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-  mode: 'production',
-  entry: './src/main.js',
+  mode: 'development',
+  entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'main.bundle.js'
@@ -14,7 +14,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         query: {
-          presets: ['es2015']
+          presets: ['env']
         }
       }
     ]
@@ -22,5 +22,5 @@ module.exports = {
   stats: {
     colors: true
   },
-  devtool: 'source-map'
+  devtool: 'inline-source-map'
 };

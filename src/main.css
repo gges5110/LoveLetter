@@ -6,6 +6,10 @@
   color: red
 }
 
+.playerProtected {
+  color: purple;
+}
+
 .playerWin {
   color: greenyellow
 }

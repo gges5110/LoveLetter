@@ -5,7 +5,7 @@ var game;
 $( document ).ready(function() {
   game = new Game();
   setupButtonEventListeners();
-  game.initailizeGame();
+  game.restart();
 });
 
 $('#restart').click(function() {

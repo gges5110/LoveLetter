@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Redux basic example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.13.0/polyfill.js"></script>
+    <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div>
+      <p>
+        Current Player ID: <span id="currentPlayerId"></span>
+
+        <button class="ui button" id="playButton1">A</button>
+        <button class="ui button" id="playButton2">B</button>
+
+        <button class="ui button primary" id="restart">Restart</button>
+        <p id="status"></p>
+
+        <p id="playerTitle1">Player 1</p>
+        <ul class="ui list" id="playerPlayedList1"></ul>
+
+        <br>
+        <p id="playerTitle2">Player 2</p>
+        <ul class="ui list" id="playerPlayedList2">
+        </ul>
+
+        <br>
+        <p id="playerTitle3">Player 3</p>
+        <ul class="ui list" id="playerPlayedList3">
+        </ul>
+
+        <br>
+        <p id="playerTitle4">Player 4</p>
+        <ul class="ui list" id="playerPlayedList4">
+      </p>
+    </div>
+    <script src="./build/main.bundle.js"></script>
+  </body>
+</html>
