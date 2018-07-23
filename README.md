@@ -1,4 +1,6 @@
 # Love Letter
+[![build status](https://img.shields.io/travis/gges5110/LoveLetter/master.svg)](https://travis-ci.org/gges5110/LoveLetter)
+
 This is a project built to replicate the [Love Letter](https://boardgamegeek.com/boardgame/129622/love-letter) board game, and hosting on GitHub pages.
 
 ### Pre-requisite
@@ -33,7 +35,11 @@ $ npm install
 * Mocha: unit testing framework
 * Math.js: Array and Matrix operations
 
-### Rules
+### Notes
+* [Redux Devtools](http://extension.remotedev.io/): for visualizing states and diff of states between each action.
+* Webpack bundles all Javascript files into a single main.bundle.js file. For ease of debugging, the source files will be under webpack://src/ in the devtool panel.
+
+### Game Rules
 Some basic rules:
 * 8-Princess (1): Lose if discarded
 * 7-Countess (1): Discard if caught with King or Prince
