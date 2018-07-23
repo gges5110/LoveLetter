@@ -1,4 +1,3 @@
-import Player from './player';
 import { cardRank, cardNames } from './const';
 
 var compareCards = function(card1, card2) {
@@ -141,7 +140,7 @@ function drawCard(previousState) {
 function drawCardForPlayer(previousState, playerId) {
   let randomCardId = getRandomCard(previousState.availableCards);
   // Remove the cardDrew from availableCards
-  let arr = Object.assign([], previousState.availableCards);
+  let arr = Object.assign({}, previousState.availableCards);
   arr[cardNames[randomCardId - 1]]--;
 
   return Object.assign({}, previousState, {
@@ -211,18 +210,6 @@ function addSeenCards(players, playerId, seenCard) {
   });
 }
 
-function populateValueTable(state) {
-  let nextState = Object.assign({}, state);
-  for (let cardId = 1; cardId < 9; cardId++) {
-    for (let playAgainst = 1; playAgainst < 4; ++playAgainst) {
-      for (let guess = 2; guess < 9; guess++) {
-        nextState.valueTable.cardId[cardId - 1].playAgainst[playAgainst - 1].guess[guess - 1] = Math.random() / 100;
-      }
-    }
-  }
-  return nextState;
-}
-
 export {
   compareCards,
   checkGameEnd,
@@ -242,5 +229,4 @@ export {
   addSeenCards,
   setPlayerDead,
   checkNotDeadAndNotProtected,
-  populateValueTable,
 };

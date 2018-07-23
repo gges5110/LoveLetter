@@ -1,18 +1,47 @@
-# LoversLetter
+# Love Letter
+This is a project built to replicate the [Love Letter](https://boardgamegeek.com/boardgame/129622/love-letter) board game, and hosting on GitHub pages.
 
-# Rule
-8-Princess (1): Lose if discarded
+### Pre-requisite
+* Install [Node.js](https://nodejs.org/en/)
+* Install Node dependencies
+* Build the project
 
-7-Countess (1): Discard if caught with King or Prince
+Once you have done all above steps, you should be able to open [index.html](./index.html) with your browser and see the game running.
 
-6-King (1): Trade hands
+### Commands
+```bash
+# Install Node dependencies
+$ npm install
+# Build Project
+$ npm run webpack
+# You can also let webpack watch the src folder for any changes
+$ npm run webpack:watch
+# Run test
+$ npm install
+```
 
-5-Prince (2): One player discards his or her hand
+### Current Players Setup
+* Player 1: human player
+* Player 2: reinforcement learning AI
+* Player 3: random AI
+* Player 4: random AI
 
-4-Handmaid (2): Protection until your next turn
+### Libraries
+* Redux: frontend state management system
+* Babel: compiler for ES6
+* Webpack: build system
+* Mocha: unit testing framework
+* Math.js: Array and Matrix operations
 
-3-Baron (2): Compare hands; lower hand is out
+### Rules
+Some basic rules:
+* 8-Princess (1): Lose if discarded
+* 7-Countess (1): Discard if caught with King or Prince
+* 6-King (1): Trade hands
+* 5-Prince (2): One player discards his or her hand
+* 4-Handmaid (2): Protection until your next turn
+* 3-Baron (2): Compare hands; lower hand is out
+* 2-Priest (2): Look at a hand
+* 1-Guard (5): Guess a player's hand
 
-2-Priest (2): Look at a hand
-
-1-Guard (5): Guess a player's hand
+You can find the full game rules [here](http://online.fliphtml5.com/mvgr/hyvg/#p=18).

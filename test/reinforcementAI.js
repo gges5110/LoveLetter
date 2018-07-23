@@ -32,6 +32,27 @@ describe('ReinforcementAI.public functions', () => {
     expect(card.playAgainst).to.be.oneOf([2, 3, 4]);
     expect(card.guardGuess).to.be.oneOf([2, 3, 4, 5, 6, 7, 8]);
   })
+
+  it('ReinforcementAI.learn', () => {
+    let state = JSON.parse(JSON.stringify(initialState));
+    state.players[1].playedCards.push({
+      cardId: 3
+    });
+    state.players[1].dead = false;
+    state.players[1].holdingCards.push(1);
+    state.players[1].holdingCards.push(1);
+
+    let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
+    reinforcementAI.initialize();
+
+    let card = reinforcementAI.getBestAction(state);
+    console.log(card);
+    expect(card.cardId).to.equal(1);
+    expect(card.playAgainst).to.be.oneOf([2, 3, 4]);
+    expect(card.guardGuess).to.be.oneOf([2, 3, 4, 5, 6, 7, 8]);
+
+    reinforcementAI.learn(state);
+  })
 });
 
 

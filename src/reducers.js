@@ -14,8 +14,7 @@ import {
   addSeenCards,
   getAvailableCardSize,
   setPlayerDead,
-  checkNotDeadAndNotProtected,
-  populateValueTable, } from './util';
+  checkNotDeadAndNotProtected } from './util';
 
 function resolve(state, cardToPlay) {
   if (cardToPlay.cardId === 1 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
@@ -196,10 +195,6 @@ function counter(state, action) {
       return nextState;
     case 'DRAW_CARD':
       return drawCard(state);
-    case 'POPULATE_TABLE':
-      return populateValueTable(state);
-    case 'UPDATE_TABLE':
-      return updateValueTable(state, action.previousState)
     case 'RESTART':
       // Clean up store state.
       let newState = JSON.parse(JSON.stringify(initialState));

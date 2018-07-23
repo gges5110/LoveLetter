@@ -255,7 +255,6 @@ env.allowedActions(s) takes an integer s and returns a list of available actions
 */
 let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [7, 4, 8]);
 $(document).ready(function() {
-  // store.dispatch({type: 'POPULATE_TABLE'});
   reinforcementAI.initialize();
   nextTurn();
 })
