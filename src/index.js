@@ -262,5 +262,6 @@ $(document).ready(function() {
 $('#restart').click(function() {
   console.log('Restart');
   store.dispatch({ type: 'RESTART'});
+  reinforcementAI.lastSAVector = -1; // Should forget about the last move from previous game
   nextTurn();
 });

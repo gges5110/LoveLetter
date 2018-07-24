@@ -53,7 +53,6 @@ export default class ReinforcementAI {
     this.SASizeArr = this.SASizeArr.concat(actionSizeArr);
     this.lastSAVector = -1;
     this.alpha = 0.5;
-    this.test = 1;
   }
 
   initialize() {
