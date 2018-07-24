@@ -1,6 +1,6 @@
 # Love Letter
 [![build status](https://img.shields.io/travis/gges5110/LoveLetter/master.svg)](https://travis-ci.org/gges5110/LoveLetter)
-
+[![Coverage Status](https://coveralls.io/repos/github/gges5110/LoveLetter/badge.svg?branch=master&service=github)](https://coveralls.io/github/gges5110/LoveLetter?branch=master)
 This is a project built to replicate the [Love Letter](https://boardgamegeek.com/boardgame/129622/love-letter) board game, and hosting on GitHub pages.
 
 ### Pre-requisite
