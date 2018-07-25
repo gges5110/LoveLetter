@@ -250,9 +250,9 @@ export default class ReinforcementAI {
   SObjectToSVector(SObject) {
     let ret = [];
     ret.push(SObject.player0dead ? 1 : 0);
-    ret.push(SObject.player0lastCardId);
-    ret.push(SObject.player0holdingCard0);
-    ret.push(SObject.player0holdingCard1);
+    ret.push(SObject.player0lastCardId - 1);
+    ret.push(SObject.player0holdingCard0 - 1);
+    ret.push(SObject.player0holdingCard1 - 1);
     return ret;
   }
 }

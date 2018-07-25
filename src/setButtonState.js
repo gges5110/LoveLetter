@@ -43,6 +43,36 @@ function disablePlayButton() {
   $("#playButton2").prop('disabled', true);
 }
 
+function playButtonOnclick(cardIdx) {
+  $(`#playButton${cardIdx + 1}`).on('click', function () {
+    store.dispatch({type: 'CHOOSE_CARD', cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[cardIdx]});
+    if (store.getState().counter.readyForNextTurn) {
+      store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
+      nextTurn();
+    }
+  });
+}
+
+function playAgainstButtonOnclick(playAgainst) {
+  $(`#playAgainstButton${playAgainst}`).on('click', function() {
+    store.dispatch({type: 'PLAY_AGAINST', playAgainst: playAgainst});
+    if (store.getState().counter.readyForNextTurn) {
+      store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
+      nextTurn();
+    }
+  });
+}
+
+function guardGuessButtonOnclick(guardGuess) {
+  $(`#guardGuessButton${guardGuess}`).on('click', function() {
+    store.dispatch({type: 'GUARD_GUESS', guardGuess: guardGuess});
+    if (store.getState().counter.readyForNextTurn) {
+      store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
+      nextTurn();
+    }
+  });
+}
+
 export {
   disablePlayAgainstButton,
   disableGuardGuessButton,
@@ -50,4 +80,7 @@ export {
   enablePlayButton,
   enablePlayAgainstButton,
   enableGuardGuessButton,
+  playButtonOnclick,
+  playAgainstButtonOnclick,
+  guardGuessButtonOnclick,
 };
