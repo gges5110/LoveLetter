@@ -74,9 +74,7 @@ const initialState = {
       seenCards: [],
     }
   ],
-  firstCard: {
-
-  },
+  firstCard: -1,
   availableCards: {
     'Guard': 5,
     'Priest': 2,

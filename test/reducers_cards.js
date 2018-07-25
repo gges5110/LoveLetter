@@ -53,7 +53,25 @@ describe('Card Resolution', () => {
     expect(nextState.players[1].playedCards.length).to.equal(1);
     expect(nextState.players[1].playedCards[0]).to.deep.equal({cardId: 2, discarded: true, guardGuess: -1, playAgainst: -1})
   });
-  it('[Prince] should draw the first card of the game if there are no cards left in the deck');
+  it('[Prince] should draw the first card of the game if there are no cards left in the deck', () => {
+    let state = JSON.parse(JSON.stringify(initialState));
+    state.players[0].holdingCards.push(5);
+    state.players[1].holdingCards.push(1);
+    state.availableCards = {}
+    state.firstCard = 3;
+    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, playAgainst: 2, guardGuess: -1}});
+    expect(nextState.players[1].holdingCards.length).to.equal(1);
+  });
+  it('[Prince] should not draw the another card if player is dead', () => {
+    let state = JSON.parse(JSON.stringify(initialState));
+    state.players[0].holdingCards.push(5);
+    state.players[1].holdingCards.push(8);
+    state.availableCards = {}
+    state.firstCard = 3;
+    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, playAgainst: 2, guardGuess: -1}});
+    expect(nextState.players[1].dead).to.equal(true);
+    expect(nextState.players[1].holdingCards.length).to.equal(0);
+  });
   it('[King] should swap hands with another player', () => {
     let state = JSON.parse(JSON.stringify(initialState));
     state.players[0].holdingCards.push(3);

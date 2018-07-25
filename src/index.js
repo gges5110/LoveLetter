@@ -1,7 +1,16 @@
 import { counter } from './reducers';
 import { cardNames } from './const';
 import actions from './actions';
-import { disablePlayButton, disablePlayAgainstButton, disableGuardGuessButton, enablePlayButton, enablePlayAgainstButton, enableGuardGuessButton } from './setButtonState';
+import {
+  disablePlayButton,
+  disablePlayAgainstButton,
+  disableGuardGuessButton,
+  enablePlayButton,
+  enablePlayAgainstButton,
+  enableGuardGuessButton,
+  playButtonOnclick,
+  playAgainstButtonOnclick,
+  guardGuessButtonOnclick, } from './setButtonState';
 import { getAvailableCardSize } from './util';
 import ReinforcementAI from './reinforcementAI';
 import randomAI from './randomAI';
@@ -71,7 +80,7 @@ function render() {
     $('#status').text(`Winner is ${store.getState().counter.gameEnds.winner.id}`);
     $(`#playerTitle${store.getState().counter.gameEnds.winner.id}`).attr("class","playerWin");
     for (var i = 0; i < 4; ++i) {
-      if (!store.getState().counter.players[i].dead) {
+      if (!store.getState().counter.players[i].dead && store.getState().counter.players[i].holdingCards[0] !== undefined) {
         $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].holdingCards[0] - 1]}`);
       }
     }
@@ -115,110 +124,6 @@ function renderPlayedCards(playerId, cardIdx) {
 render()
 store.subscribe(render)
 
-$('#playButton1').on('click', function () {
-  store.dispatch({type: 'CHOOSE_CARD', cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[0]});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#playButton2').on('click', function () {
-  store.dispatch({type: 'CHOOSE_CARD', cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[1]});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#playAgainstButton1').on('click', function() {
-  store.dispatch({type: 'PLAY_AGAINST', playAgainst: 1});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#playAgainstButton2').on('click', function() {
-  store.dispatch({type: 'PLAY_AGAINST', playAgainst: 2});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#playAgainstButton3').on('click', function() {
-  store.dispatch({type: 'PLAY_AGAINST', playAgainst: 3});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#playAgainstButton4').on('click', function() {
-  store.dispatch({type: 'PLAY_AGAINST', playAgainst: 4});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#guardGuessButton2').on('click', function() {
-  store.dispatch({type: 'GUARD_GUESS', guardGuess: 2});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#guardGuessButton3').on('click', function() {
-  store.dispatch({type: 'GUARD_GUESS', guardGuess: 3});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#guardGuessButton4').on('click', function() {
-  store.dispatch({type: 'GUARD_GUESS', guardGuess: 4});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#guardGuessButton5').on('click', function() {
-  store.dispatch({type: 'GUARD_GUESS', guardGuess: 5});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#guardGuessButton6').on('click', function() {
-  store.dispatch({type: 'GUARD_GUESS', guardGuess: 6});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#guardGuessButton7').on('click', function() {
-  store.dispatch({type: 'GUARD_GUESS', guardGuess: 7});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
-$('#guardGuessButton8').on('click', function() {
-  store.dispatch({type: 'GUARD_GUESS', guardGuess: 8});
-  if (store.getState().counter.readyForNextTurn) {
-    store.dispatch(actions.playCard(store.getState().counter.cardToPlay));
-    nextTurn();
-  }
-});
-
 function nextTurn() {
   if (store.getState().counter.gameEnds.winner !== null) {
     // Game end
@@ -255,6 +160,19 @@ env.allowedActions(s) takes an integer s and returns a list of available actions
 */
 let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [7, 4, 8]);
 $(document).ready(function() {
+  playButtonOnclick(0);
+  playButtonOnclick(1);
+  playAgainstButtonOnclick(1);
+  playAgainstButtonOnclick(2);
+  playAgainstButtonOnclick(3);
+  playAgainstButtonOnclick(4);
+  guardGuessButtonOnclick(2);
+  guardGuessButtonOnclick(3);
+  guardGuessButtonOnclick(4);
+  guardGuessButtonOnclick(5);
+  guardGuessButtonOnclick(6);
+  guardGuessButtonOnclick(7);
+  guardGuessButtonOnclick(8);
   reinforcementAI.initialize();
   nextTurn();
 })
