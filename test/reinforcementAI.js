@@ -20,15 +20,15 @@ describe('ReinforcementAI.public functions', () => {
       cardId: 3
     });
     state.players[1].dead = false;
-    state.players[1].holdingCards.push(1);
-    state.players[1].holdingCards.push(1);
+    state.players[1].holdingCards.push(3);
+    state.players[1].holdingCards.push(8);
 
     let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     reinforcementAI.initialize();
 
     let card = reinforcementAI.getBestAction(state);
     console.log(card);
-    expect(card.cardId).to.equal(1);
+    expect(card.cardId).to.oneOf([3, 8]);
     expect(card.playAgainst).to.be.oneOf([2, 3, 4]);
     expect(card.guardGuess).to.be.oneOf([2, 3, 4, 5, 6, 7, 8]);
   })
@@ -61,13 +61,12 @@ describe('ReinforcementAI.private functions', () => {
     let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     let SVector = reinforcementAI.SObjectToSVector({
       player0dead: true,
-      player0lastCardId: 6,
-      player0holdingCard0: 5,
-      player0holdingCard1: 0
+      player0lastCardId: 7,
+      player0holdingCard0: 6,
+      player0holdingCard1: 1
     });
 
     expect(SVector).to.deep.equal([1, 6, 5, 0]);
-    // expect(reinforcementAI.totalSALength()).to.equal(258048);
   })
 
   it('generateActionVectors', () => {
@@ -102,6 +101,14 @@ describe('ReinforcementAI.private functions', () => {
     let SAVector = reinforcementAI.getMaxQValueSAVectorGivenSAVectors(SAVectors);
     expect(SAVector).to.deep.be.oneOf(SAVectors);
   });
+
+  it('getQValue', () => {
+    let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
+    reinforcementAI.initialize();
+    let qValue = reinforcementAI.getQValue([1, 8, 7, 7, 7, 3, 6]);
+    expect(qValue).to.be.lessThan(1);
+    expect(qValue).to.be.greaterThan(0);
+  })
 
   it('combineSAVectors', () => {
     let SVector = [1, 6, 5, 1];
