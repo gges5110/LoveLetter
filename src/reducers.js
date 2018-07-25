@@ -14,7 +14,8 @@ import {
   addSeenCards,
   getAvailableCardSize,
   setPlayerDead,
-  checkNotDeadAndNotProtected } from './util';
+  checkNotDeadAndNotProtected,
+  addHoldingCards } from './util';
 
 function resolve(state, cardToPlay) {
   if (cardToPlay.cardId === 1 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
@@ -57,17 +58,20 @@ function resolve(state, cardToPlay) {
       discarded: true
     });
 
-    if (getAvailableCardSize(state.availableCards) === 0) {
-      // Give the hidden card to player
-    } else {
-      nextState = drawCardForPlayer(nextState, cardToPlay.playAgainst);
-    }
-
     if (cardToDiscard === 8) {
       nextState.players = Object.assign(nextState.players, {[cardToPlay.playAgainst - 1]: Object.assign({}, nextState.players[cardToPlay.playAgainst - 1], {
         dead: true
       })});
+      return nextState;
     }
+
+    if (getAvailableCardSize(state.availableCards) === 0) {
+      // Give the hidden card to player
+      nextState.players = addHoldingCards(nextState.players, cardToPlay.playAgainst, nextState.firstCard);
+    } else {
+      nextState = drawCardForPlayer(nextState, cardToPlay.playAgainst);
+    }
+
     return nextState;
   } else if (cardToPlay.cardId === 6 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
     let nextState = Object.assign({}, state);
@@ -98,6 +102,9 @@ function counter(state, action) {
     // Setup and draw cards.
     // Discard a card at the start of the game.
     let randomCardId = getRandomCard(newState.availableCards);
+    newState = Object.assign({}, newState, {
+      firstCard: randomCardId
+    });
     newState.availableCards[cardNames[randomCardId - 1]]--;
 
     newState = drawCardForPlayer(newState, 1);
@@ -201,6 +208,9 @@ function counter(state, action) {
       // Setup and draw cards.
       // Discard a card at the start of the game.
       let randomCardId = getRandomCard(newState.availableCards);
+      newState = Object.assign({}, newState, {
+        firstCard: randomCardId
+      });
       newState.availableCards[cardNames[randomCardId - 1]]--;
 
       newState = drawCardForPlayer(newState, 1);
