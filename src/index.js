@@ -160,19 +160,19 @@ env.allowedActions(s) takes an integer s and returns a list of available actions
 */
 let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [7, 4, 8]);
 $(document).ready(function() {
-  playButtonOnclick(0);
-  playButtonOnclick(1);
-  playAgainstButtonOnclick(1);
-  playAgainstButtonOnclick(2);
-  playAgainstButtonOnclick(3);
-  playAgainstButtonOnclick(4);
-  guardGuessButtonOnclick(2);
-  guardGuessButtonOnclick(3);
-  guardGuessButtonOnclick(4);
-  guardGuessButtonOnclick(5);
-  guardGuessButtonOnclick(6);
-  guardGuessButtonOnclick(7);
-  guardGuessButtonOnclick(8);
+  playButtonOnclick(store, 0, nextTurn);
+  playButtonOnclick(store, 1, nextTurn);
+  playAgainstButtonOnclick(store, 1, nextTurn);
+  playAgainstButtonOnclick(store, 2, nextTurn);
+  playAgainstButtonOnclick(store, 3, nextTurn);
+  playAgainstButtonOnclick(store, 4, nextTurn);
+  guardGuessButtonOnclick(store, 2, nextTurn);
+  guardGuessButtonOnclick(store, 3, nextTurn);
+  guardGuessButtonOnclick(store, 4, nextTurn);
+  guardGuessButtonOnclick(store, 5, nextTurn);
+  guardGuessButtonOnclick(store, 6, nextTurn);
+  guardGuessButtonOnclick(store, 7, nextTurn);
+  guardGuessButtonOnclick(store, 8, nextTurn);
   reinforcementAI.initialize();
   nextTurn();
 })
