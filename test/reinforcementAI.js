@@ -20,16 +20,15 @@ describe('ReinforcementAI.public functions', () => {
       cardId: 3
     });
     state.players[1].dead = false;
-    state.players[1].holdingCards.push(3);
+    state.players[1].holdingCards.push(4);
     state.players[1].holdingCards.push(8);
 
     let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     reinforcementAI.initialize();
 
     let card = reinforcementAI.getBestAction(state);
-    console.log(card);
-    expect(card.cardId).to.oneOf([3, 8]);
-    expect(card.playAgainst).to.be.oneOf([2, 3, 4]);
+    expect(card.cardId).to.oneOf([4, 8]);
+    expect(card.playAgainst).to.be.oneOf([1]);
     expect(card.guardGuess).to.be.oneOf([2, 3, 4, 5, 6, 7, 8]);
   })
 
@@ -46,7 +45,6 @@ describe('ReinforcementAI.public functions', () => {
     reinforcementAI.initialize();
 
     let card = reinforcementAI.getBestAction(state);
-    console.log(card);
     expect(card.cardId).to.equal(1);
     expect(card.playAgainst).to.be.oneOf([2, 3, 4]);
     expect(card.guardGuess).to.be.oneOf([2, 3, 4, 5, 6, 7, 8]);
