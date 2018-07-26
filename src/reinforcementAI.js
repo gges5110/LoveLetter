@@ -94,13 +94,13 @@ export default class ReinforcementAI {
     var playAgainst = [], guess = [];
     // SObject.player0card0
     if (SObject.player0holdingCard0 === 1) {
-      playAgainst = [2, 3, 4];
+      playAgainst = [1, 3, 4]; // assume RF AI is player 2
       guess = [2, 3, 4, 5, 6, 7, 8];
     } else if (SObject.player0holdingCard0 === 8 || SObject.player0holdingCard0 === 7 || SObject.player0holdingCard0 === 4) {
-      playAgainst = [1];
+      playAgainst = [2]; // assume RF AI is player 2
       guess = [2, 3, 4, 5, 6, 7, 8];
     } else {
-      playAgainst = [2, 3, 4];
+      playAgainst = [1, 3, 4]; // assume RF AI is player 2
       guess = [2, 3, 4, 5, 6, 7, 8];
     }
     AVectors = AVectors.concat(this.generateActionVectors(SObject.player0holdingCard0, playAgainst, guess));
@@ -108,13 +108,13 @@ export default class ReinforcementAI {
 
     // SObject.player0card1
     if (SObject.player0holdingCard1 === 1) {
-      playAgainst = [2, 3, 4];
+      playAgainst = [1, 3, 4]; // assume RF AI is player 2
       guess = [2, 3, 4, 5, 6, 7, 8];
     } else if (SObject.player0holdingCard1 === 8 || SObject.player0holdingCard1 === 7 || SObject.player0holdingCard1 === 4) {
-      playAgainst = [1];
+      playAgainst = [2]; // assume RF AI is player 2
       guess = [];
     } else {
-      playAgainst = [2, 3, 4];
+      playAgainst = [1, 3, 4]; // assume RF AI is player 2
       guess = [];
     }
     AVectors = AVectors.concat(this.generateActionVectors(SObject.player0holdingCard1, playAgainst, guess));
