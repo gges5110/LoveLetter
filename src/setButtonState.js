@@ -1,3 +1,4 @@
+import actions from './actions';
 function enableGuardGuessButton() {
   $("#guardGuessButton2").prop('disabled', false);
   $("#guardGuessButton3").prop('disabled', false);
@@ -43,7 +44,7 @@ function disablePlayButton() {
   $("#playButton2").prop('disabled', true);
 }
 
-function playButtonOnclick(cardIdx) {
+function playButtonOnclick(store, cardIdx, nextTurn) {
   $(`#playButton${cardIdx + 1}`).on('click', function () {
     store.dispatch({type: 'CHOOSE_CARD', cardId: store.getState().counter.players[store.getState().counter.currentPlayerId - 1].holdingCards[cardIdx]});
     if (store.getState().counter.readyForNextTurn) {
@@ -53,7 +54,7 @@ function playButtonOnclick(cardIdx) {
   });
 }
 
-function playAgainstButtonOnclick(playAgainst) {
+function playAgainstButtonOnclick(store, playAgainst, nextTurn) {
   $(`#playAgainstButton${playAgainst}`).on('click', function() {
     store.dispatch({type: 'PLAY_AGAINST', playAgainst: playAgainst});
     if (store.getState().counter.readyForNextTurn) {
@@ -63,7 +64,7 @@ function playAgainstButtonOnclick(playAgainst) {
   });
 }
 
-function guardGuessButtonOnclick(guardGuess) {
+function guardGuessButtonOnclick(store, guardGuess, nextTurn) {
   $(`#guardGuessButton${guardGuess}`).on('click', function() {
     store.dispatch({type: 'GUARD_GUESS', guardGuess: guardGuess});
     if (store.getState().counter.readyForNextTurn) {
