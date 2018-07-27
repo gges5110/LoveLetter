@@ -61,7 +61,7 @@ export default class ReinforcementAI {
 
   getBestAction(reduxState) {
     let SObject = this.reduxStateToSObject(reduxState);
-    let allowedSAVectors = this.allowedSAVectors(SObject);
+    let allowedSAVectors = this.allowedSAVectors(SObject,reduxState);
     let bestSAVector = this.getMaxQValueSAVectorGivenSAVectors(allowedSAVectors);
     this.lastSAVector = bestSAVector;
     return this.SAVectorToActionObject(bestSAVector);
@@ -69,7 +69,7 @@ export default class ReinforcementAI {
 
   learn(nextReduxState) {
     let nextSObject = this.reduxStateToSObject(nextReduxState);
-    let allowedSAIndicies = this.allowedSAVectors(nextSObject);
+    let allowedSAIndicies = this.allowedSAVectors(nextSObject,nextReduxState);
     let max_A = this.getMaxQValueGivenSAVectors(allowedSAIndicies);
     this.QValueTable[this.lastSAVector] = this.QValueTable[this.lastSAVector] +
       this.alpha * [this.reward(nextSObject) + max_A - this.QValueTable[this.lastSAVector]]
@@ -84,38 +84,42 @@ export default class ReinforcementAI {
     player0holdingCard1: reduxState.players[0].holdingCards[1],
   }
   */
-  allowedSAVectors(SObject) {
+  allowedSAVectors(SObject,reduxState) {
     // Represent index as 1d vector, math.subset([[0, 1], [2, 3]], math.index(1, 0)) // 2
     let SVector = this.SObjectToSVector(SObject);
     let AVectors = [], SAIndicies = [];
     if (SObject.player0dead) {
       return as;
     }
-    var playAgainst = [], guess = [];
+    var playAgainst = [1, 2, 3, 4], guess = [2, 3, 4, 5, 6, 7, 8];
+    var playerID = playAgainst.indexOf(reduxState.currentPlayerId);
+    // Remove players who are dead or protected
+    for (var i = reduxState.players.length-1; i > -1; i--){
+    	if (reduxState.players[i].dead || reduxState.players[i].protected){
+    		playAgainst.splice(i,1);
+    		playerID = playAgainst.indexOf(reduxState.currentPlayerId);
+    	}    	
+    }
+    var playAgainst2 = playAgainst.slice();
     // SObject.player0card0
     if (SObject.player0holdingCard0 === 1) {
-      playAgainst = [1, 3, 4]; // assume RF AI is player 2
-      guess = [2, 3, 4, 5, 6, 7, 8];
+      playAgainst.splice(playerID, 1); // remove self player ID
     } else if (SObject.player0holdingCard0 === 8 || SObject.player0holdingCard0 === 7 || SObject.player0holdingCard0 === 4) {
-      playAgainst = [2]; // assume RF AI is player 2
-      guess = [2, 3, 4, 5, 6, 7, 8];
+      playAgainst = [reduxState.currentPlayerId];
     } else {
-      playAgainst = [1, 3, 4]; // assume RF AI is player 2
-      guess = [2, 3, 4, 5, 6, 7, 8];
+      playAgainst.splice(playerID, 1); // remove self player ID
     }
     AVectors = AVectors.concat(this.generateActionVectors(SObject.player0holdingCard0, playAgainst, guess));
     let actionObjects1 = this.AIndiciesToActionObjects(AVectors);
 
     // SObject.player0card1
+    playAgainst = playAgainst2;
     if (SObject.player0holdingCard1 === 1) {
-      playAgainst = [1, 3, 4]; // assume RF AI is player 2
-      guess = [2, 3, 4, 5, 6, 7, 8];
+      playAgainst.splice(playerID, 1); // remove self player ID
     } else if (SObject.player0holdingCard1 === 8 || SObject.player0holdingCard1 === 7 || SObject.player0holdingCard1 === 4) {
-      playAgainst = [2]; // assume RF AI is player 2
-      guess = [];
+      playAgainst = [reduxState.currentPlayerId];
     } else {
-      playAgainst = [1, 3, 4]; // assume RF AI is player 2
-      guess = [];
+      playAgainst.splice(playerID, 1); // remove self player ID
     }
     AVectors = AVectors.concat(this.generateActionVectors(SObject.player0holdingCard1, playAgainst, guess));
     let actionObjects2 = this.AIndiciesToActionObjects(AVectors);
