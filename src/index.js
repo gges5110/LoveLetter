@@ -12,8 +12,8 @@ import {
   playAgainstButtonOnclick,
   guardGuessButtonOnclick, } from './setButtonState';
 import { getAvailableCardSize } from './util';
-import ReinforcementAI from './reinforcementAI';
-import randomAI from './randomAI';
+import ReinforcementAI from './AI/reinforcementAI';
+import randomAI from './AI/randomAI';
 
 var store = Redux.createStore(Redux.combineReducers({counter}),
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
@@ -132,7 +132,7 @@ function nextTurn() {
     // RL AI move
     setTimeout(function() {
       // Update Value Table, if not the first time
-      store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+      store.dispatch(actions.drawCard(store.getState().counter.currentPlayerId));
       reinforcementAI.learn(store.getState().counter);
       let reinforcementAICard = reinforcementAI.getBestAction(store.getState().counter);
       store.dispatch(actions.playCard(reinforcementAICard));
@@ -142,13 +142,13 @@ function nextTurn() {
     // Random AI move
     // Disable buttons
     setTimeout(function() {
-      store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+      store.dispatch(actions.drawCard(store.getState().counter.currentPlayerId));
       let randomAICard = randomAI(store.getState().counter.players, store.getState().counter.currentPlayerId);
       store.dispatch(actions.playCard(randomAICard));
       nextTurn();
     }, 1000);
   } else {
-    store.dispatch({ type: 'DRAW_CARD', player: store.getState().counter.currentPlayerId});
+    store.dispatch(actions.drawCard(store.getState().counter.currentPlayerId));
     // Wait for human input
   }
 }
@@ -175,6 +175,21 @@ $(document).ready(function() {
   guardGuessButtonOnclick(store, 8, nextTurn);
   reinforcementAI.initialize();
   nextTurn();
+})
+
+$('#evaluation').click(function() {
+  $('#evaluation').addClass("disabled");
+  console.log('Eval');
+  // Swap out this mock with actual win rate calculation with simulating games.
+  // Play one game.
+  setTimeout(function() {
+    console.log('Eval end');
+    $('#evaluation').removeClass("disabled");
+    $('#win-rate-1').text(Math.ceil(Math.random() * 10000) / 100)
+    $('#win-rate-2').text(Math.ceil(Math.random() * 10000) / 100)
+    $('#win-rate-3').text(Math.ceil(Math.random() * 10000) / 100)
+    $('#win-rate-4').text(Math.ceil(Math.random() * 10000) / 100)
+  }, 1000);
 })
 
 $('#restart').click(function() {
