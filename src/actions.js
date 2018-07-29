@@ -11,3 +11,10 @@ var discardCard = exports.discardCard = function discardCard(card) {
     card: card
   };
 }
+
+var drawCard = exports.drawCard = function drawCard(player) {
+  return {
+    type: 'DRAW_CARD',
+    player: player
+  }
+}
