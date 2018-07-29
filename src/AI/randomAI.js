@@ -1,4 +1,4 @@
-import { getNonDeadNonProtectedPlayers } from './util';
+import { getNonDeadNonProtectedPlayers } from '../util.js';
 export default function randomAI(players, playerId) {
   let cardId;
   if (players[playerId - 1].holdingCards.indexOf(4) !== -1) {

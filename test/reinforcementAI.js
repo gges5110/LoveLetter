@@ -1,5 +1,5 @@
 import chai from 'chai';
-import ReinforcementAI from '../src/reinforcementAI';
+import ReinforcementAI from '../src/AI/reinforcementAI';
 import { initialState } from '../src/const';
 import math from 'mathjs';
 
