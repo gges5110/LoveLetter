@@ -21,7 +21,6 @@ function calculateWinner(players) {
       if (winnerId == -1) {
         winnerId = player.id;
       } else {
-        // console.log(`Comparing ${players[winnerId - 1].holdingCards[0]} with ${player.holdingCards[0]}`);
         if (players[winnerId - 1].holdingCards[0] < player.holdingCards[0]) {
           winnerId = player.id;
         }
@@ -190,12 +189,13 @@ function checkNotDeadAndNotProtected(state, playerId) {
   return playerId > 0 && playerId < 5 && !state.players[playerId - 1].dead && !state.players[playerId - 1].protected;
 }
 
-function setPlayerDead(state, playerId) {
-  return Object.assign({}, state, {
-    players: Object.assign([], state.players, {
-      [playerId - 1]: Object.assign({}, state.players[playerId - 1], {
-        dead: true
-      })
+function setPlayerDead(players, playerId) {
+  let nextPlayers = Object.assign([], players);
+  nextPlayers = addHoldingCards(nextPlayers, playerId, nextPlayers[playerId - 1].holdingCards[0]);
+  nextPlayers = discardCard(nextPlayers, playerId, { cardId: nextPlayers[playerId - 1].holdingCards[0]});
+  return Object.assign([], nextPlayers, {
+    [playerId - 1]: Object.assign({}, nextPlayers[playerId - 1], {
+      dead: true
     })
   })
 }

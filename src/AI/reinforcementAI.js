@@ -89,40 +89,30 @@ export default class ReinforcementAI {
     let SVector = this.SObjectToSVector(SObject);
     let AVectors = [], SAIndicies = [];
     if (SObject.player0dead) {
-      return as;
+      return [];
     }
-    var playAgainst = [1, 2, 3, 4], guess = [2, 3, 4, 5, 6, 7, 8];
+    let playAgainst = [1, 2, 3, 4], guess = [2, 3, 4, 5, 6, 7, 8];
     // Remove players who are dead or protected
-    for (var i = playerStatus.length-1; i > -1; i--){
-      if (playerStatus[i].dead || playerStatus[i].protected){
-    		playAgainst.splice(i,1);    		
-      }    	
+    for (let i = playerStatus.length - 1; i > -1; i--) {
+      if (playerStatus[i].dead || playerStatus[i].protected) {
+        playAgainst.splice(i, 1);
+      }
     }
-    var playerID_ind = playAgainst.indexOf(currentPlayerId);
-    var playAgainst_copy = playAgainst.slice();
-    // SObject.player0card0
-    if (SObject.player0holdingCard0 === 1) {
-      playAgainst.splice(playerID_ind, 1); // remove self player ID
-    } else if (SObject.player0holdingCard0 === 8 || SObject.player0holdingCard0 === 7 || SObject.player0holdingCard0 === 4) {
-      playAgainst = [currentPlayerId];
-    } else {
-      playAgainst.splice(playerID_ind, 1); // remove self player ID
-    }
-    AVectors = AVectors.concat(this.generateActionVectors(SObject.player0holdingCard0, playAgainst, guess));
-    let actionObjects1 = this.AIndiciesToActionObjects(AVectors);
-
-    // SObject.player0card1
-    playAgainst = playAgainst_copy;
-    if (SObject.player0holdingCard1 === 1) {
-      playAgainst.splice(playerID_ind, 1); // remove self player ID
-    } else if (SObject.player0holdingCard1 === 8 || SObject.player0holdingCard1 === 7 || SObject.player0holdingCard1 === 4) {
-      playAgainst = [currentPlayerId];
-    } else {
-      playAgainst.splice(playerID_ind, 1); // remove self player ID
-    }
-    AVectors = AVectors.concat(this.generateActionVectors(SObject.player0holdingCard1, playAgainst, guess));
-    let actionObjects2 = this.AIndiciesToActionObjects(AVectors);
+    playAgainst.splice(playAgainst.indexOf(currentPlayerId), 1);
+    const opponents=  playAgainst;
+    AVectors = AVectors.concat(this.allowedAVectors(SObject.player0holdingCard0, guess, currentPlayerId, opponents));
+    AVectors = AVectors.concat(this.allowedAVectors(SObject.player0holdingCard1, guess, currentPlayerId, opponents));
     return this.combineSAVectors(SVector, AVectors);
+  }
+
+  allowedAVectors(holdingCard, guess, currentPlayerId, opponents) {
+    let playAgainst = [];
+    if ([4, 7, 8].indexOf(holdingCard) !== -1) {
+      playAgainst = [currentPlayerId];
+    } else {
+      playAgainst = opponents;
+    }
+    return this.generateActionVectors(holdingCard, playAgainst, guess);
   }
 
   // For debugging
