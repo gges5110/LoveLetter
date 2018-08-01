@@ -20,7 +20,9 @@ import {
 function resolve(state, cardToPlay) {
   if (cardToPlay.cardId === 1 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
     if (cardToPlay.guardGuess === state.players[cardToPlay.playAgainst - 1].holdingCards[0]) {
-      return setPlayerDead(state, cardToPlay.playAgainst);
+      let nextState = Object.assign({}, state);
+      nextState.players = setPlayerDead(nextState.players, cardToPlay.playAgainst);
+      return nextState;
     } else {
       return state;
     }
@@ -35,9 +37,13 @@ function resolve(state, cardToPlay) {
     let cardValue1 = state.players[state.currentPlayerId - 1].holdingCards[0];
     let cardValue2 = state.players[cardToPlay.playAgainst - 1].holdingCards[0];
     if (cardValue1 > cardValue2) {
-      return setPlayerDead(state, cardToPlay.playAgainst);
+      let nextState = Object.assign({}, state);
+      nextState.players = setPlayerDead(state.players, cardToPlay.playAgainst);
+      return nextState;
     } else if (cardValue1 < cardValue2) {
-      return setPlayerDead(state, state.currentPlayerId);
+      let nextState = Object.assign({}, state);
+      nextState.players = setPlayerDead(state.players, state.currentPlayerId);
+      return nextState;
     } else {
       return state;
     }
@@ -59,9 +65,7 @@ function resolve(state, cardToPlay) {
     });
 
     if (cardToDiscard === 8) {
-      nextState.players = Object.assign(nextState.players, {[cardToPlay.playAgainst - 1]: Object.assign({}, nextState.players[cardToPlay.playAgainst - 1], {
-        dead: true
-      })});
+      nextState.players = setPlayerDead(nextState.players, cardToPlay.playAgainst);
       return nextState;
     }
 
@@ -84,11 +88,9 @@ function resolve(state, cardToPlay) {
     })})
     return nextState;
   } else if (cardToPlay.cardId === 8) {
-    return Object.assign({}, state, {
-      players: Object.assign([], state.players, { [state.currentPlayerId - 1]: Object.assign({}, state.players[state.currentPlayerId - 1], {
-        dead: true
-      })})
-    });
+    let nextState = Object.assign({}, state);
+    nextState.players = setPlayerDead(state.players, state.currentPlayerId);
+    return nextState;
   } else {
     return state;
   }

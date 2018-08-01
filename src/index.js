@@ -1,5 +1,6 @@
 import { counter } from './reducers';
 import { cardNames } from './const';
+import { createStore, combineReducers } from 'redux';
 import actions from './actions';
 import {
   disablePlayButton,
@@ -14,8 +15,9 @@ import {
 import { getAvailableCardSize } from './util';
 import ReinforcementAI from './AI/reinforcementAI';
 import randomAI from './AI/randomAI';
+import Evaluation from './AI/evaluate';
 
-var store = Redux.createStore(Redux.combineReducers({counter}),
+var store = createStore(combineReducers({counter}),
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 function render() {
@@ -64,7 +66,7 @@ function render() {
   for (let i = 0; i < 4; ++i) {
     if (store.getState().counter.players[i].dead) {
       $(`#playerTitle${i + 1}`).attr("class","playerDead");
-      $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].holdingCards[0] - 1]}`);
+      $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].playedCards[store.getState().counter.players[i].playedCards.length - 1] - 1]}`);
     } else {
       $(`#playerTitle${i + 1}`).text(`Player ${i + 1}`);
     }
@@ -158,7 +160,7 @@ env.getNumStates() returns an integer of total number of states
 env.getMaxNumActions() returns an integer with max number of actions in any state
 env.allowedActions(s) takes an integer s and returns a list of available actions, which should be integers from zero to maxNumActions
 */
-let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [7, 4, 8]);
+let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
 $(document).ready(function() {
   playButtonOnclick(store, 0, nextTurn);
   playButtonOnclick(store, 1, nextTurn);
@@ -179,21 +181,18 @@ $(document).ready(function() {
 
 $('#evaluation').click(function() {
   $('#evaluation').addClass("disabled");
-  console.log('Eval');
-  // Swap out this mock with actual win rate calculation with simulating games.
-  // Play one game.
-  setTimeout(function() {
-    console.log('Eval end');
-    $('#evaluation').removeClass("disabled");
-    $('#win-rate-1').text(Math.ceil(Math.random() * 10000) / 100)
-    $('#win-rate-2').text(Math.ceil(Math.random() * 10000) / 100)
-    $('#win-rate-3').text(Math.ceil(Math.random() * 10000) / 100)
-    $('#win-rate-4').text(Math.ceil(Math.random() * 10000) / 100)
-  }, 1000);
+  let evaluation = new Evaluation();
+    // Play one game.
+  let result = evaluation.start(2);
+
+  $('#evaluation').removeClass("disabled");
+  $('#win-rate-1').text(result.winRate[0]);
+  $('#win-rate-2').text(result.winRate[1]);
+  $('#win-rate-3').text(result.winRate[2]);
+  $('#win-rate-4').text(result.winRate[3]);
 })
 
 $('#restart').click(function() {
-  console.log('Restart');
   store.dispatch({ type: 'RESTART'});
   reinforcementAI.lastSAVector = -1; // Should forget about the last move from previous game
   nextTurn();
