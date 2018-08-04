@@ -123,8 +123,8 @@ function renderPlayedCards(playerId, cardIdx) {
     $(`#playerPlayedList${playerId + 1}`).append(`<li class="item">${string}</li>`);
   }
 }
-render()
-store.subscribe(render)
+render();
+store.subscribe(render);
 
 function nextTurn() {
   if (store.getState().counter.gameEnds.winner !== null) {
