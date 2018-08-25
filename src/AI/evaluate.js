@@ -1,12 +1,9 @@
-import { counter } from '../reducers';
-import { createStore, combineReducers } from 'redux';
 import ReinforcementAI from './reinforcementAI';
 import Game from "../game";
 
 export default class Evaluation {
   constructor() {
-    this.store = createStore(combineReducers({counter}));
-    this.game = new Game(4);
+    this.game = new Game(4, null, 1);
     let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     reinforcementAI.initialize();
     this.game.setPlayer(2, reinforcementAI);

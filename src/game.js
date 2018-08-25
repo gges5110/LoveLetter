@@ -6,9 +6,9 @@ import ReinforcementAI from "./AI/reinforcementAI";
 import HumanPlayer from "./AI/human";
 
 export default class Game {
-  constructor(players) {
+  constructor(players, store, timeout) {
     this.computerPlayers = Array(players);
-    this.store = createStore(combineReducers({counter}));
+    this.store = store || createStore(combineReducers({counter}));
 
     // Player 1
     this.setPlayer(1, new RandomAI());
@@ -22,6 +22,7 @@ export default class Game {
     this.setPlayer(4, new RandomAI());
 
     this.play = this.play.bind(this);
+    this.timeout = timeout || 1000;
 
     this.nextTurn = this.nextTurn.bind(this);
   }
@@ -53,7 +54,9 @@ export default class Game {
     if (this.store.getState().counter.gameEnds.winner !== null) {
       // Game end
       console.log('Game Ends');
-      resolve(this.getWinnerId());
+      if (resolve) {
+        resolve(this.getWinnerId());
+      }
       return;
     } else if (this.store.getState().counter.players[this.store.getState().counter.currentPlayerId - 1].dead) {
       // Skip dead players
@@ -67,7 +70,7 @@ export default class Game {
           // Wait until the human response, let UI call this.nextTurn() directly.
           break;
         case ReinforcementAI:
-          this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
+          // this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
           currentPlayer.learn(this.store.getState().counter);
           let reinforcementAICard = currentPlayer.getBestAction(this.store.getState().counter);
           this.store.dispatch(actions.playCard(reinforcementAICard));
@@ -76,11 +79,11 @@ export default class Game {
         case RandomAI:
           // Random AI move
           setTimeout(function() {
-            this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
+            // this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
             let randomAICard = currentPlayer.getAction(this.store.getState().counter.players, this.store.getState().counter.currentPlayerId);
             this.store.dispatch(actions.playCard(randomAICard));
             this.nextTurn(resolve);
-          }.bind(this), 1000);
+          }.bind(this), this.timeout);
         default:
           return;
       }
