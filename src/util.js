@@ -140,7 +140,9 @@ function drawCardForPlayer(previousState, playerId) {
   let randomCardId = getRandomCard(previousState.availableCards);
   // Remove the cardDrew from availableCards
   let arr = Object.assign({}, previousState.availableCards);
-  arr[cardNames[randomCardId - 1]]--;
+  if (arr[cardNames[randomCardId - 1]] !== undefined) {
+    arr[cardNames[randomCardId - 1]]--;
+  }
 
   return Object.assign({}, previousState, {
     players: addHoldingCards(previousState.players, playerId, randomCardId),

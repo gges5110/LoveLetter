@@ -1,7 +1,6 @@
 import { counter } from './reducers';
 import { cardNames } from './const';
 import { createStore, combineReducers } from 'redux';
-import actions from './actions';
 import {
   disablePlayButton,
   disablePlayAgainstButton,
@@ -14,8 +13,9 @@ import {
   guardGuessButtonOnclick, } from './setButtonState';
 import { getAvailableCardSize } from './util';
 import ReinforcementAI from './AI/reinforcementAI';
-import randomAI from './AI/randomAI';
 import Evaluation from './AI/evaluate';
+import Game from "./game";
+import HumanPlayer from "./AI/human";
 
 var store = createStore(combineReducers({counter}),
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
@@ -123,77 +123,57 @@ function renderPlayedCards(playerId, cardIdx) {
     $(`#playerPlayedList${playerId + 1}`).append(`<li class="item">${string}</li>`);
   }
 }
-render()
-store.subscribe(render)
-
-function nextTurn() {
-  if (store.getState().counter.gameEnds.winner !== null) {
-    // Game end
-    return;
-  } else if (store.getState().counter.currentPlayerId === 2 && store.getState().counter.players[1].dead === false) {
-    // RL AI move
-    setTimeout(function() {
-      // Update Value Table, if not the first time
-      store.dispatch(actions.drawCard(store.getState().counter.currentPlayerId));
-      reinforcementAI.learn(store.getState().counter);
-      let reinforcementAICard = reinforcementAI.getBestAction(store.getState().counter);
-      store.dispatch(actions.playCard(reinforcementAICard));
-      nextTurn();
-    }, 1000);
-  } else if (store.getState().counter.currentPlayerId !== 1 || store.getState().counter.players[0].dead) {
-    // Random AI move
-    // Disable buttons
-    setTimeout(function() {
-      store.dispatch(actions.drawCard(store.getState().counter.currentPlayerId));
-      let randomAICard = randomAI(store.getState().counter.players, store.getState().counter.currentPlayerId);
-      store.dispatch(actions.playCard(randomAICard));
-      nextTurn();
-    }, 1000);
-  } else {
-    store.dispatch(actions.drawCard(store.getState().counter.currentPlayerId));
-    // Wait for human input
-  }
-}
+render();
+store.subscribe(render);
 
 /*
 env.getNumStates() returns an integer of total number of states
 env.getMaxNumActions() returns an integer with max number of actions in any state
 env.allowedActions(s) takes an integer s and returns a list of available actions, which should be integers from zero to maxNumActions
 */
-let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
+let game;
+
 $(document).ready(function() {
-  playButtonOnclick(store, 0, nextTurn);
-  playButtonOnclick(store, 1, nextTurn);
-  playAgainstButtonOnclick(store, 1, nextTurn);
-  playAgainstButtonOnclick(store, 2, nextTurn);
-  playAgainstButtonOnclick(store, 3, nextTurn);
-  playAgainstButtonOnclick(store, 4, nextTurn);
-  guardGuessButtonOnclick(store, 2, nextTurn);
-  guardGuessButtonOnclick(store, 3, nextTurn);
-  guardGuessButtonOnclick(store, 4, nextTurn);
-  guardGuessButtonOnclick(store, 5, nextTurn);
-  guardGuessButtonOnclick(store, 6, nextTurn);
-  guardGuessButtonOnclick(store, 7, nextTurn);
-  guardGuessButtonOnclick(store, 8, nextTurn);
+  game = new Game(4, store);
+
+  playButtonOnclick(store, 0, game.nextTurn);
+  playButtonOnclick(store, 1, game.nextTurn);
+  playAgainstButtonOnclick(store, 1, game.nextTurn);
+  playAgainstButtonOnclick(store, 2, game.nextTurn);
+  playAgainstButtonOnclick(store, 3, game.nextTurn);
+  playAgainstButtonOnclick(store, 4, game.nextTurn);
+  guardGuessButtonOnclick(store, 2, game.nextTurn);
+  guardGuessButtonOnclick(store, 3, game.nextTurn);
+  guardGuessButtonOnclick(store, 4, game.nextTurn);
+  guardGuessButtonOnclick(store, 5, game.nextTurn);
+  guardGuessButtonOnclick(store, 6, game.nextTurn);
+  guardGuessButtonOnclick(store, 7, game.nextTurn);
+  guardGuessButtonOnclick(store, 8, game.nextTurn);
+
+  let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
   reinforcementAI.initialize();
-  nextTurn();
+  game.setPlayer(2, reinforcementAI);
+  game.setPlayer(1, new HumanPlayer());
+  game.start();
 })
 
 $('#evaluation').click(function() {
   $('#evaluation').addClass("disabled");
   let evaluation = new Evaluation();
-    // Play one game.
-  let result = evaluation.start(2);
-
-  $('#evaluation').removeClass("disabled");
-  $('#win-rate-1').text(result.winRate[0]);
-  $('#win-rate-2').text(result.winRate[1]);
-  $('#win-rate-3').text(result.winRate[2]);
-  $('#win-rate-4').text(result.winRate[3]);
-})
+  // Play one game.
+  evaluation.start().then(function(result) {
+    console.log(result); // "Stuff worked!"
+    $('#evaluation').removeClass("disabled");
+    $('#win-rate-1').text(result.winRate[0]);
+    $('#win-rate-2').text(result.winRate[1]);
+    $('#win-rate-3').text(result.winRate[2]);
+    $('#win-rate-4').text(result.winRate[3]);
+  }, function(err) {
+    console.log(err); // Error: "It broke"
+  });
+});
 
 $('#restart').click(function() {
-  store.dispatch({ type: 'RESTART'});
-  reinforcementAI.lastSAVector = -1; // Should forget about the last move from previous game
-  nextTurn();
+  game.start();
+  // reinforcementAI.lastSAVector = -1; // Should forget about the last move from previous game
 });
