@@ -11,7 +11,11 @@ module.exports = {
   devServer: {
     hot: true,
     historyApiFallback: true,
+    publicPath: '/build/',
   },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+  ],
   module: {
     rules: [
       {
