@@ -182,15 +182,18 @@ $(document).ready(function() {
 $('#evaluation').click(function() {
   $('#evaluation').addClass("disabled");
   let evaluation = new Evaluation();
-    // Play one game.
-  let result = evaluation.start(2);
-
-  $('#evaluation').removeClass("disabled");
-  $('#win-rate-1').text(result.winRate[0]);
-  $('#win-rate-2').text(result.winRate[1]);
-  $('#win-rate-3').text(result.winRate[2]);
-  $('#win-rate-4').text(result.winRate[3]);
-})
+  // Play one game.
+  evaluation.start.then(function(result) {
+    console.log(result); // "Stuff worked!"
+    $('#evaluation').removeClass("disabled");
+    $('#win-rate-1').text(result.winRate[0]);
+    $('#win-rate-2').text(result.winRate[1]);
+    $('#win-rate-3').text(result.winRate[2]);
+    $('#win-rate-4').text(result.winRate[3]);
+  }, function(err) {
+    console.log(err); // Error: "It broke"
+  });
+});
 
 $('#restart').click(function() {
   store.dispatch({ type: 'RESTART'});
