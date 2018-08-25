@@ -8,6 +8,10 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
     filename: 'main.bundle.js'
   },
+  devServer: {
+    hot: true,
+    historyApiFallback: true,
+  },
   module: {
     rules: [
       {
