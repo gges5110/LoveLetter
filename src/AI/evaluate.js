@@ -8,8 +8,11 @@ export default class Evaluation {
     reinforcementAI.initialize();
     this.game.setPlayer(2, reinforcementAI);
 
-    // We might want to make this a method instead of a member variable.
-    this.start = new Promise(function(resolve, reject) {
+    this.start = this.start.bind(this);
+  }
+
+  start() {
+    return new Promise(function(resolve, reject) {
       // do a thing, possibly async, then…
       let winRate = [0, 0, 0, 0];
       let games = 2;

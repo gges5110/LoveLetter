@@ -161,7 +161,7 @@ $('#evaluation').click(function() {
   $('#evaluation').addClass("disabled");
   let evaluation = new Evaluation();
   // Play one game.
-  evaluation.start.then(function(result) {
+  evaluation.start().then(function(result) {
     console.log(result); // "Stuff worked!"
     $('#evaluation').removeClass("disabled");
     $('#win-rate-1').text(result.winRate[0]);
