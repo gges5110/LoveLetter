@@ -4,7 +4,7 @@ import chai from 'chai';
 let expect = chai.expect;
 
 describe('Evaluate', () => {
-  it('should return the initial state', (done) => {
+  it('should add up to 100%', (done) => {
     let evaluate = new Evaluation();
     evaluate.start().then(function(result) {
       expect(result.winRate).to.be.an('array');

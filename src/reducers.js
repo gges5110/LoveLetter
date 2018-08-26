@@ -1,6 +1,4 @@
-// var availableCards, currentPlayer, gameEnd;
-// var playAgainst, cardsNotPlayedYet;
-import { initialState, cardRank, cardNames } from './const';
+import { initialState, cardNames } from './const';
 import {
   getRandomCard,
   getLivingPlayerSize,
@@ -16,84 +14,105 @@ import {
   setPlayerDead,
   checkNotDeadAndNotProtected,
   addHoldingCards } from './util';
+import update from 'immutability-helper';
+
+function checkPlayable(state, playerId, cardId) {
+  if (cardId !== 4 && cardId !== 8) {
+    return checkNotDeadAndNotProtected(state, playerId);
+  } else {
+    return true;
+  }
+}
 
 function resolve(state, cardToPlay) {
-  if (cardToPlay.cardId === 1 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
-    if (cardToPlay.guardGuess === state.players[cardToPlay.playAgainst - 1].holdingCards[0]) {
-      let nextState = Object.assign({}, state);
-      nextState.players = setPlayerDead(nextState.players, cardToPlay.playAgainst);
-      return nextState;
-    } else {
-      return state;
-    }
-  } else if (cardToPlay.cardId === 2 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
-    let nextState = Object.assign({}, state);
-    nextState.players = addSeenCards(nextState.players, nextState.currentPlayerId, {
-      cardId: nextState.players[cardToPlay.playAgainst - 1].holdingCards[0],
-      playerId: cardToPlay.playAgainst
-    });
-    return nextState;
-  } else if (cardToPlay.cardId === 3 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
-    let cardValue1 = state.players[state.currentPlayerId - 1].holdingCards[0];
-    let cardValue2 = state.players[cardToPlay.playAgainst - 1].holdingCards[0];
-    if (cardValue1 > cardValue2) {
-      let nextState = Object.assign({}, state);
-      nextState.players = setPlayerDead(state.players, cardToPlay.playAgainst);
-      return nextState;
-    } else if (cardValue1 < cardValue2) {
-      let nextState = Object.assign({}, state);
-      nextState.players = setPlayerDead(state.players, state.currentPlayerId);
-      return nextState;
-    } else {
-      return state;
-    }
-  } else if (cardToPlay.cardId === 4) {
-    return Object.assign({}, state, {
-      players: Object.assign([], state.players, { [state.currentPlayerId - 1]: Object.assign({}, state.players[state.currentPlayerId - 1], {
-        protected: true
-      })})
-    });
-  } else if (cardToPlay.cardId === 5 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
-    // Prince, Discard and draw
-    let nextState = Object.assign({}, state);
-    let cardToDiscard = state.players[cardToPlay.playAgainst - 1].holdingCards[0];
-    nextState.players = discardCard(state.players, cardToPlay.playAgainst, cardToDiscard);
-    nextState.players = addPlayedCard(nextState.players, cardToPlay.playAgainst, {
-      cardId: cardToDiscard,
-      playAgainst: -1,
-      discarded: true
-    });
-
-    if (cardToDiscard === 8) {
-      nextState.players = setPlayerDead(nextState.players, cardToPlay.playAgainst);
-      return nextState;
-    }
-
-    if (getAvailableCardSize(state.availableCards) === 0) {
-      // Give the hidden card to player
-      nextState.players = addHoldingCards(nextState.players, cardToPlay.playAgainst, nextState.firstCard);
-    } else {
-      nextState = drawCardForPlayer(nextState, cardToPlay.playAgainst);
-    }
-
-    return nextState;
-  } else if (cardToPlay.cardId === 6 && checkNotDeadAndNotProtected(state, cardToPlay.playAgainst)) {
-    let nextState = Object.assign({}, state);
-    let cardToSwap = nextState.players[state.currentPlayerId - 1].holdingCards[0];
-    nextState.players = Object.assign([], nextState.players, {[state.currentPlayerId - 1]: Object.assign({}, state.players[state.currentPlayerId - 1], {
-      holdingCards: [nextState.players[cardToPlay.playAgainst - 1].holdingCards[0]]
-    })})
-    nextState.players = Object.assign([], nextState.players, {[cardToPlay.playAgainst - 1]: Object.assign({}, state.players[cardToPlay.playAgainst - 1], {
-      holdingCards: [cardToSwap]
-    })})
-    return nextState;
-  } else if (cardToPlay.cardId === 8) {
-    let nextState = Object.assign({}, state);
-    nextState.players = setPlayerDead(state.players, state.currentPlayerId);
-    return nextState;
-  } else {
+  if (!checkPlayable(state, cardToPlay.playAgainst, cardToPlay.cardId)) {
     return state;
   }
+
+  let nextState = Object.assign({}, state);
+
+  switch (cardToPlay.cardId) {
+    case 1:
+      if (cardToPlay.guardGuess === state.players[cardToPlay.playAgainst - 1].holdingCards[0]) {
+        nextState.players = setPlayerDead(nextState.players, cardToPlay.playAgainst);
+      }
+      break;
+    case 2:
+      nextState.players = addSeenCards(nextState.players, nextState.currentPlayerId, {
+        cardId: nextState.players[cardToPlay.playAgainst - 1].holdingCards[0],
+        playerId: cardToPlay.playAgainst
+      });
+      break;
+    case 3:
+      let cardValue1 = state.players[state.currentPlayerId - 1].holdingCards[0];
+      let cardValue2 = state.players[cardToPlay.playAgainst - 1].holdingCards[0];
+      if (cardValue1 > cardValue2) {
+        nextState.players = setPlayerDead(state.players, cardToPlay.playAgainst);
+      } else if (cardValue1 < cardValue2) {
+        nextState.players = setPlayerDead(state.players, state.currentPlayerId);
+      }
+      break;
+    case 4:
+      return update(state, {
+        players: {
+          [state.currentPlayerId - 1]: {
+            protected: {
+              $set: true
+            }
+          }
+        }
+      });
+    case 5:
+      // Prince, Discard and draw
+      let cardToDiscard = state.players[cardToPlay.playAgainst - 1].holdingCards[0];
+      nextState.players = discardCard(state.players, cardToPlay.playAgainst, {cardId: cardToDiscard});
+      nextState.players = addPlayedCard(nextState.players, cardToPlay.playAgainst, {
+        cardId: cardToDiscard,
+        playAgainst: -1,
+        discarded: true
+      });
+
+      if (cardToDiscard === 8) {
+        nextState.players = setPlayerDead(nextState.players, cardToPlay.playAgainst);
+      } else {
+        if (getAvailableCardSize(state.availableCards) === 0) {
+          // Give the hidden card to player
+          nextState.players = addHoldingCards(nextState.players, cardToPlay.playAgainst, nextState.firstCard);
+        } else {
+          nextState = drawCardForPlayer(nextState, cardToPlay.playAgainst);
+        }
+      }
+      break;
+    case 6:
+      let cardToSwap = nextState.players[state.currentPlayerId - 1].holdingCards[0];
+      nextState = update(nextState, {
+        players: {
+          [state.currentPlayerId - 1]: {
+            holdingCards: {
+              $set: [nextState.players[cardToPlay.playAgainst - 1].holdingCards[0]]
+            }
+          }
+        }
+      });
+
+      nextState = update(nextState, {
+        players: {
+          [cardToPlay.playAgainst - 1]: {
+            holdingCards: {
+              $set: [cardToSwap]
+            }
+          }
+        }
+      });
+      break;
+    case 8:
+      nextState.players = setPlayerDead(state.players, state.currentPlayerId);
+      break;
+    default:
+      break;
+  }
+
+  return nextState;
 }
 
 function counter(state, action) {

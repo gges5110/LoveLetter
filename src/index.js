@@ -66,7 +66,11 @@ function render() {
   for (let i = 0; i < 4; ++i) {
     if (store.getState().counter.players[i].dead) {
       $(`#playerTitle${i + 1}`).attr("class","playerDead");
-      $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].playedCards[store.getState().counter.players[i].playedCards.length - 1] - 1]}`);
+      if (store.getState().counter.players[i].holdingCards.length !== 0) {
+        $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].holdingCards[0] - 1]}`);
+      } else {
+        $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].playedCards[store.getState().counter.players[i].playedCards.length - 1].cardId - 1]}`);
+      }
     } else {
       $(`#playerTitle${i + 1}`).text(`Player ${i + 1}`);
     }
