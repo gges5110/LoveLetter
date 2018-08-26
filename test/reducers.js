@@ -43,14 +43,15 @@ describe('General Reducer', () => {
 
   it('should go to the next player once a card is played', () => {
     let state = counter(undefined, {type: 'RESTART'});
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: state.players[state.currentPlayerId - 1].holdingCards[1], playAgainst: 2, guardGuess: -1}});
+    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: state.players[state.currentPlayerId - 1].holdingCards[0], playAgainst: 2, guardGuess: -1}});
 
     // Should not mutate the previous state, check playedCards
     expect(state.players[state.currentPlayerId - 1].playedCards.length).to.equal(0);
+
     expect(nextState.currentPlayerId).to.equal(state.currentPlayerId + 1);
     expect(nextState.players[state.currentPlayerId - 1].playedCards.length).to.equal(state.players[state.currentPlayerId - 1].playedCards.length + 1);
-    expect(nextState.players[state.currentPlayerId - 1].playedCards[0].cardId).to.equal(state.players[state.currentPlayerId - 1].holdingCards[1]);
-    expect(nextState.players[state.currentPlayerId - 1].playedCards[0].playAgainst).to.equal(2);
+    expect(nextState.players[state.currentPlayerId - 1].playedCards[0].cardId).to.equal(state.players[state.currentPlayerId - 1].holdingCards[0]);
+    expect(nextState.players[state.currentPlayerId - 1].playedCards[0].playAgainst).to.be.oneOf([2, -1]);
   });
 
   it('should discard the played card');

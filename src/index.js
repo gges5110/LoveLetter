@@ -66,7 +66,11 @@ function render() {
   for (let i = 0; i < 4; ++i) {
     if (store.getState().counter.players[i].dead) {
       $(`#playerTitle${i + 1}`).attr("class","playerDead");
-      $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].playedCards[store.getState().counter.players[i].playedCards.length - 1] - 1]}`);
+      if (store.getState().counter.players[i].holdingCards.length !== 0) {
+        $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].holdingCards[0] - 1]}`);
+      } else {
+        $(`#playerTitle${i + 1}`).text(`Player ${i + 1} - ${cardNames[store.getState().counter.players[i].playedCards[store.getState().counter.players[i].playedCards.length - 1].cardId - 1]}`);
+      }
     } else {
       $(`#playerTitle${i + 1}`).text(`Player ${i + 1}`);
     }
@@ -162,14 +166,11 @@ $('#evaluation').click(function() {
   let evaluation = new Evaluation();
   // Play one game.
   evaluation.start().then(function(result) {
-    console.log(result); // "Stuff worked!"
     $('#evaluation').removeClass("disabled");
     $('#win-rate-1').text(result.winRate[0]);
     $('#win-rate-2').text(result.winRate[1]);
     $('#win-rate-3').text(result.winRate[2]);
     $('#win-rate-4').text(result.winRate[3]);
-  }, function(err) {
-    console.log(err); // Error: "It broke"
   });
 });
 
