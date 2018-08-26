@@ -216,7 +216,6 @@ function counter(state, action) {
       // Check if game ends
       let gameEnds = checkGameEnd(nextState.players, nextState.availableCards);
       if (gameEnds.gameEnd) {
-        console.log('Game ended');
         nextState.gameEnds.winner = nextState.players[gameEnds.winnerId - 1];
         nextState.buttonStates.chooseCard = false;
       }

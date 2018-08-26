@@ -49,11 +49,8 @@ export default class Game {
   }
 
   nextTurn(resolve) {
-    console.log('next turn');
-
     if (this.store.getState().counter.gameEnds.winner !== null) {
       // Game end
-      console.log('Game Ends');
       if (resolve) {
         resolve(this.getWinnerId());
       }

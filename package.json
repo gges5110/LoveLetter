@@ -7,8 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha -- --require babel-register",
-    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require babel-register && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "cover": "istanbul cover --include-all-sources --root ./src ./node_modules/mocha/bin/_mocha -- --timeout 15000 --require babel-register",
+    "coveralls": "istanbul cover --include-all-sources --root ./src ./node_modules/mocha/bin/_mocha --report lcovonly -- --require babel-register && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "test": "mocha --timeout 15000 --require babel-register",
     "webpack": "webpack",
     "webpack:watch": "webpack-dev-server --mode development --open --hot"
