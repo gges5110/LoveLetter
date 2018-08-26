@@ -17,17 +17,12 @@ export default class Evaluation {
       let winRate = [0, 0, 0, 0];
       let games = 2;
 
-      console.log('Start playing game');
       // Wrap this.game.play into a Promise and do asynchronous calls.
       for (let i = 0, p = Promise.resolve(); i < games; i++) {
         p = p.then(function(winnerId) {
-          if (i !== 0) {
-            console.log(`Played game ${i}, winner is ${winnerId}`);
-          }
           winRate[winnerId - 1]++;
           if (i === games - 1) {
             return this.game.play().then(function(winnerId) {
-              console.log(`Played game ${i}, winner is ${winnerId}`);
               winRate[winnerId - 1]++;
               resolve({
                 winRate: [

@@ -1,8 +1,6 @@
 import { cardRank, cardNames } from './const';
+import update from 'immutability-helper';
 
-var compareCards = function(card1, card2) {
-  return cardRank[card2] - cardRank[card1];
-}
 
 function getLivingPlayerSize(players) {
   let result = 0;
@@ -18,7 +16,7 @@ function calculateWinner(players) {
   let winnerId = -1;
   players.forEach(player => {
     if (!player.dead) {
-      if (winnerId == -1) {
+      if (winnerId === -1) {
         winnerId = player.id;
       } else {
         if (players[winnerId - 1].holdingCards[0] < player.holdingCards[0]) {
@@ -34,7 +32,7 @@ function calculateWinner(players) {
 function getNonDeadNonProtectedPlayers(playerId, players) {
   let nonDeadNonProtectedPlayerList = [];
   players.forEach(player => {
-    if (player.id != playerId && !player.protected && !player.dead) {
+    if (player.id !== playerId && !player.protected && !player.dead) {
       nonDeadNonProtectedPlayerList.push(player.id);
     }
   });
@@ -67,14 +65,14 @@ function getRandomCard(availableCards) {
   // Get the number of total cards
   let totalCards = getAvailableCardSize(availableCards);
 
-  if (totalCards == 0) {
+  if (totalCards === 0) {
     return;
   }
 
   let randomCardNumber = Math.floor(Math.random() * totalCards);
 
   let temp = 0, drawedCard;
-  for (var key in availableCards) {
+  for (let key in availableCards) {
     if (availableCards.hasOwnProperty(key)) {
       temp += availableCards[key];
       if (temp > randomCardNumber) {
@@ -101,7 +99,7 @@ function nextPlayer(players, currentPlayerId) {
 
 function getAvailableCardSize(availableCards) {
   let totalCards = 0;
-  for (var key in availableCards) {
+  for (let key in availableCards) {
     if (availableCards.hasOwnProperty(key)) {
       totalCards += availableCards[key];
     }
@@ -117,18 +115,17 @@ function resetProtection(players, currentPlayerId) {
 
 // discardCard(nextState, currentPlayerId, action.cardToPlay.cardId);
 function discardCard(players, currentPlayerId, discardCard) {
-  return players.map(function CB(player, index) {
-    if (player.id === currentPlayerId) {
-      let arr = Object.assign([], player.holdingCards);
-      // Remove card.
-      arr.splice(arr.indexOf(discardCard.cardId), 1);
+  let index = players[currentPlayerId - 1].holdingCards.findIndex((cardId) => cardId === discardCard.cardId);
+  if (index === -1) {
+    throw `Can't find card ${discardCard.cardId} in player ${currentPlayerId}'s hand.`;
+  }
 
-      return Object.assign({}, player, {
-        holdingCards: arr
-      });
-    } else {
-      return player;
-    }
+  return update(players, {
+      [currentPlayerId - 1]: {
+        holdingCards: {
+          $splice: [[index, 1]]
+        }
+      }
   });
 }
 
@@ -178,12 +175,12 @@ function addPlayedCard(players, playerId, card) {
 }
 
 function addHoldingCards(players, playerId, card) {
-  let arr = Object.assign([], players[playerId - 1].holdingCards);
-  arr.push(card);
-  return Object.assign([], players, {
-    [playerId - 1]: Object.assign({}, players[playerId - 1], {
-      holdingCards: arr
-    })
+  return update(players, {
+    [playerId - 1]: {
+      holdingCards: {
+        $push: [card]
+      }
+    }
   });
 }
 
@@ -213,7 +210,6 @@ function addSeenCards(players, playerId, seenCard) {
 }
 
 export {
-  compareCards,
   checkGameEnd,
   getRandomCard,
   getAvailableCardSize,
