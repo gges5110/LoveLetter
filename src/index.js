@@ -17,9 +17,25 @@ import Evaluation from './AI/evaluate';
 import Game from "./game";
 import HumanPlayer from "./AI/human";
 
-var store = createStore(combineReducers({counter}),
+import React from 'react';
+import ReactDOM from 'react-dom';
+import SimpleTabs from './SimpleTabs';
+
+function App() {
+  return (
+    <div>
+      <SimpleTabs />
+    </div>
+
+  );
+}
+
+ReactDOM.render(<App />, document.querySelector('#app'));
+
+let store = createStore(combineReducers({counter}),
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
+// Replace this block with Components after adopting React.
 function render() {
   $('#currentPlayerId').text(store.getState().counter.currentPlayerId.toString());
   let humanPlayerId = 0; // store.getState().counter.currentPlayerId - 1

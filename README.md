@@ -19,7 +19,7 @@ $ npm run webpack
 # You can also let webpack watch the src folder for any changes
 $ npm run webpack:watch
 # Run test
-$ npm install
+$ npm test
 ```
 
 ### Current Players Setup

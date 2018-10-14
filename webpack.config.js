@@ -10,8 +10,8 @@ module.exports = {
   },
   devServer: {
     hot: true,
-    historyApiFallback: true,
     publicPath: '/build/',
+    historyApiFallback: true
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin()
@@ -21,8 +21,9 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
+        exclude: /(node_modules|bower_compontents)/,
         query: {
-          presets: ['env']
+          presets: ['env', 'stage-0']
         }
       }
     ]
