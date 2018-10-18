@@ -24,10 +24,16 @@
   },
   "homepage": "https://github.com/gges5110/LoversLetter#readme",
   "devDependencies": {
+    "@material-ui/core": "^3.2.0",
+    "@material-ui/icons": "^3.0.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
@@ -35,10 +41,14 @@
     "istanbul": "^1.1.0-alpha.1",
     "mathjs": "^5.0.3",
     "mocha": "^5.2.0",
+    "react-redux": "^5.0.7",
     "redux": "^4.0.0",
     "webpack": "^4.10.2",
     "webpack-cli": "^2.1.4",
     "webpack-dev-server": "^3.1.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2"
+  }
 }

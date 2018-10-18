@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Love Letter - Simulator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="src/main.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
+    <script src="semantic/semantic.min.js"></script>
+  </head>
+
+  <body>
+    <div class="ui main raised container segment" id="container">
+      <!-- <div class="ui segment"> -->
+        <h2 class="ui header">Love Letter - Simulator</h2>
+      <!-- Following Menu -->
+      <div class="ui large top fixed hidden menu">
+        <div class="ui container">
+          <a class="active item">Home</a>
+          <a class="item">Work</a>
+          <a class="item">Company</a>
+          <a class="item">Careers</a>
+          <div class="right menu">
+            <div class="item">
+              <a class="ui button">Log in</a>
+            </div>
+            <div class="item">
+              <a class="ui primary button">Sign Up</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <div class="ui vertical inverted sidebar menu">
+        <a class="active item">Home</a>
+        <a class="item">Work</a>
+        <a class="item">Company</a>
+        <a class="item">Careers</a>
+        <a class="item">Login</a>
+        <a class="item">Signup</a>
+      </div>
+
+
+      <div class="ui top attached tabular menu">
+          <a class="item active" data-tab="first">Game</a>
+          <a class="item" data-tab="second">Rules</a>
+          <a class="item" data-tab="third">About</a>
+          <a class="item" data-tab="evaluation-tab">AI Evaluation</a>
+        </div>
+        <div class="ui bottom attached tab segment active" data-tab="first">
+          <div class="ui two column doubling grid">
+            <div class="column">
+              <!-- <div class="ui segment"> -->
+                <button class="ui button primary" id="restart">Restart</button>
+                <div class="ui divider"></div>
+                <div class="ui segments">
+                  <div class="ui segment">
+                    Choose a card
+                    <div>
+                      <div class="ui buttons">
+                        <button class="ui button" id="playButton1">A</button>
+                        <button class="ui button" id="playButton2">B</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ui segment">
+                    Play Against
+                    <div>
+                      <div class="ui buttons">
+                        <button class="ui button" id="playAgainstButton1">1</button>
+                        <button class="ui button" id="playAgainstButton2">2</button>
+                        <button class="ui button" id="playAgainstButton3">3</button>
+                        <button class="ui button" id="playAgainstButton4">4</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ui segment">
+                    Guard Guess
+                    <div>
+                      <button class="ui button compact" id="guardGuessButton2">Priest</button>
+                      <button class="ui button compact" id="guardGuessButton3">Baron</button>
+                      <button class="ui button compact" id="guardGuessButton4">Handmaid</button>
+                      <button class="ui button compact" id="guardGuessButton5">Prince</button>
+                      <button class="ui button compact" id="guardGuessButton6">King</button>
+                      <button class="ui button compact" id="guardGuessButton7">Countess</button>
+                      <button class="ui button compact" id="guardGuessButton8">Princess</button>
+                    </div>
+                  </div>
+                  <div class="ui segment">
+                    Priest List
+                    <ul class="ui list" id="priestList"></ul>
+                  </div>
+                </div>
+              <!-- </div> -->
+            </div>
+            <div class="column">
+              <!-- <div class="ui segment"> -->
+                <p id="status"></p>
+                <br>
+                <div class="ui segment text">
+                  <p id="playerTitle1">Player 1</p>
+                  <ul class="ui list" id="playerPlayedList1"></ul>
+
+                  <br>
+                  <p id="playerTitle2">Player 2</p>
+                  <ul class="ui list" id="playerPlayedList2">
+                  </ul>
+
+                  <br>
+                  <p id="playerTitle3">Player 3</p>
+                  <ul class="ui list" id="playerPlayedList3">
+                  </ul>
+
+                  <br>
+                  <p id="playerTitle4">Player 4</p>
+                  <ul class="ui list" id="playerPlayedList4">
+                  </ul>
+                </div>
+              <!-- </div> -->
+            </div>
+          </div>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="second">
+          <p>
+          <h4>End of Game</h4>
+            Game ends if the deck is empty at the end of a turn. The player with the highest ranked person wins. In case of a tie, the player who discarded the highest total value of cards wins.
+            <br/><br/>
+            Game also ends if all players but one are out of the game, in which case the remaining player wins.
+            <br/><br/>
+            You can get the rules book
+            <a href="http://online.fliphtml5.com/mvgr/hyvg/#p=1" target="_blank">here.</a>
+            The following is a summary table.
+          </p>
+          <table class="ui selectable table">
+            <thead>
+              <tr>
+                <th>Card Rank</th>
+                <th>Card Name</th>
+                <th>Card Amount</th>
+                <th>Card Description</th>
+              </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>8</td>
+              <td>Princess</td>
+              <td>1</td>
+              <td>Knocked out if discarded</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>Countess</td>
+              <td>1</td>
+              <td>Discard if the other card you have is King or Prince</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>King</td>
+              <td>1</td>
+              <td>Trade hands with another player</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Prince</td>
+              <td>2</td>
+              <td>Choose one player to discards his or her hand</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Handmaid</td>
+              <td>2</td>
+              <td>Protect yourself from other players until next turn</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Baron</td>
+              <td>2</td>
+              <td>Compare your other card with another player, the person with the lower rank card is knocked out</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Priest</td>
+              <td>2</td>
+              <td>Secretly look at another player's hand</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>Guard</td>
+              <td>5</td>
+              <td>Choose another player and guess his/her hand, the person is knocked out if you guessed right</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="third">
+          <a href="https://github.com/gges5110/LoveLetter" target="_blank">GitHub Project Link</a>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="evaluation-tab">
+          <button class="ui button primary" id="evaluation">Start Evaluate</button><br/>
+          Player 1 (random AI) Win rate: <span id="win-rate-1"></span> %<br/>
+          Player 2 (reinforcement AI) Win rate: <span id="win-rate-2"></span> %<br/>
+          Player 3 (random AI) Win rate: <span id="win-rate-3"></span> %<br/>
+          Player 4 (random AI) Win rate: <span id="win-rate-4"></span> %<br/>
+        </div>
+      <!-- </div> -->
+    </div>
+
+    <script>
+      $('.menu .item')
+        .tab()
+      ;
+    </script>
+    <script src="./build/main.bundle.js"></script>
+  </body>
+</html>
