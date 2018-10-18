@@ -1,14 +1,14 @@
-import actions from "./actions";
-import RandomAI from "./AI/randomAI";
-import {combineReducers, createStore} from "redux";
-import {counter} from "./reducers";
+import {playCard, drawCard} from "./actions/index";
+
 import ReinforcementAI from "./AI/reinforcementAI";
+import RandomAI from "./AI/randomAI";
 import HumanPlayer from "./AI/human";
+import GameReducer from "./reducers/reducer_game";
 
 export default class Game {
   constructor(players, store, timeout) {
     this.computerPlayers = Array(players);
-    this.store = store || createStore(combineReducers({counter}));
+    this.store = store;
 
     // Player 1
     this.setPlayer(1, new RandomAI());
@@ -40,7 +40,7 @@ export default class Game {
   }
 
   getWinnerId() {
-    return this.store.getState().counter.gameEnds.winner.id;
+    return this.store.getState().GameReducer.gameEnds.winner.id;
   }
 
   start() {
@@ -49,36 +49,36 @@ export default class Game {
   }
 
   nextTurn(resolve) {
-    if (this.store.getState().counter.gameEnds.winner !== null) {
+    if (this.store.getState().GameReducer.gameEnds.winner !== null) {
       // Game end
       if (resolve) {
         resolve(this.getWinnerId());
       }
       return;
-    } else if (this.store.getState().counter.players[this.store.getState().counter.currentPlayerId - 1].dead) {
+    } else if (this.store.getState().GameReducer.players[this.store.getState().GameReducer.currentPlayerId - 1].dead) {
       // Skip dead players
       this.nextTurn(resolve);
       return;
     } else {
-      this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
-      let currentPlayer = this.computerPlayers[this.store.getState().counter.currentPlayerId - 1];
+      this.store.dispatch(drawCard(this.store.getState().GameReducer.currentPlayerId));
+      let currentPlayer = this.computerPlayers[this.store.getState().GameReducer.currentPlayerId - 1];
       switch (currentPlayer.constructor) {
         case HumanPlayer:
           // Wait until the human response, let UI call this.nextTurn() directly.
           break;
         case ReinforcementAI:
-          // this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
-          currentPlayer.learn(this.store.getState().counter);
-          let reinforcementAICard = currentPlayer.getBestAction(this.store.getState().counter);
-          this.store.dispatch(actions.playCard(reinforcementAICard));
+          // this.store.dispatch(actions.drawCard(this.store.getState().GameReducer.currentPlayerId));
+          currentPlayer.learn(this.store.getState().GameReducer);
+          let reinforcementAICard = currentPlayer.getBestAction(this.store.getState().GameReducer);
+          this.store.dispatch(playCard(reinforcementAICard));
           this.nextTurn(resolve);
           return;
         case RandomAI:
           // Random AI move
           setTimeout(function() {
-            // this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
-            let randomAICard = currentPlayer.getAction(this.store.getState().counter.players, this.store.getState().counter.currentPlayerId);
-            this.store.dispatch(actions.playCard(randomAICard));
+            // this.store.dispatch(actions.drawCard(this.store.getState().GameReducer.currentPlayerId));
+            let randomAICard = currentPlayer.getAction(this.store.getState().GameReducer.players, this.store.getState().GameReducer.currentPlayerId);
+            this.store.dispatch(playCard(randomAICard));
             this.nextTurn(resolve);
           }.bind(this), this.timeout);
         default:
@@ -87,4 +87,5 @@ export default class Game {
     }
   }
 }
+
 

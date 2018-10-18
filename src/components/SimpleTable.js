@@ -54,12 +54,12 @@ function SimpleTable(props) {
           {rows.map(row => {
             return (
               <TableRow key={row.id} hover>
-                <TableCell component="th" scope="row">
+                <TableCell component="th" scope="row" numeric>
                   {row.rank}
                 </TableCell>
-                <TableCell numeric>{row.name}</TableCell>
+                <TableCell>{row.name}</TableCell>
                 <TableCell numeric>{row.amount}</TableCell>
-                <TableCell numeric>{row.description}</TableCell>
+                <TableCell>{row.description}</TableCell>
               </TableRow>
             );
           })}

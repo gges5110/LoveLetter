@@ -25,6 +25,7 @@
   "homepage": "https://github.com/gges5110/LoversLetter#readme",
   "devDependencies": {
     "@material-ui/core": "^3.2.0",
+    "@material-ui/icons": "^3.0.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
@@ -40,6 +41,7 @@
     "istanbul": "^1.1.0-alpha.1",
     "mathjs": "^5.0.3",
     "mocha": "^5.2.0",
+    "react-redux": "^5.0.7",
     "redux": "^4.0.0",
     "webpack": "^4.10.2",
     "webpack-cli": "^2.1.4",
