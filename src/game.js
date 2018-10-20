@@ -11,7 +11,7 @@ export default class Game {
     this.store = store;
 
     // Player 1
-    this.setPlayer(1, new RandomAI());
+    this.setPlayer(1, new HumanPlayer());
     // Player 2
     let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     reinforcementAI.initialize();

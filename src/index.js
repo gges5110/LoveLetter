@@ -7,7 +7,7 @@ import App from "./components/app";
 import reducers from "./reducers";
 import GameReducer from "./reducers/reducer_game";
 
-let store = createStore(combineReducers({GameReducer}));
+let store = createStore(combineReducers({GameReducer}), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 export {
   store
 }

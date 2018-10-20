@@ -149,23 +149,7 @@ function drawCardForPlayer(previousState, playerId) {
 
 function addPlayedCard(players, playerId, card) {
   let arr = Object.assign([], players[playerId - 1].playedCards);
-  if (card.cardId === 4 || card.cardId === 7 || card.cardId === 8) {
-    arr.push({
-      cardId: card.cardId,
-      playAgainst: -1,
-      guardGuess: -1,
-      discarded: card.discarded,
-    });
-  } else if (card.cardId !== 1) {
-    arr.push({
-      cardId: card.cardId,
-      playAgainst: card.playAgainst,
-      guardGuess: -1,
-      discarded: card.discarded,
-    });
-  } else {
-    arr.push(card);
-  }
+  arr.push(card);
 
   return Object.assign([], players, {
     [playerId - 1]: Object.assign({}, players[playerId - 1], {

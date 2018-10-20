@@ -12,15 +12,18 @@ class GameTab extends React.Component {
     this.game.start();
   }
 
+  restart() {
+    this.game.start();
+  }
 
   render() {
     return (
       <div>
-        <Button color="primary" variant="contained">
+        <Button color="primary" variant="contained" onClick={() => this.restart}>
           Restart
         </Button>
-        <CardSelect />
-        {/*<GameBoard />*/}
+        <CardSelect nextTurn={this.game.nextTurn} />
+        <GameBoard />
       </div>
     );
   }

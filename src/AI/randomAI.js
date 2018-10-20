@@ -18,22 +18,22 @@ export default class RandomAI {
       }
     }
 
-    let guardGuess;
+    let guess;
     if (cardId === 1) {
       // Randomly choose from the highest not yet appeared card.
       // cardToGuess = getHighestNotYetAppearedCard(this.cards, cardsNotPlayedYet);
-      guardGuess = 8; // Make this smarter.
+      guess = 8; // Make this smarter.
     }
 
-    let playAgainst = playerId % 4 + 1;
+    let target = playerId % 4 + 1;
     let getNonDeadNonProtectedPlayerList = getNonDeadNonProtectedPlayers(playerId, players);
     if (getNonDeadNonProtectedPlayerList.length === 0) {
       // The player is the winner.
     } else {
       // Randomly select one player to play the card against.
       let randomPlayerIndex = Math.floor(Math.random() * getNonDeadNonProtectedPlayerList.length);
-      playAgainst = getNonDeadNonProtectedPlayerList[randomPlayerIndex];
+      target = getNonDeadNonProtectedPlayerList[randomPlayerIndex];
     }
-    return {cardId, playAgainst, guardGuess};
+    return {cardId, target, guess};
   }
 }

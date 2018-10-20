@@ -129,8 +129,8 @@ export default class ReinforcementAI {
     let arr = AIndex;
     return {
       cardId: arr[0] + 1,
-      playAgainst: arr[1] + 1,
-      guardGuess: arr[2] + 2
+      target: arr[1] + 1,
+      guess: arr[2] + 2
     };
   }
 

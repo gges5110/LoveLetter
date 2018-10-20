@@ -35,7 +35,7 @@ function checkGameEnd(players, availableCards) {
 }
 
 function resolve(state, cardToPlay) {
-  if (!checkPlayable(state, cardToPlay.playAgainst, cardToPlay.cardId)) {
+  if (!checkPlayable(state, cardToPlay.target, cardToPlay.cardId)) {
     return state;
   }
 
@@ -43,21 +43,21 @@ function resolve(state, cardToPlay) {
 
   switch (cardToPlay.cardId) {
     case 1:
-      if (cardToPlay.guardGuess === state.players[cardToPlay.playAgainst - 1].holdingCards[0]) {
-        nextState.players = setPlayerDead(nextState.players, cardToPlay.playAgainst);
+      if (cardToPlay.guess === state.players[cardToPlay.target - 1].holdingCards[0]) {
+        nextState.players = setPlayerDead(nextState.players, cardToPlay.target);
       }
       break;
     case 2:
       nextState.players = addSeenCards(nextState.players, nextState.currentPlayerId, {
-        cardId: nextState.players[cardToPlay.playAgainst - 1].holdingCards[0],
-        playerId: cardToPlay.playAgainst
+        cardId: nextState.players[cardToPlay.target - 1].holdingCards[0],
+        playerId: cardToPlay.target
       });
       break;
     case 3:
       let cardValue1 = state.players[state.currentPlayerId - 1].holdingCards[0];
-      let cardValue2 = state.players[cardToPlay.playAgainst - 1].holdingCards[0];
+      let cardValue2 = state.players[cardToPlay.target - 1].holdingCards[0];
       if (cardValue1 > cardValue2) {
-        nextState.players = setPlayerDead(state.players, cardToPlay.playAgainst);
+        nextState.players = setPlayerDead(state.players, cardToPlay.target);
       } else if (cardValue1 < cardValue2) {
         nextState.players = setPlayerDead(state.players, state.currentPlayerId);
       }
@@ -74,22 +74,22 @@ function resolve(state, cardToPlay) {
       });
     case 5:
       // Prince, Discard and draw
-      let cardToDiscard = state.players[cardToPlay.playAgainst - 1].holdingCards[0];
-      nextState.players = discardCard(state.players, cardToPlay.playAgainst, {cardId: cardToDiscard});
-      nextState.players = addPlayedCard(nextState.players, cardToPlay.playAgainst, {
+      let cardToDiscard = state.players[cardToPlay.target - 1].holdingCards[0];
+      nextState.players = discardCard(state.players, cardToPlay.target, {cardId: cardToDiscard});
+      nextState.players = addPlayedCard(nextState.players, cardToPlay.target, {
         cardId: cardToDiscard,
-        playAgainst: -1,
+        target: -1,
         discarded: true
       });
 
       if (cardToDiscard === 8) {
-        nextState.players = setPlayerDead(nextState.players, cardToPlay.playAgainst);
+        nextState.players = setPlayerDead(nextState.players, cardToPlay.target);
       } else {
         if (getAvailableCardSize(state.availableCards) === 0) {
           // Give the hidden card to player
-          nextState.players = addHoldingCards(nextState.players, cardToPlay.playAgainst, nextState.firstCard);
+          nextState.players = addHoldingCards(nextState.players, cardToPlay.target, nextState.firstCard);
         } else {
-          nextState = drawCardForPlayer(nextState, cardToPlay.playAgainst);
+          nextState = drawCardForPlayer(nextState, cardToPlay.target);
         }
       }
       break;
@@ -99,7 +99,7 @@ function resolve(state, cardToPlay) {
         players: {
           [state.currentPlayerId - 1]: {
             holdingCards: {
-              $set: [nextState.players[cardToPlay.playAgainst - 1].holdingCards[0]]
+              $set: [nextState.players[cardToPlay.target - 1].holdingCards[0]]
             }
           }
         }
@@ -107,7 +107,7 @@ function resolve(state, cardToPlay) {
 
       nextState = update(nextState, {
         players: {
-          [cardToPlay.playAgainst - 1]: {
+          [cardToPlay.target - 1]: {
             holdingCards: {
               $set: [cardToSwap]
             }

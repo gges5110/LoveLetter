@@ -9,37 +9,77 @@ class CardSelect extends Component {
     super(props);
 
     this.state = {
-      card: null,
+      cardId: null,
       target: null,
-      guess: null,
     };
 
     this.chooseCard = this.chooseCard.bind(this);
+    this.chooseTarget = this.chooseTarget.bind(this);
+    this.chooseGuess = this.chooseGuess.bind(this);
     this.submitAction = this.submitAction.bind(this);
   }
 
   chooseCard(card_id) {
     console.assert(this.props.holdingCards.includes(card_id), `${card_id} not in ${this.props.holdingCards}]`);
-    this.setState({card: card_id});
-    if([4, 8].includes(card_id)) {
-      this.submitAction();
+    if([4, 7, 8].includes(card_id)) {
+      this.submitAction(
+        Object.assign(this.state, {
+          cardId: card_id
+        })
+      );
+    } else {
+      this.setState({cardId: card_id});
     }
   }
 
-  submitAction() {
-    this.props.playCard({
-      'card': this.state.card,
-      'against': this.state.guess,
-      'guess': this.state.guess
+  chooseTarget(target) {
+    if (this.state.cardId !== 1) {
+      this.submitAction(
+        Object.assign(this.state, {
+          target
+        })
+      );
+    } else {
+      this.setState({target: target});
+    }
+  }
+
+  chooseGuess(guess) {
+    this.submitAction(
+      Object.assign(this.state, {
+        guess
+      })
+    );
+  }
+
+  submitAction(action) {
+    this.props.playCard(action);
+    this.setState({
+      cardId: null,
+      target: null,
+      guess: null,
     });
+    this.props.nextTurn();
   }
 
   render() {
     let display;
-    if (this.state.card == null) {
+    if (this.state.cardId == null) {
       display = this.props.holdingCards.map((holdingCard, index) =>
         <Button key={index} onClick={() => this.chooseCard(holdingCard)} color="primary" variant="contained">
           {holdingCard}
+        </Button>
+      );
+    } else if (this.state.target == null) {
+      display = [1, 2, 3, 4].map((target, index) =>
+        <Button disabled={!this.props.playersStatus[index]} key={index} onClick={() => this.chooseTarget(target)} color="primary" variant="contained">
+          {target}
+        </Button>
+      );
+    } else {
+      display = [2, 3, 4, 5, 6, 7, 8].map((guess, index) =>
+        <Button key={index} onClick={() => this.chooseGuess(guess)} color="primary" variant="contained">
+          {guess}
         </Button>
       );
     }
@@ -54,10 +94,13 @@ class CardSelect extends Component {
 }
 
 function mapStateToProps(state) {
-  // Whatever is returned will show up as props
-  // inside of BookList
+  const playersStatus = state.GameReducer.players.map((player) => {
+    return !player.dead;
+  });
+
   return {
-    holdingCards: state.GameReducer.players[0].holdingCards
+    holdingCards: state.GameReducer.players[0].holdingCards,
+    playersStatus: playersStatus
   };
 }
 
