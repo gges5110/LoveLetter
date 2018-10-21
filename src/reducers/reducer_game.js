@@ -1,4 +1,4 @@
-import {PLAY_CARD, DISCARD_CARD, DRAW_CARD} from "../actions/index";
+import {PLAY_CARD, DISCARD_CARD, DRAW_CARD, RESTART} from "../actions/index";
 import {cardNames, initialState} from "../const";
 import {
   getRandomCard,
@@ -148,6 +148,23 @@ export default function(state, action) {
   }
 
   switch (action.type) {
+    case RESTART:
+      // Clean up store state.
+      let newState = JSON.parse(JSON.stringify(initialState));
+      // Setup and draw cards.
+      // Discard a card at the start of the game.
+      let randomCardId = getRandomCard(newState.availableCards);
+      newState = Object.assign({}, newState, {
+        firstCard: randomCardId
+      });
+      newState.availableCards[cardNames[randomCardId - 1]]--;
+
+      newState = drawCardForPlayer(newState, 1);
+      newState = drawCardForPlayer(newState, 2);
+      newState = drawCardForPlayer(newState, 3);
+      newState = drawCardForPlayer(newState, 4);
+
+      return newState;
     case DRAW_CARD:
       return drawCard(state);
     case DISCARD_CARD: {

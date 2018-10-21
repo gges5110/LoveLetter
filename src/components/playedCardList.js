@@ -6,6 +6,7 @@ import ListItem from "@material-ui/core/ListItem/ListItem";
 import ListItemText from "@material-ui/core/ListItemText/ListItemText";
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListItemIcon from "@material-ui/core/ListItemIcon/ListItemIcon";
+import {cardNames} from "../const";
 
 export default class PlayedCardList extends React.Component {
   constructor(props) {
@@ -33,12 +34,12 @@ export default class PlayedCardList extends React.Component {
 
   render() {
     let display = this.props.player.playedCards.map((playedCard, index) => {
-      let primary = `Played card ${playedCard.cardId}`;
+      let primary = `Played ${cardNames[playedCard.cardId - 1]}`;
       if (playedCard.target !== null) {
         primary += `, against ${playedCard.target}`;
       }
       if (playedCard.guess !== null && playedCard.guess !== undefined) {
-        primary += `, guessed ${playedCard.guess}`;
+        primary += `, guessed ${cardNames[playedCard.guess - 1]}`;
       }
       return (
         <ListItem button key={index}>

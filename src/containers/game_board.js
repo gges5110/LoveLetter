@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
 import PlayedCardList from "../components/playedCardList";
+import {getAvailableCardSize} from '../util';
 
 const styles = theme => ({
   root: {
@@ -18,13 +19,16 @@ class GameBoard extends Component {
 
   render() {
     const { classes } = this.props;
+    const playedCardLists = this.props.players.map((player, index) => {
+      return (
+        <PlayedCardList player={player} key={index}/>
+      )
+    });
+
     return (
       <div className={classes.root}>
-        Game Board
-        <PlayedCardList player={this.props.players[0]}/>
-        <PlayedCardList player={this.props.players[1]}/>
-        <PlayedCardList player={this.props.players[2]}/>
-        <PlayedCardList player={this.props.players[3]}/>
+        Game Board, available cards: {this.props.cardsLeft}
+        {playedCardLists}
       </div>
     )
   }
@@ -33,7 +37,8 @@ class GameBoard extends Component {
 
 function mapStateToProps(state) {
   return {
-    players: state.GameReducer.players
+    players: state.GameReducer.players,
+    cardsLeft: getAvailableCardSize(state.GameReducer.availableCards)
   };
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import CardSelect from '../containers/card_select';
 import GameBoard from '../containers/game_board';
 import Game from "../game";
@@ -19,7 +20,8 @@ class GameTab extends React.Component {
   render() {
     return (
       <div>
-        <Button color="primary" variant="contained" onClick={() => this.restart}>
+        <Button color="primary" variant="contained" onClick={() => this.restart()}>
+          <RefreshIcon/>
           Restart
         </Button>
         <CardSelect nextTurn={this.game.nextTurn} />

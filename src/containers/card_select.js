@@ -3,6 +3,25 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { playCard } from "../actions/index";
 import Button from '@material-ui/core/Button';
+import CreditCardIcon from '@material-ui/icons/CreditCard';
+import PersonIcon from '@material-ui/icons/Person';
+import { withStyles } from '@material-ui/core/styles';
+import {cardNames} from "../const";
+
+const styles = theme => ({
+  button: {
+    margin: theme.spacing.unit,
+  },
+  leftIcon: {
+    marginRight: theme.spacing.unit,
+  },
+  rightIcon: {
+    marginLeft: theme.spacing.unit,
+  },
+  iconSmall: {
+    fontSize: 20,
+  },
+});
 
 class CardSelect extends Component {
   constructor(props) {
@@ -64,22 +83,25 @@ class CardSelect extends Component {
 
   render() {
     let display;
+    const { classes } = this.props;
     if (this.state.cardId == null) {
       display = this.props.holdingCards.map((holdingCard, index) =>
-        <Button key={index} onClick={() => this.chooseCard(holdingCard)} color="primary" variant="contained">
-          {holdingCard}
+        <Button key={index} onClick={() => this.chooseCard(holdingCard)} className={classes.button} color="primary" variant="contained" style={{marginRight: 8}}>
+          {cardNames[holdingCard - 1]}
+          <CreditCardIcon className={classes.rightIcon}/>
         </Button>
       );
     } else if (this.state.target == null) {
       display = [1, 2, 3, 4].map((target, index) =>
-        <Button disabled={!this.props.playersStatus[index]} key={index} onClick={() => this.chooseTarget(target)} color="primary" variant="contained">
+        <Button disabled={!this.props.playersStatus[index]} key={index} onClick={() => this.chooseTarget(target)} className={classes.button} color="primary" variant="contained">
           {target}
+          <PersonIcon className={classes.rightIcon}/>
         </Button>
       );
     } else {
       display = [2, 3, 4, 5, 6, 7, 8].map((guess, index) =>
         <Button key={index} onClick={() => this.chooseGuess(guess)} color="primary" variant="contained">
-          {guess}
+          {cardNames[guess - 1]}
         </Button>
       );
     }
@@ -108,4 +130,6 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ playCard }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CardSelect);
+let WrappedWithStyle = withStyles(styles)(CardSelect);
+
+export default connect(mapStateToProps, mapDispatchToProps)(WrappedWithStyle);

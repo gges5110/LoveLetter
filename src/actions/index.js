@@ -24,3 +24,11 @@ export function drawCard(player) {
     player: player
   }
 }
+
+export const RESTART = 'RESTART';
+
+export function restart() {
+  return {
+    type: RESTART
+  }
+}

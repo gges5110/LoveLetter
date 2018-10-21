@@ -7,7 +7,7 @@ const cardRank = {
   'King': 6,
   'Countess': 7,
   'Princess': 8,
-}
+};
 
 const cardNames = [
   'Guard',

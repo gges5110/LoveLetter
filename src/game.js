@@ -1,4 +1,4 @@
-import {playCard, drawCard} from "./actions/index";
+import {playCard, drawCard, restart} from "./actions/index";
 
 import ReinforcementAI from "./AI/reinforcementAI";
 import RandomAI from "./AI/randomAI";
@@ -44,7 +44,7 @@ export default class Game {
   }
 
   start() {
-    this.store.dispatch({type: "RESTART"});
+    this.store.dispatch(restart());
     this.nextTurn();
   }
 

@@ -6,15 +6,26 @@ import {combineReducers, createStore} from "redux";
 import App from "./components/app";
 import reducers from "./reducers";
 import GameReducer from "./reducers/reducer_game";
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 let store = createStore(combineReducers({GameReducer}), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 export {
   store
 }
+
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true,
+    suppressDeprecationWarnings: true
+  }
+});
+
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <MuiThemeProvider theme={theme}>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </MuiThemeProvider>  ,
   document.querySelector("#app")
 );
 
