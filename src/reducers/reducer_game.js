@@ -78,7 +78,8 @@ function resolve(state, cardToPlay) {
       nextState.players = discardCard(state.players, cardToPlay.target, {cardId: cardToDiscard});
       nextState.players = addPlayedCard(nextState.players, cardToPlay.target, {
         cardId: cardToDiscard,
-        target: -1,
+        target: null,
+        guess: null,
         discarded: true
       });
 

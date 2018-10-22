@@ -15,7 +15,7 @@ export default class Game {
     // Player 2
     let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     reinforcementAI.initialize();
-    this.setPlayer(2, reinforcementAI);
+    this.setPlayer(2, new RandomAI());
     // Player 3
     this.setPlayer(3, new RandomAI());
     // Player 4
@@ -29,7 +29,7 @@ export default class Game {
 
   play() {
     return new Promise(function (resolve, reject) {
-      this.store.dispatch({type: "RESTART"});
+      this.store.dispatch(restart());
       // Start the game
       this.nextTurn(resolve)}.bind(this));
   }
@@ -51,6 +51,7 @@ export default class Game {
   nextTurn(resolve) {
     if (this.store.getState().GameReducer.gameEnds.winner !== null) {
       // Game end
+      console.log(`Game Ends, winner is ${this.getWinnerId()}`);
       if (resolve) {
         resolve(this.getWinnerId());
       }

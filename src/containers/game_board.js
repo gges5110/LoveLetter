@@ -7,7 +7,7 @@ import {getAvailableCardSize} from '../util';
 const styles = theme => ({
   root: {
     width: '100%',
-    maxWidth: 360,
+    maxWidth: 420,
     backgroundColor: theme.palette.background.paper,
   },
 });
@@ -21,7 +21,7 @@ class GameBoard extends Component {
     const { classes } = this.props;
     const playedCardLists = this.props.players.map((player, index) => {
       return (
-        <PlayedCardList player={player} key={index}/>
+        <PlayedCardList player={player} key={index} winner={this.props.winner}/>
       )
     });
 
@@ -38,7 +38,8 @@ class GameBoard extends Component {
 function mapStateToProps(state) {
   return {
     players: state.GameReducer.players,
-    cardsLeft: getAvailableCardSize(state.GameReducer.availableCards)
+    cardsLeft: getAvailableCardSize(state.GameReducer.availableCards),
+    winner: state.GameReducer.gameEnds.winner,
   };
 }
 

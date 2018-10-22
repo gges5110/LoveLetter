@@ -12,9 +12,9 @@ import EvaluationTab from './evaluationTab';
 
 function TabContainer(props) {
   return (
-    <Typography variant="body2" style={{ padding: 8 * 3 }}>
+    <div style={{ padding: 8 * 3 }}>
       {props.children}
-    </Typography>
+    </div>
   );
 }
 

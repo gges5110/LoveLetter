@@ -36,7 +36,7 @@ const rows = [
   createData('Princess', 'Knocked out if discarded', 8, 1),
 ];
 
-function SimpleTable(props) {
+function RulesTable(props) {
   const { classes } = props;
 
   return (
@@ -69,8 +69,8 @@ function SimpleTable(props) {
   );
 }
 
-SimpleTable.propTypes = {
+RulesTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SimpleTable);
+export default withStyles(styles)(RulesTable);

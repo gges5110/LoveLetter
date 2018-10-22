@@ -82,30 +82,44 @@ class CardSelect extends Component {
   }
 
   render() {
-    let display;
+    let display = [];
     const { classes } = this.props;
     if (this.state.cardId == null) {
-      display = this.props.holdingCards.map((holdingCard, index) =>
+      display.push(
+        <div key={0}>
+          Select Card
+        </div>
+      );
+      display.push(this.props.holdingCards.map((holdingCard, index) =>
         <Button key={index} onClick={() => this.chooseCard(holdingCard)} className={classes.button} color="primary" variant="contained" style={{marginRight: 8}}>
           {cardNames[holdingCard - 1]}
           <CreditCardIcon className={classes.rightIcon}/>
         </Button>
-      );
+      ));
     } else if (this.state.target == null) {
-      display = [1, 2, 3, 4].map((target, index) =>
+      display.push(
+        <div key={0}>
+          Select Target
+        </div>
+      );
+      display.push([1, 2, 3, 4].map((target, index) =>
         <Button disabled={!this.props.playersStatus[index]} key={index} onClick={() => this.chooseTarget(target)} className={classes.button} color="primary" variant="contained">
           {target}
           <PersonIcon className={classes.rightIcon}/>
         </Button>
-      );
+      ));
     } else {
-      display = [2, 3, 4, 5, 6, 7, 8].map((guess, index) =>
+      display.push(
+        <div key={0}>
+          Guess Card
+        </div>
+      );
+      display.push([2, 3, 4, 5, 6, 7, 8].map((guess, index) =>
         <Button key={index} onClick={() => this.chooseGuess(guess)} color="primary" variant="contained">
           {cardNames[guess - 1]}
         </Button>
-      );
+      ));
     }
-
 
     return (
       <div>
@@ -117,7 +131,7 @@ class CardSelect extends Component {
 
 function mapStateToProps(state) {
   const playersStatus = state.GameReducer.players.map((player) => {
-    return !player.dead;
+    return !player.dead && !player.protected;
   });
 
   return {
