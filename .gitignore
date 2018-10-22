@@ -3,6 +3,5 @@ coverage/*
 build/*
 .idea/*
 
-package-lock.json
 npm-debug.log
 .DS_Store
