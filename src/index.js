@@ -7,6 +7,7 @@ import App from "./components/app";
 import reducers from "./reducers";
 import GameReducer from "./reducers/reducer_game";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import {blue, orange} from "@material-ui/core/colors";
 
 let store = createStore(combineReducers({GameReducer}), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 export {
@@ -17,7 +18,11 @@ const theme = createMuiTheme({
   typography: {
     useNextVariants: true,
     suppressDeprecationWarnings: true
-  }
+  },
+  palette: {
+    primary: blue,
+    secondary: orange,
+  },
 });
 
 ReactDOM.render(

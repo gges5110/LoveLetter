@@ -5,6 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 
 import GameTab from './gameTab';
 import RulesTab from './rulesTab';
@@ -12,9 +13,9 @@ import EvaluationTab from './evaluationTab';
 
 function TabContainer(props) {
   return (
-    <div style={{ padding: 8 * 3 }}>
+    <Paper elevation={1} style={{ padding: 8 * 3, marginLeft: 200, marginRight: 200, marginTop: 24 }}>
       {props.children}
-    </div>
+    </Paper>
   );
 }
 
@@ -26,7 +27,6 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
     width: '100%',
-    backgroundColor: theme.palette.background.paper,
   },
 });
 
@@ -49,10 +49,7 @@ class ScrollableTabsButtonAuto extends React.Component {
           <Tabs
             value={value}
             onChange={this.handleChange}
-            indicatorColor="primary"
-            textColor="primary"
-            scrollable
-            scrollButtons="auto"
+            style={{paddingLeft: 200}}
           >
             <Tab label="Game" />
             <Tab label="Rules" />

@@ -3,12 +3,16 @@ import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
 import PlayedCardList from "../components/playedCardList";
 import {getAvailableCardSize} from '../util';
+import Card from "@material-ui/core/Card/Card";
+import CardContent from "@material-ui/core/CardContent/CardContent";
+import Typography from "@material-ui/core/Typography/Typography";
+import CardActions from "@material-ui/core/CardActions/CardActions";
+import Button from "@material-ui/core/Button/Button";
+import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 
 const styles = theme => ({
-  root: {
-    width: '100%',
-    maxWidth: 420,
-    backgroundColor: theme.palette.background.paper,
+  cardHeader: {
+    backgroundColor: theme.palette.grey[200],
   },
 });
 
@@ -26,10 +30,16 @@ class GameBoard extends Component {
     });
 
     return (
-      <div className={classes.root}>
-        Game Board, available cards: {this.props.cardsLeft}
-        {playedCardLists}
-      </div>
+      <Card>
+        <CardHeader
+          title="Game Board"
+          subheader={`Available cards: ${this.props.cardsLeft}`}
+          className={classes.cardHeader}
+        />
+        <CardContent>
+          {playedCardLists}
+        </CardContent>
+      </Card>
     )
   }
 }
@@ -43,6 +53,5 @@ function mapStateToProps(state) {
   };
 }
 
-let StyleWrapped = withStyles(styles)(GameBoard);
-
-export default connect(mapStateToProps)(StyleWrapped);
+let WrappedWithStyle = withStyles(styles)(GameBoard);
+export default connect(mapStateToProps)(WrappedWithStyle);
