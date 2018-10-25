@@ -1,10 +1,10 @@
 import ReinforcementAI from './reinforcementAI';
-import Game from "../game";
+import Game from '../game';
 
 export default class Evaluation {
   constructor() {
     this.game = new Game(4, null, 1);
-    let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
+    const reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     reinforcementAI.initialize();
     this.game.setPlayer(2, reinforcementAI);
 
@@ -12,17 +12,17 @@ export default class Evaluation {
   }
 
   start() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(((resolve, reject) => {
       // do a thing, possibly async, then…
-      let winRate = [0, 0, 0, 0];
-      let games = 2;
+      const winRate = [0, 0, 0, 0];
+      const games = 2;
 
       // Wrap this.game.play into a Promise and do asynchronous calls.
       for (let i = 0, p = Promise.resolve(); i < games; i++) {
-        p = p.then(function(winnerId) {
+        p = p.then((winnerId) => {
           winRate[winnerId - 1]++;
           if (i === games - 1) {
-            return this.game.play().then(function(winnerId) {
+            return this.game.play().then((winnerId) => {
               winRate[winnerId - 1]++;
               resolve({
                 winRate: [
@@ -30,14 +30,13 @@ export default class Evaluation {
                   winRate[1] / games * 100,
                   winRate[2] / games * 100,
                   winRate[3] / games * 100,
-                ]
+                ],
               });
-            }.bind(this));
-          } else {
-            return this.game.play();
+            });
           }
-        }.bind(this));
+          return this.game.play();
+        });
       }
-    }.bind(this));
+    }));
   }
 }

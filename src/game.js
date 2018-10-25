@@ -1,9 +1,8 @@
-import {playCard, drawCard, restart} from "./actions/index";
+import { drawCard, playCard, restart } from './actions/index';
 
-import ReinforcementAI from "./AI/reinforcementAI";
-import RandomAI from "./AI/randomAI";
-import HumanPlayer from "./AI/human";
-import GameReducer from "./reducers/reducer_game";
+import ReinforcementAI from './AI/reinforcementAI';
+import RandomAI from './AI/randomAI';
+import HumanPlayer from './AI/human';
 
 export default class Game {
   constructor(players, store, timeout) {
@@ -13,7 +12,7 @@ export default class Game {
     // Player 1
     this.setPlayer(1, new HumanPlayer());
     // Player 2
-    let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
+    const reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     reinforcementAI.initialize();
     this.setPlayer(2, new RandomAI());
     // Player 3
@@ -28,10 +27,11 @@ export default class Game {
   }
 
   play() {
-    return new Promise(function (resolve, reject) {
+    return new Promise(((resolve, reject) => {
       this.store.dispatch(restart());
       // Start the game
-      this.nextTurn(resolve)}.bind(this));
+      this.nextTurn(resolve);
+    }));
   }
 
   // Public functions
@@ -55,14 +55,12 @@ export default class Game {
       if (resolve) {
         resolve(this.getWinnerId());
       }
-      return;
     } else if (this.store.getState().GameReducer.players[this.store.getState().GameReducer.currentPlayerId - 1].dead) {
       // Skip dead players
       this.nextTurn(resolve);
-      return;
     } else {
       this.store.dispatch(drawCard(this.store.getState().GameReducer.currentPlayerId));
-      let currentPlayer = this.computerPlayers[this.store.getState().GameReducer.currentPlayerId - 1];
+      const currentPlayer = this.computerPlayers[this.store.getState().GameReducer.currentPlayerId - 1];
       switch (currentPlayer.constructor) {
         case HumanPlayer:
           // Wait until the human response, let UI call this.nextTurn() directly.
@@ -70,23 +68,20 @@ export default class Game {
         case ReinforcementAI:
           // this.store.dispatch(actions.drawCard(this.store.getState().GameReducer.currentPlayerId));
           currentPlayer.learn(this.store.getState().GameReducer);
-          let reinforcementAICard = currentPlayer.getBestAction(this.store.getState().GameReducer);
+          const reinforcementAICard = currentPlayer.getBestAction(this.store.getState().GameReducer);
           this.store.dispatch(playCard(reinforcementAICard));
           this.nextTurn(resolve);
           return;
         case RandomAI:
           // Random AI move
-          setTimeout(function() {
+          setTimeout(() => {
             // this.store.dispatch(actions.drawCard(this.store.getState().GameReducer.currentPlayerId));
-            let randomAICard = currentPlayer.getAction(this.store.getState().GameReducer.players, this.store.getState().GameReducer.currentPlayerId);
+            const randomAICard = currentPlayer.getAction(this.store.getState().GameReducer.players, this.store.getState().GameReducer.currentPlayerId);
             this.store.dispatch(playCard(randomAICard));
             this.nextTurn(resolve);
-          }.bind(this), this.timeout);
+          }, this.timeout);
         default:
-          return;
       }
     }
   }
 }
-
-

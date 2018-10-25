@@ -10,12 +10,10 @@ export default class RandomAI {
     if (players[playerId - 1].holdingCards.indexOf(4) !== -1) {
       // Prioritize on playing handmaid.
       cardId = 4;
+    } else if (players[playerId - 1].holdingCards[0] < players[playerId - 1].holdingCards[1]) {
+      cardId = players[playerId - 1].holdingCards[0];
     } else {
-      if (players[playerId - 1].holdingCards[0] < players[playerId - 1].holdingCards[1]) {
-        cardId = players[playerId - 1].holdingCards[0];
-      } else {
-        cardId = players[playerId - 1].holdingCards[1];
-      }
+      cardId = players[playerId - 1].holdingCards[1];
     }
 
     let guess;
@@ -26,14 +24,14 @@ export default class RandomAI {
     }
 
     let target = playerId % 4 + 1;
-    let getNonDeadNonProtectedPlayerList = getNonDeadNonProtectedPlayers(playerId, players);
+    const getNonDeadNonProtectedPlayerList = getNonDeadNonProtectedPlayers(playerId, players);
     if (getNonDeadNonProtectedPlayerList.length === 0) {
       // The player is the winner.
     } else {
       // Randomly select one player to play the card against.
-      let randomPlayerIndex = Math.floor(Math.random() * getNonDeadNonProtectedPlayerList.length);
+      const randomPlayerIndex = Math.floor(Math.random() * getNonDeadNonProtectedPlayerList.length);
       target = getNonDeadNonProtectedPlayerList[randomPlayerIndex];
     }
-    return {cardId, target, guess};
+    return { cardId, target, guess };
   }
 }

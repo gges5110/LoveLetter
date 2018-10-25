@@ -1,13 +1,10 @@
 import React, {Component} from 'react';
-import { connect } from "react-redux";
-import { withStyles } from '@material-ui/core/styles';
-import PlayedCardList from "../components/playedCardList";
+import {connect} from "react-redux";
+import {withStyles} from '@material-ui/core/styles';
+import PlayedCardList from "./PlayedCardList";
 import {getAvailableCardSize} from '../util';
 import Card from "@material-ui/core/Card/Card";
 import CardContent from "@material-ui/core/CardContent/CardContent";
-import Typography from "@material-ui/core/Typography/Typography";
-import CardActions from "@material-ui/core/CardActions/CardActions";
-import Button from "@material-ui/core/Button/Button";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 
 const styles = theme => ({

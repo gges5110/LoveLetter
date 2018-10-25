@@ -1,5 +1,5 @@
 import React from 'react';
-import RulesTable from './rulesTable';
+import RulesTable from './RulesTable';
 
 class RulesTab extends React.Component {
   render() {

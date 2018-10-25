@@ -1,10 +1,9 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 
-import SelectAction from '../containers/select_action';
-import GameBoard from '../containers/game_board';
+import SelectAction from './SelectAction';
+import GameBoard from './GameBoard';
 import Game from "../game";
-import {store} from '../index';
+import {store} from '../pages/index';
 
 class GameTab extends React.Component {
   constructor(props) {

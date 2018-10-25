@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from "@material-ui/core/ListItem/ListItem";
@@ -12,7 +12,7 @@ import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 import ListItemIcon from "@material-ui/core/ListItemIcon/ListItemIcon";
 import {cardNames} from "../const";
 import Avatar from "@material-ui/core/Avatar/Avatar";
-import {green, pink, lime} from "@material-ui/core/colors";
+import {green, lime, pink} from "@material-ui/core/colors";
 
 const styles = {
   avatar: {

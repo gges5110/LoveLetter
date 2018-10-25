@@ -1,15 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 
-import GameTab from './gameTab';
-import RulesTab from './rulesTab';
-import EvaluationTab from './evaluationTab';
+import GameTab from './GameTab';
+import RulesTab from './RulesTab';
+import EvaluationTab from './EvaluationTab';
 
 function TabContainer(props) {
   return (
@@ -30,7 +29,7 @@ const styles = theme => ({
   },
 });
 
-class ScrollableTabsButtonAuto extends React.Component {
+class Page extends React.Component {
   state = {
     value: 0,
   };
@@ -66,8 +65,8 @@ class ScrollableTabsButtonAuto extends React.Component {
   }
 }
 
-ScrollableTabsButtonAuto.propTypes = {
+Page.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ScrollableTabsButtonAuto);
+export default withStyles(styles)(Page);

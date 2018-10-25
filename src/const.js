@@ -1,12 +1,12 @@
 const cardRank = {
-  'Guard': 1,
-  'Priest': 2,
-  'Baron': 3,
-  'Handmaid': 4,
-  'Prince': 5,
-  'King': 6,
-  'Countess': 7,
-  'Princess': 8,
+  Guard: 1,
+  Priest: 2,
+  Baron: 3,
+  Handmaid: 4,
+  Prince: 5,
+  King: 6,
+  Countess: 7,
+  Princess: 8,
 };
 
 const cardNames = [
@@ -21,14 +21,14 @@ const cardNames = [
 ];
 
 const startingCards = {
-  'Guard': 5,
-  'Priest': 2,
-  'Baron': 2,
-  'Handmaid': 2,
-  'Prince': 2,
-  'King': 1,
-  'Countess': 1,
-  'Princess': 1,
+  Guard: 5,
+  Priest: 2,
+  Baron: 2,
+  Handmaid: 2,
+  Prince: 2,
+  King: 1,
+  Countess: 1,
+  Princess: 1,
 };
 
 const nonAttackingCards = [
@@ -72,21 +72,21 @@ const initialState = {
       holdingCards: [],
       playedCards: [],
       seenCards: [],
-    }
+    },
   ],
   firstCard: -1,
   availableCards: {
-    'Guard': 5,
-    'Priest': 2,
-    'Baron': 2,
-    'Handmaid': 2,
-    'Prince': 2,
-    'King': 1,
-    'Countess': 1,
-    'Princess': 1,
+    Guard: 5,
+    Priest: 2,
+    Baron: 2,
+    Handmaid: 2,
+    Prince: 2,
+    King: 1,
+    Countess: 1,
+    Princess: 1,
   },
   gameEnds: {
-    winner: null
+    winner: null,
   },
   buttonStates: {
     chooseCard: true,
@@ -97,8 +97,8 @@ const initialState = {
   cardToPlay: {
     cardId: null,
     playAgainst: -1,
-    guardGuess: -1
-  }
+    guardGuess: -1,
+  },
 };
 
 export {
@@ -107,4 +107,4 @@ export {
   initialState,
   nonAttackingCards,
   startingCards,
-}
+};
