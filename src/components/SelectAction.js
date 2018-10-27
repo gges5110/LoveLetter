@@ -198,7 +198,7 @@ class SelectAction extends Component {
     let activeStep = this.getActiveStep();
 
     return (
-      <Card style={{marginBottom: 12, maxWidth: 480}}>
+      <Card style={{marginBottom: 12}}>
         <CardHeader
           title="Action"
           subheader={this.renderTitle()}

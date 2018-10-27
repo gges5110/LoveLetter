@@ -5,9 +5,9 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
-import GameTab from './GameTab';
-import RulesTab from './RulesTab';
-import EvaluationTab from './EvaluationTab';
+import GameTab from '../pages/Tabs/GameTab';
+import RulesTab from '../pages/Tabs/RulesTab';
+import EvaluationTab from '../pages/Tabs/EvaluationTab';
 import TabContainer from "./TabContainer";
 
 const styles = theme => ({
