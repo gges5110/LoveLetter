@@ -28,8 +28,8 @@ describe('ReinforcementAI.public functions', () => {
 
     let card = reinforcementAI.getBestAction(state);
     expect(card.cardId).to.oneOf([4, 8]);
-    expect(card.playAgainst).to.be.oneOf([1]);
-    expect(card.guardGuess).to.be.oneOf([2, 3, 4, 5, 6, 7, 8]);
+    expect(card.target).to.be.oneOf([1]);
+    expect(card.guess).to.be.oneOf([2, 3, 4, 5, 6, 7, 8]);
   })
 
   it('ReinforcementAI.learn', () => {
@@ -46,8 +46,8 @@ describe('ReinforcementAI.public functions', () => {
 
     let card = reinforcementAI.getBestAction(state);
     expect(card.cardId).to.equal(1);
-    expect(card.playAgainst).to.be.oneOf([2, 3, 4]);
-    expect(card.guardGuess).to.be.oneOf([2, 3, 4, 5, 6, 7, 8]);
+    expect(card.target).to.be.oneOf([2, 3, 4]);
+    expect(card.guess).to.be.oneOf([2, 3, 4, 5, 6, 7, 8]);
 
     reinforcementAI.learn(state);
   })
@@ -71,22 +71,22 @@ describe('ReinforcementAI.private functions', () => {
     let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     // let SVector = [1, 6, 5, 0];
     let player0holdingCard0 = 8;
-    let playAgainst = [2, 3, 4];
+    let target = [2, 3, 4];
     let guess = [2, 3, 4, 5, 6, 7, 8];
-    let AVectors = reinforcementAI.generateActionVectors(player0holdingCard0, playAgainst, guess);
-    expect(AVectors.length).to.equal(playAgainst.length * guess.length);
-    expect(AVectors[0]).to.deep.equal([player0holdingCard0 - 1, playAgainst[0] - 1, guess[0] - 2]);
-    expect(AVectors[1]).to.deep.equal([player0holdingCard0 - 1, playAgainst[0] - 1, guess[1] - 2]);
+    let AVectors = reinforcementAI.generateActionVectors(player0holdingCard0, target, guess);
+    expect(AVectors.length).to.equal(target.length * guess.length);
+    expect(AVectors[0]).to.deep.equal([player0holdingCard0 - 1, target[0] - 1, guess[0] - 2]);
+    expect(AVectors[1]).to.deep.equal([player0holdingCard0 - 1, target[0] - 1, guess[1] - 2]);
   })
 
   it('AVectorToActionObject', () => {
     let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
-    // guardGuess [2, 3, 4, 5, 6, 7, 8]
+    // guess [2, 3, 4, 5, 6, 7, 8]
     // action vec [0, 1, 2, 3, 4, 5, 6]
     let actionObject = reinforcementAI.AVectorToActionObject([0, 2, 6]);
     expect(actionObject.cardId).to.equal(1);
-    expect(actionObject.playAgainst).to.equal(3);
-    expect(actionObject.guardGuess).to.equal(8);
+    expect(actionObject.target).to.equal(3);
+    expect(actionObject.guess).to.equal(8);
   });
 
   it('getMaxQValueSAVectorGivenSAVectors', () => {
@@ -119,8 +119,8 @@ describe('ReinforcementAI.private functions', () => {
     let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     expect(reinforcementAI.SAVectorToActionObject([0, 0, 0, 0, 0, 2, 5])).to.deep.equal({
       cardId: 1,
-      playAgainst: 3,
-      guardGuess: 7
+      target: 3,
+      guess: 7
     });
   })
 });

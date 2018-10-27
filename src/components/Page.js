@@ -1,36 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
 
-import GameTab from './gameTab';
-import RulesTab from './rulesTab';
-import EvaluationTab from './evaluationTab';
-
-function TabContainer(props) {
-  return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
-      {props.children}
-    </Typography>
-  );
-}
-
-TabContainer.propTypes = {
-  children: PropTypes.node.isRequired,
-};
+import GameTab from '../pages/Tabs/GameTab';
+import RulesTab from '../pages/Tabs/RulesTab';
+import EvaluationTab from '../pages/Tabs/EvaluationTab';
+import TabContainer from "./TabContainer";
 
 const styles = theme => ({
   root: {
     flexGrow: 1,
     width: '100%',
-    backgroundColor: theme.palette.background.paper,
   },
+  tabHeader: {
+    [theme.breakpoints.down('sm')]: {
+      paddingLeft: 20,
+      paddingRight: 20
+    },
+    [theme.breakpoints.up('md')]: {
+      paddingLeft: 200,
+      paddingRight: 200
+    },
+  }
 });
 
-class ScrollableTabsButtonAuto extends React.Component {
+class Page extends React.Component {
   state = {
     value: 0,
   };
@@ -49,10 +46,7 @@ class ScrollableTabsButtonAuto extends React.Component {
           <Tabs
             value={value}
             onChange={this.handleChange}
-            indicatorColor="primary"
-            textColor="primary"
-            scrollable
-            scrollButtons="auto"
+            className={classes.tabHeader}
           >
             <Tab label="Game" />
             <Tab label="Rules" />
@@ -69,8 +63,8 @@ class ScrollableTabsButtonAuto extends React.Component {
   }
 }
 
-ScrollableTabsButtonAuto.propTypes = {
+Page.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ScrollableTabsButtonAuto);
+export default withStyles(styles)(Page);
