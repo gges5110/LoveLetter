@@ -32,9 +32,13 @@ export default class Evaluation {
                   winRate[3] / games * 100,
                 ],
               });
+            }).catch((err) => {
+              console.log(err);
             });
           }
           return this.game.play();
+        }).catch((err) => {
+          console.log(err);
         });
       }
     }));

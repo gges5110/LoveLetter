@@ -4,29 +4,27 @@ import {withStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Paper from '@material-ui/core/Paper';
 
 import GameTab from './GameTab';
 import RulesTab from './RulesTab';
 import EvaluationTab from './EvaluationTab';
-
-function TabContainer(props) {
-  return (
-    <Paper elevation={1} style={{ padding: 8 * 3, marginLeft: 200, marginRight: 200, marginTop: 24 }}>
-      {props.children}
-    </Paper>
-  );
-}
-
-TabContainer.propTypes = {
-  children: PropTypes.node.isRequired,
-};
+import TabContainer from "./TabContainer";
 
 const styles = theme => ({
   root: {
     flexGrow: 1,
     width: '100%',
   },
+  tabHeader: {
+    [theme.breakpoints.down('sm')]: {
+      paddingLeft: 20,
+      paddingRight: 20
+    },
+    [theme.breakpoints.up('md')]: {
+      paddingLeft: 200,
+      paddingRight: 200
+    },
+  }
 });
 
 class Page extends React.Component {
@@ -48,7 +46,7 @@ class Page extends React.Component {
           <Tabs
             value={value}
             onChange={this.handleChange}
-            style={{paddingLeft: 200}}
+            className={classes.tabHeader}
           >
             <Tab label="Game" />
             <Tab label="Rules" />

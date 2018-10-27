@@ -27,7 +27,7 @@ class GameBoard extends Component {
     });
 
     return (
-      <Card>
+      <Card style={{maxWidth: 350}}>
         <CardHeader
           title="Game Board"
           subheader={`Available cards: ${this.props.cardsLeft}`}

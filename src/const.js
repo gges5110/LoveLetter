@@ -93,12 +93,6 @@ const initialState = {
     playAgainst: false,
     GuardGuess: false,
   },
-  readyForNextTurn: false,
-  cardToPlay: {
-    cardId: null,
-    playAgainst: -1,
-    guardGuess: -1,
-  },
 };
 
 export {

@@ -160,7 +160,7 @@ class SelectAction extends Component {
     }
 
     return (
-      <Card style={{marginTop: 12, marginBottom: 12}}>
+      <Card style={{marginBottom: 12, maxWidth: 480}}>
         <CardHeader
           title="Action"
           subheader={title}
@@ -171,6 +171,7 @@ class SelectAction extends Component {
         </CardContent>
         <CardActions>
           <Button
+            style={{marginLeft: 'auto',}}
             color="default"
             variant="outlined"
             onClick={this.props.restart}

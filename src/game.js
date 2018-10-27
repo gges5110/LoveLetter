@@ -3,11 +3,17 @@ import { drawCard, playCard, restart } from './actions/index';
 import ReinforcementAI from './AI/reinforcementAI';
 import RandomAI from './AI/randomAI';
 import HumanPlayer from './AI/human';
+import {combineReducers, createStore} from "redux";
+import GameReducer from "./reducers/reducer_game";
 
 export default class Game {
   constructor(players, store, timeout) {
     this.computerPlayers = Array(players);
-    this.store = store;
+    if (store !== null) {
+      this.store = store;
+    } else {
+      this.store = createStore(combineReducers({GameReducer}));
+    }
 
     // Player 1
     this.setPlayer(1, new HumanPlayer());

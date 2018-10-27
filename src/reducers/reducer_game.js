@@ -54,7 +54,7 @@ function resolve(state, cardToPlay) {
         playerId: cardToPlay.target,
       });
       break;
-    case 3:
+    case 3: {
       const cardValue1 = state.players[state.currentPlayerId - 1].holdingCards[0];
       const cardValue2 = state.players[cardToPlay.target - 1].holdingCards[0];
       if (cardValue1 > cardValue2) {
@@ -63,6 +63,7 @@ function resolve(state, cardToPlay) {
         nextState.players = setPlayerDead(state.players, state.currentPlayerId);
       }
       break;
+    }
     case 4:
       return update(state, {
         players: {
@@ -73,7 +74,7 @@ function resolve(state, cardToPlay) {
           },
         },
       });
-    case 5:
+    case 5: {
       // Prince, Discard and draw
       const cardToDiscard = state.players[cardToPlay.target - 1].holdingCards[0];
       nextState.players = discardCard(state.players, cardToPlay.target, { cardId: cardToDiscard });
@@ -93,6 +94,8 @@ function resolve(state, cardToPlay) {
         nextState = drawCardForPlayer(nextState, cardToPlay.target);
       }
       break;
+    }
+
     case 6:
       const cardToSwap = nextState.players[state.currentPlayerId - 1].holdingCards[0];
       nextState = update(nextState, {
