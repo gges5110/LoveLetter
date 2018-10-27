@@ -3,15 +3,15 @@ var webpack = require('webpack');
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.js',
+  entry: './src/pages/index.js',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'main.bundle.js'
   },
   devServer: {
     hot: true,
-    historyApiFallback: true,
     publicPath: '/build/',
+    historyApiFallback: true
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin()
@@ -21,8 +21,9 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
+        exclude: /(node_modules|bower_compontents)/,
         query: {
-          presets: ['env']
+          presets: ['env', 'stage-0']
         }
       }
     ]

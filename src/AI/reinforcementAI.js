@@ -60,19 +60,19 @@ export default class ReinforcementAI {
   }
 
   getBestAction(reduxState) {
-    let SObject = this.reduxStateToSObject(reduxState);
-    let allowedSAVectors = this.allowedSAVectors(SObject,reduxState.currentPlayerId,reduxState.players);
-    let bestSAVector = this.getMaxQValueSAVectorGivenSAVectors(allowedSAVectors);
+    const SObject = this.reduxStateToSObject(reduxState);
+    const allowedSAVectors = this.allowedSAVectors(SObject, reduxState.currentPlayerId, reduxState.players);
+    const bestSAVector = this.getMaxQValueSAVectorGivenSAVectors(allowedSAVectors);
     this.lastSAVector = bestSAVector;
     return this.SAVectorToActionObject(bestSAVector);
   }
 
   learn(nextReduxState) {
-    let nextSObject = this.reduxStateToSObject(nextReduxState);
-    let allowedSAIndicies = this.allowedSAVectors(nextSObject,nextReduxState.currentPlayerId,nextReduxState.players);
-    let max_A = this.getMaxQValueGivenSAVectors(allowedSAIndicies);
-    this.QValueTable[this.lastSAVector] = this.QValueTable[this.lastSAVector] +
-      this.alpha * [this.reward(nextSObject) + max_A - this.QValueTable[this.lastSAVector]]
+    const nextSObject = this.reduxStateToSObject(nextReduxState);
+    const allowedSAIndicies = this.allowedSAVectors(nextSObject, nextReduxState.currentPlayerId, nextReduxState.players);
+    const max_A = this.getMaxQValueGivenSAVectors(allowedSAIndicies);
+    this.QValueTable[this.lastSAVector] = this.QValueTable[this.lastSAVector]
+      + this.alpha * [this.reward(nextSObject) + max_A - this.QValueTable[this.lastSAVector]];
   }
 
   // Private functions
@@ -86,12 +86,14 @@ export default class ReinforcementAI {
   */
   allowedSAVectors(SObject, currentPlayerId, playerStatus) {
     // Represent index as 1d vector, math.subset([[0, 1], [2, 3]], math.index(1, 0)) // 2
-    let SVector = this.SObjectToSVector(SObject);
-    let AVectors = [], SAIndicies = [];
+    const SVector = this.SObjectToSVector(SObject);
+    let AVectors = []; const
+      SAIndicies = [];
     if (SObject.player0dead) {
       return [];
     }
-    let playAgainst = [1, 2, 3, 4], guess = [2, 3, 4, 5, 6, 7, 8];
+    const playAgainst = [1, 2, 3, 4]; const
+      guess = [2, 3, 4, 5, 6, 7, 8];
     // Remove players who are dead or protected
     for (let i = playerStatus.length - 1; i > -1; i--) {
       if (playerStatus[i].dead || playerStatus[i].protected) {
@@ -99,7 +101,7 @@ export default class ReinforcementAI {
       }
     }
     playAgainst.splice(playAgainst.indexOf(currentPlayerId), 1);
-    const opponents=  playAgainst;
+    const opponents = playAgainst;
     AVectors = AVectors.concat(this.allowedAVectors(SObject.player0holdingCard0, guess, currentPlayerId, opponents));
     AVectors = AVectors.concat(this.allowedAVectors(SObject.player0holdingCard1, guess, currentPlayerId, opponents));
     return this.combineSAVectors(SVector, AVectors);
@@ -118,7 +120,7 @@ export default class ReinforcementAI {
   // For debugging
   AIndiciesToActionObjects(AIndicies) {
     // [8, 4, 7]
-    let arr = [];
+    const arr = [];
     for (let i = 0; i < AIndicies.length; ++i) {
       arr.push(this.AVectorToActionObject(AIndicies[i]));
     }
@@ -126,18 +128,18 @@ export default class ReinforcementAI {
   }
 
   AVectorToActionObject(AIndex) {
-    let arr = AIndex;
+    const arr = AIndex;
     return {
       cardId: arr[0] + 1,
-      playAgainst: arr[1] + 1,
-      guardGuess: arr[2] + 2
+      target: arr[1] + 1,
+      guess: arr[2] + 2,
     };
   }
 
   combineSAVectors(SVector, AVectors) {
     // [1, 2, 3, 4], [[5, 6, 7], [3, 2, 1]]
     // return [[1, 2, 3, 4, 5, 6, 7], [1, 2, 3, 4, 3, 2, 1]]
-    let ret = [];
+    const ret = [];
     for (let i = 0; i < AVectors.length; ++i) {
       let combinedSAVector = SVector;
       combinedSAVector = combinedSAVector.concat(AVectors[i]);
@@ -147,11 +149,11 @@ export default class ReinforcementAI {
   }
 
   generateActionVectors(cardIdx, playAgainstArr, guessArr) {
-    let arr = [];
+    const arr = [];
     // [8, 4, 7]
-    for (var pidx = 0; pidx < playAgainstArr.length; ++pidx) {
-      for (var gidx = 0; gidx < guessArr.length; ++gidx) {
-        let actionVector = [];
+    for (let pidx = 0; pidx < playAgainstArr.length; ++pidx) {
+      for (let gidx = 0; gidx < guessArr.length; ++gidx) {
+        const actionVector = [];
         actionVector.push(cardIdx - 1);
         actionVector.push(playAgainstArr[pidx] - 1);
         actionVector.push(guessArr[gidx] - 2);
@@ -172,20 +174,20 @@ export default class ReinforcementAI {
   getMaxQValueSAVectorGivenSAVectors(SAVectors) {
     if (SAVectors.length === undefined || SAVectors.length === 0) {
       return -1;
-    } else {
-      let max = this.getQValue(SAVectors[0]), vector = SAVectors[0];
-      for (let i = 1; i < SAVectors.length; ++i) {
-        if (max < this.getQValue(SAVectors[i])) {
-          max = this.getQValue(SAVectors[i]);
-          vector = SAVectors[i];
-        }
-      }
-      return vector;
     }
+    let max = this.getQValue(SAVectors[0]); let
+      vector = SAVectors[0];
+    for (let i = 1; i < SAVectors.length; ++i) {
+      if (max < this.getQValue(SAVectors[i])) {
+        max = this.getQValue(SAVectors[i]);
+        vector = SAVectors[i];
+      }
+    }
+    return vector;
   }
 
   getMaxQValueGivenSAVectors(SAVectors) {
-    let vector = this.getMaxQValueSAVectorGivenSAVectors(SAVectors);
+    const vector = this.getMaxQValueSAVectorGivenSAVectors(SAVectors);
     return this.getQValue(vector);
   }
 
@@ -210,10 +212,10 @@ export default class ReinforcementAI {
 
     return {
       player0dead: reduxState.players[1].dead,
-      player0lastCardId: player0lastCardId,
+      player0lastCardId,
       player0holdingCard0: reduxState.players[1].holdingCards[0],
       player0holdingCard1: reduxState.players[1].holdingCards[1],
-    }
+    };
   }
 
   reward(SObject) {
@@ -221,7 +223,7 @@ export default class ReinforcementAI {
   }
 
   SAVectorToActionObject(SAVector) {
-    let AIndex = this.getAVectorFromSAVector(SAVector);
+    const AIndex = this.getAVectorFromSAVector(SAVector);
     return this.AVectorToActionObject(AIndex);
   }
 
@@ -241,7 +243,7 @@ export default class ReinforcementAI {
   }
 
   SObjectToSVector(SObject) {
-    let ret = [];
+    const ret = [];
     ret.push(SObject.player0dead ? 1 : 0);
     ret.push(SObject.player0lastCardId - 1);
     ret.push(SObject.player0holdingCard0 - 1);

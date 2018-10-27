@@ -1,4 +1,4 @@
-import { counter } from '../src/reducers';
+import GameReducer from '../src/reducers/reducer_game';
 import { initialState } from '../src/const';
 import { getAvailableCardSize } from '../src/util';
 import chai from 'chai';
@@ -14,7 +14,7 @@ describe('Card Resolution', () => {
     state.players[0].holdingCards.push(1);
     state.players[0].holdingCards.push(3);
     state.players[1].holdingCards.push(8);
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 1, playAgainst: 2, guardGuess: 8}});
+    let nextState = GameReducer(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 1, target: 2, guess: 8}});
 
     expect(nextState.players[0].dead).to.equal(false);
     expect(nextState.players[1].dead).to.equal(true);
@@ -25,7 +25,7 @@ describe('Card Resolution', () => {
     state.players[0].holdingCards.push(2);
     state.players[0].holdingCards.push(3);
     state.players[1].holdingCards.push(8);
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 2, playAgainst: 2, guardGuess: -1}});
+    let nextState = GameReducer(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 2, target: 2, guess: -1}});
 
     expect(nextState.players[0].seenCards).to.be.an('array')
     expect(nextState.players[0].seenCards.length).to.equal(1)
@@ -37,7 +37,7 @@ describe('Card Resolution', () => {
     state.players[0].holdingCards.push(1);
     state.players[0].holdingCards.push(3);
     state.players[1].holdingCards.push(8);
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 3, playAgainst: 2, guardGuess: -1}});
+    let nextState = GameReducer(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 3, target: 2, guess: -1}});
 
     expect(nextState.players[0].dead).to.equal(true);
     expect(nextState.players[1].dead).to.equal(false);
@@ -47,11 +47,11 @@ describe('Card Resolution', () => {
     let state = JSON.parse(JSON.stringify(initialState));
     state.players[0].holdingCards.push(5);
     state.players[1].holdingCards.push(2);
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, playAgainst: 2, guardGuess: -1}});
+    let nextState = GameReducer(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, target: 2, guess: -1}});
 
     expect(nextState.players[1].playedCards).to.be.a('array');
     expect(nextState.players[1].playedCards.length).to.equal(1);
-    expect(nextState.players[1].playedCards[0]).to.deep.equal({cardId: 2, discarded: true, guardGuess: -1, playAgainst: -1})
+    expect(nextState.players[1].playedCards[0]).to.deep.equal({cardId: 2, discarded: true, guess: null, target: null})
   });
   it('[Prince] should draw the first card of the game if there are no cards left in the deck', () => {
     let state = JSON.parse(JSON.stringify(initialState));
@@ -59,7 +59,7 @@ describe('Card Resolution', () => {
     state.players[1].holdingCards.push(1);
     state.availableCards = {}
     state.firstCard = 3;
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, playAgainst: 2, guardGuess: -1}});
+    let nextState = GameReducer(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, target: 2, guess: -1}});
     expect(nextState.players[1].holdingCards.length).to.equal(1);
   });
   it('[Prince] should not draw the another card if player is dead', () => {
@@ -68,7 +68,7 @@ describe('Card Resolution', () => {
     state.players[1].holdingCards.push(8);
     state.availableCards = {}
     state.firstCard = 3;
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, playAgainst: 2, guardGuess: -1}});
+    let nextState = GameReducer(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, target: 2, guess: -1}});
     expect(nextState.players[1].dead).to.equal(true);
     expect(nextState.players[1].holdingCards.length).to.equal(0);
   });
@@ -77,7 +77,7 @@ describe('Card Resolution', () => {
     state.players[0].holdingCards.push(3);
     state.players[0].holdingCards.push(6);
     state.players[1].holdingCards.push(8);
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 6, playAgainst: 2, guardGuess: -1}});
+    let nextState = GameReducer(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 6, target: 2, guess: -1}});
 
     expect(nextState.players[0].holdingCards).to.be.a('array');
     expect(nextState.players[0].holdingCards.length).to.equal(1);
@@ -91,7 +91,7 @@ describe('Card Resolution', () => {
   it('[Princess] should die when a player plays Princess', () => {
     let state = JSON.parse(JSON.stringify(initialState));
     state.players[0].holdingCards.push(8);
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 8, playAgainst: -1, guardGuess: -1}});
+    let nextState = GameReducer(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 8, target: -1, guess: -1}});
 
     expect(nextState.players[0].dead).to.equal(true);
   });
@@ -100,11 +100,11 @@ describe('Card Resolution', () => {
     let state = JSON.parse(JSON.stringify(initialState));
     state.players[0].holdingCards.push(5);
     state.players[1].holdingCards.push(8);
-    let nextState = counter(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, playAgainst: 2, guardGuess: -1}});
+    let nextState = GameReducer(state, {type: 'PLAY_CARD', cardToPlay: {cardId: 5, target: 2, guess: -1}});
 
     expect(nextState.players[1].playedCards).to.be.a('array');
     expect(nextState.players[1].playedCards.length).to.equal(1);
-    expect(nextState.players[1].playedCards[0]).to.deep.equal({cardId: 8, discarded: true, guardGuess: -1, playAgainst: -1})
+    expect(nextState.players[1].playedCards[0]).to.deep.equal({cardId: 8, discarded: true, guess: null, target: null})
     expect(nextState.players[1].dead).to.equal(true);
   })
 })

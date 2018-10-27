@@ -1,21 +1,26 @@
-import actions from "./actions";
-import RandomAI from "./AI/randomAI";
+import { drawCard, playCard, restart } from './actions/index';
+
+import ReinforcementAI from './AI/reinforcementAI';
+import RandomAI from './AI/randomAI';
+import HumanPlayer from './AI/human';
 import {combineReducers, createStore} from "redux";
-import {counter} from "./reducers";
-import ReinforcementAI from "./AI/reinforcementAI";
-import HumanPlayer from "./AI/human";
+import GameReducer from "./reducers/reducer_game";
 
 export default class Game {
   constructor(players, store, timeout) {
     this.computerPlayers = Array(players);
-    this.store = store || createStore(combineReducers({counter}));
+    if (store !== null) {
+      this.store = store;
+    } else {
+      this.store = createStore(combineReducers({GameReducer}));
+    }
 
     // Player 1
-    this.setPlayer(1, new RandomAI());
+    this.setPlayer(1, new HumanPlayer());
     // Player 2
-    let reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
+    const reinforcementAI = new ReinforcementAI([2, 9, 8, 8], [8, 4, 7]);
     reinforcementAI.initialize();
-    this.setPlayer(2, reinforcementAI);
+    this.setPlayer(2, new RandomAI());
     // Player 3
     this.setPlayer(3, new RandomAI());
     // Player 4
@@ -28,10 +33,11 @@ export default class Game {
   }
 
   play() {
-    return new Promise(function (resolve, reject) {
-      this.store.dispatch({type: "RESTART"});
+    return new Promise(((resolve, reject) => {
+      this.store.dispatch(restart());
       // Start the game
-      this.nextTurn(resolve)}.bind(this));
+      this.nextTurn(resolve);
+    }));
   }
 
   // Public functions
@@ -40,51 +46,48 @@ export default class Game {
   }
 
   getWinnerId() {
-    return this.store.getState().counter.gameEnds.winner.id;
+    return this.store.getState().GameReducer.gameEnds.winner.id;
   }
 
   start() {
-    this.store.dispatch({type: "RESTART"});
+    this.store.dispatch(restart());
     this.nextTurn();
   }
 
   nextTurn(resolve) {
-    if (this.store.getState().counter.gameEnds.winner !== null) {
+    if (this.store.getState().GameReducer.gameEnds.winner !== null) {
       // Game end
+      console.log(`Game Ends, winner is ${this.getWinnerId()}`);
       if (resolve) {
         resolve(this.getWinnerId());
       }
-      return;
-    } else if (this.store.getState().counter.players[this.store.getState().counter.currentPlayerId - 1].dead) {
+    } else if (this.store.getState().GameReducer.players[this.store.getState().GameReducer.currentPlayerId - 1].dead) {
       // Skip dead players
       this.nextTurn(resolve);
-      return;
     } else {
-      this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
-      let currentPlayer = this.computerPlayers[this.store.getState().counter.currentPlayerId - 1];
+      this.store.dispatch(drawCard(this.store.getState().GameReducer.currentPlayerId));
+      const currentPlayer = this.computerPlayers[this.store.getState().GameReducer.currentPlayerId - 1];
       switch (currentPlayer.constructor) {
         case HumanPlayer:
           // Wait until the human response, let UI call this.nextTurn() directly.
           break;
         case ReinforcementAI:
-          // this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
-          currentPlayer.learn(this.store.getState().counter);
-          let reinforcementAICard = currentPlayer.getBestAction(this.store.getState().counter);
-          this.store.dispatch(actions.playCard(reinforcementAICard));
+          // this.store.dispatch(actions.drawCard(this.store.getState().GameReducer.currentPlayerId));
+          currentPlayer.learn(this.store.getState().GameReducer);
+          const reinforcementAICard = currentPlayer.getBestAction(this.store.getState().GameReducer);
+          this.store.dispatch(playCard(reinforcementAICard));
           this.nextTurn(resolve);
           return;
         case RandomAI:
           // Random AI move
-          setTimeout(function() {
-            // this.store.dispatch(actions.drawCard(this.store.getState().counter.currentPlayerId));
-            let randomAICard = currentPlayer.getAction(this.store.getState().counter.players, this.store.getState().counter.currentPlayerId);
-            this.store.dispatch(actions.playCard(randomAICard));
+          setTimeout(() => {
+            // this.store.dispatch(actions.drawCard(this.store.getState().GameReducer.currentPlayerId));
+            const randomAICard = currentPlayer.getAction(this.store.getState().GameReducer.players, this.store.getState().GameReducer.currentPlayerId);
+            this.store.dispatch(playCard(randomAICard));
             this.nextTurn(resolve);
-          }.bind(this), this.timeout);
+          }, this.timeout);
         default:
-          return;
       }
     }
   }
 }
-
